@@ -16,7 +16,7 @@ class TestDilutionFactor(unittest.TestCase):
         builder.extension.execute()
 
         # Assert
-        transfers = builder.transfers
+        transfers = builder.sorted_transfers
         self.assertEqual(5, transfers[0].pipette_sample_volume)
         self.assertEqual(5, transfers[0].pipette_buffer_volume)
         self.assertEqual(3.3, transfers[1].pipette_sample_volume)
@@ -61,7 +61,7 @@ class TestDilutionFactor(unittest.TestCase):
         builder.extension.execute()
 
         # Assert
-        transfers = builder.transfers
+        transfers = builder.sorted_transfers
         self.assertEqual(2,len(transfers))
         self.assertEqual(8, transfers[0].pipette_sample_volume)
         self.assertEqual(36, transfers[0].pipette_buffer_volume)

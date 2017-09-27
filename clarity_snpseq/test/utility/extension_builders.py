@@ -4,6 +4,7 @@ from clarity_ext.utils import *
 from clarity_ext_scripts.dilution.dna_dilution_start import Extension as ExtensionDna
 from clarity_ext_scripts.dilution.factor_dilution_start import Extension as ExtensionFactor
 from clarity_ext_scripts.dilution.settings import MetadataInfo
+from clarity_ext_scripts.dilution.settings import HamiltonRobotSettings
 from clarity_snpseq.test.utility.helpers import DilutionHelpers
 from clarity_snpseq.test.utility.pair_builders import DnaPairBuilder
 from clarity_snpseq.test.utility.pair_builders import FactorPairBuilder
@@ -45,10 +46,12 @@ class ExtensionBuilder(object):
         return ExtensionBuilderFactor(ExtensionFactor, source_type=Analyte, target_type=Analyte)
 
     @property
-    def transfers(self):
+    def sorted_transfers(self):
         transfer_batches = single(
             self.extension.dilution_session.single_robot_transfer_batches_for_update())
-        return transfer_batches.transfers
+        h = HamiltonRobotSettings()
+        sorted_transfers = sorted(transfer_batches.transfers, key=h.transfer_sort_key)
+        return sorted_transfers
 
     @property
     def single_transfer(self):
