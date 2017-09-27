@@ -128,3 +128,21 @@ class TestDilution(unittest.TestCase):
         metadata_info = builder.metadata_info("Metadata filename", HamiltonRobotSettings())
         self.assertTrue("source1" in [m[0].container.name for m in metadata_info.container_mappings])
         self.assertTrue("control container" in [m[0].container.name for m in metadata_info.container_mappings])
+
+    def test_execute__with_two_ordinary_and_one_control__control_sorted_as_ordinary_sample(self):
+        # Control samples are always placed in DNA1, so they should be before the second ordinary sample
+        # Arrange
+        builder = ExtensionBuilder.create_with_dna_extension()
+        builder.with_control_id_prefix("101C-")
+        builder.add_artifact_pair(source_container_name="control container", is_control=True)
+        builder.add_artifact_pair(source_container_name="source1")
+        builder.add_artifact_pair(source_container_name="source2")
+
+        # Act
+        builder.extension.execute()
+
+        # Assert
+        transfers = builder.sorted_transfers
+        self.assertEqual("in-FROM:A:1", transfers[0].source_location.artifact.name)
+        self.assertEqual("Negative control", transfers[1].source_location.artifact.name)
+        self.assertEqual("in-FROM:B:1", transfers[2].source_location.artifact.name)
