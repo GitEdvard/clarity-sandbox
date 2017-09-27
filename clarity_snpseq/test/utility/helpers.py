@@ -18,10 +18,10 @@ class DilutionHelpers:
 
         context_wrapper = ext_wrapper.context_wrapper
         context_wrapper.add_shared_result_file(SharedResultFile(name="Step log"))
-        context_wrapper.add_shared_result_file(SharedResultFile(name="Hamilton Driver File"))
-        context_wrapper.add_shared_result_file(SharedResultFile(name="Hamilton Driver File"))
-        context_wrapper.add_shared_result_file(SharedResultFile(name="Biomek Driver File"))
-        context_wrapper.add_shared_result_file(SharedResultFile(name="Biomek Driver File"))
+        context_wrapper.add_shared_result_file(SharedResultFile(name="Final"))
+        context_wrapper.add_shared_result_file(SharedResultFile(name="Final"))
+        context_wrapper.add_shared_result_file(SharedResultFile(name="Final"))
+        context_wrapper.add_shared_result_file(SharedResultFile(name="Final"))
         context_wrapper.add_shared_result_file(SharedResultFile(name="Metadata"))
         context_wrapper.add_shared_result_file(SharedResultFile(name="Metadata"))
 
