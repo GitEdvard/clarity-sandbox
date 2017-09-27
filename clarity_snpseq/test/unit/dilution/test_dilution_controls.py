@@ -74,10 +74,12 @@ class TestDilution(unittest.TestCase):
         # Assert
         metadata_info = builder.metadata_info("Metadata filename", HamiltonRobotSettings())
         print_list(metadata_info.container_mappings, "container_mappings")
-        container_to_container_slot = metadata_info.transfer_batches[0].container_to_container_slot
-        print_out_dict(container_to_container_slot.values(), "Container to container slot")
-        print("Length of dict: {}".format(len(container_to_container_slot)))
-        print("Type that is mapped: {}".format(type(container_to_container_slot[container_to_container_slot.keys()[0]])))
+        # container_to_container_slot is removed in the new version
+        # TODO: examine its usage anyway?
+        # container_to_container_slot = metadata_info.transfer_batches[0].container_to_container_slot
+        # print_out_dict(container_to_container_slot.values(), "Container to container slot")
+        # print("Length of dict: {}".format(len(container_to_container_slot)))
+        # print("Type that is mapped: {}".format(type(container_to_container_slot[container_to_container_slot.keys()[0]])))
         self.assertEqual(1,1)
 
     def test_execute__with_two_added_controls_and_one_normal_sample__control_excluded_in_container_mappings(self):
