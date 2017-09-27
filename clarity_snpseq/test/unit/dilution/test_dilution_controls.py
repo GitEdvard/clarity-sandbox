@@ -31,7 +31,7 @@ class TestDilution(unittest.TestCase):
         self.assertEqual(1, 1)
 
     @unittest.skip("Writes to harddisk")
-    def test_run_execute__with_two_controls_and_one_normal_sample__save_file_on_harddisk(self):
+    def test_execute__with_two_controls_and_one_normal_sample__save_file_on_harddisk(self):
         # Arrange
         builder = ExtensionBuilder.create_with_dna_extension()
         builder.with_control_id_prefix("101C-")
@@ -60,7 +60,7 @@ class TestDilution(unittest.TestCase):
         # Upload the metadata file:
         upload_file_service.upload_files(metadata_file_handle, metadata_files)
 
-    def test_run_execute__with_two_controls_and_one_normal_sample__examine_variables(self):
+    def test_execute__with_two_controls_and_one_normal_sample__examine_variables(self):
         # Arrange
         builder = ExtensionBuilder.create_with_dna_extension()
         builder.with_control_id_prefix("101C-")
@@ -80,7 +80,7 @@ class TestDilution(unittest.TestCase):
         print("Type that is mapped: {}".format(type(container_to_container_slot[container_to_container_slot.keys()[0]])))
         self.assertEqual(1,1)
 
-    def test_run_execute__with_two_added_controls_and_one_normal_sample__control_excluded_in_container_mappings(self):
+    def test_execute__with_two_added_controls_and_one_normal_sample__control_excluded_in_container_mappings(self):
         """
         container_mappings controls what is shown under source containers and target containers
         in the xml metadata file
@@ -108,7 +108,7 @@ class TestDilution(unittest.TestCase):
         self.assertTrue("source1" in [m[0].container.name for m in metadata_info.container_mappings])
         self.assertFalse("control container" in [m[0].container.name for m in metadata_info.container_mappings])
 
-    def test_run_execute__with_two_previous_added_controls_and_one_normal__controls_included_in_container_mapping(self):
+    def test_execute__with_two_previous_added_controls_and_one_normal__controls_included_in_container_mapping(self):
         """
         In this test, lims-id for control artifacts are updated with prefix 2- 
         """
