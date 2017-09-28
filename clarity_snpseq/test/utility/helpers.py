@@ -1,3 +1,4 @@
+from __future__ import print_function
 import functools
 import logging
 from clarity_ext.domain import *
