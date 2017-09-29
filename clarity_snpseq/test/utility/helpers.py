@@ -34,10 +34,11 @@ class DilutionHelpers:
         dil_helper.create_dilution_pair = functools.partial(dil_helper.create_dilution_pair,
                                                             source_type=source_type,
                                                             target_type=target_type)
-        DilutionHelpers._handle_loggers(context_wrapper, logging_level)
+        DilutionHelpers._handle_loggers(ext_wrapper, context_wrapper, logging_level)
         return ext_wrapper, dil_helper
 
     @staticmethod
-    def _handle_loggers(context_wrapper, logging_level):
+    def _handle_loggers(extension_wrapper, context_wrapper, logging_level):
+        extension_wrapper.extension.logger.setLevel(logging_level)
         context_wrapper.context.dilution_service.logger.setLevel(logging_level)
         context_wrapper.context.upload_file_service.logger.setLevel(logging_level)

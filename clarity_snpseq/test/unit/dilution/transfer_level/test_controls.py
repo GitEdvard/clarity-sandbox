@@ -5,7 +5,7 @@ from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBas
 
 
 class TestControls(TestDilutionBase):
-    def test_execute__with_two_ordinary_and_one_control__control_sorted_as_ordinary_sample(self):
+    def test__with_two_ordinary_and_one_control__control_sorted_as_ordinary_sample(self):
         # Control samples are always placed in DNA1, so they should be before the second ordinary sample
         # Arrange
         builder = ExtensionBuilder.create_with_dna_extension()
