@@ -3,9 +3,13 @@ import unittest
 import datetime
 from clarity_ext.service.file_service import UploadFileService
 from clarity_ext.service.file_service import OSService
+from clarity_ext_scripts.dilution.settings import HamiltonRobotSettings
 
 
 class TestDilutionBase(unittest.TestCase):
+    def setUp(self):
+        self.hamilton_robot_setting = HamiltonRobotSettings()
+
     def save_metadata_to_harddisk(self, extension, save_directory):
         artifact_service = extension.context.artifact_service
         upload_file_service = UploadFileService(

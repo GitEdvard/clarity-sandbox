@@ -31,7 +31,7 @@ class TestDilution(unittest.TestCase):
         self.assertEqual(1, 1)
 
     @unittest.skip("Writes to harddisk")
-    def test_execute__with_two_controls_and_one_normal_sample__save_file_on_harddisk(self):
+    def test__with_two_controls_and_one_normal_sample__save_file_on_harddisk(self):
         # Arrange
         builder = ExtensionBuilder.create_with_dna_extension()
         builder.with_control_id_prefix("101C-")
@@ -60,7 +60,7 @@ class TestDilution(unittest.TestCase):
         # Upload the metadata file:
         upload_file_service.upload_files(metadata_file_handle, metadata_files)
 
-    def test_execute__with_two_controls_and_one_normal_sample__examine_variables(self):
+    def test__with_two_controls_and_one_normal_sample__examine_variables(self):
         # Arrange
         builder = ExtensionBuilder.create_with_dna_extension()
         builder.with_control_id_prefix("101C-")
@@ -74,15 +74,9 @@ class TestDilution(unittest.TestCase):
         # Assert
         metadata_info = builder.metadata_info("Metadata filename", HamiltonRobotSettings())
         print_list(metadata_info.container_mappings, "container_mappings")
-        # container_to_container_slot is removed in the new version
-        # TODO: examine its usage anyway?
-        # container_to_container_slot = metadata_info.transfer_batches[0].container_to_container_slot
-        # print_out_dict(container_to_container_slot.values(), "Container to container slot")
-        # print("Length of dict: {}".format(len(container_to_container_slot)))
-        # print("Type that is mapped: {}".format(type(container_to_container_slot[container_to_container_slot.keys()[0]])))
         self.assertEqual(1,1)
 
-    def test_execute__with_two_added_controls_and_one_normal_sample__control_excluded_in_container_mappings(self):
+    def test__with_two_added_controls_and_one_normal_sample__control_excluded_in_container_mappings(self):
         """
         container_mappings controls what is shown under source containers and target containers
         in the xml metadata file
@@ -110,7 +104,7 @@ class TestDilution(unittest.TestCase):
         self.assertTrue("source1" in [m[0].container.name for m in metadata_info.container_mappings])
         self.assertFalse("control container" in [m[0].container.name for m in metadata_info.container_mappings])
 
-    def test_execute__with_two_previous_added_controls_and_one_normal__controls_included_in_container_mapping(self):
+    def test__with_two_previous_added_controls_and_one_normal__controls_included_in_container_mapping(self):
         """
         In this test, lims-id for control artifacts are updated with prefix 2- 
         """
@@ -128,21 +122,3 @@ class TestDilution(unittest.TestCase):
         metadata_info = builder.metadata_info("Metadata filename", HamiltonRobotSettings())
         self.assertTrue("source1" in [m[0].container.name for m in metadata_info.container_mappings])
         self.assertTrue("control container" in [m[0].container.name for m in metadata_info.container_mappings])
-
-    def test_execute__with_two_ordinary_and_one_control__control_sorted_as_ordinary_sample(self):
-        # Control samples are always placed in DNA1, so they should be before the second ordinary sample
-        # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
-        builder.with_control_id_prefix("101C-")
-        builder.add_artifact_pair(source_container_name="control container", is_control=True)
-        builder.add_artifact_pair(source_container_name="source1")
-        builder.add_artifact_pair(source_container_name="source2")
-
-        # Act
-        builder.extension.execute()
-
-        # Assert
-        transfers = builder.sorted_transfers
-        self.assertEqual("in-FROM:A:1", transfers[0].source_location.artifact.name)
-        self.assertEqual("Negative control", transfers[1].source_location.artifact.name)
-        self.assertEqual("in-FROM:B:1", transfers[2].source_location.artifact.name)
