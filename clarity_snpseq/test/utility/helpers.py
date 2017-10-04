@@ -24,6 +24,12 @@ class DilutionHelpers:
         context_wrapper.add_shared_result_file(SharedResultFile(name="Final"))
         context_wrapper.add_shared_result_file(SharedResultFile(name="Final"))
         context_wrapper.add_shared_result_file(SharedResultFile(name="Final"))
+        context_wrapper.add_shared_result_file(SharedResultFile(name="Evaporate step 1"))
+        context_wrapper.add_shared_result_file(SharedResultFile(name="Evaporate step 1"))
+        context_wrapper.add_shared_result_file(SharedResultFile(name="Evaporate step 2"))
+        context_wrapper.add_shared_result_file(SharedResultFile(name="Evaporate step 2"))
+        context_wrapper.add_shared_result_file(SharedResultFile(name="Intermediate"))
+        context_wrapper.add_shared_result_file(SharedResultFile(name="Intermediate"))
         context_wrapper.add_shared_result_file(SharedResultFile(name="Metadata"))
         context_wrapper.add_shared_result_file(SharedResultFile(name="Metadata"))
 

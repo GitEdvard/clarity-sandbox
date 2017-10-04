@@ -4,18 +4,16 @@ import datetime
 from clarity_ext.service.file_service import UploadFileService
 from clarity_ext.service.file_service import OSService
 from clarity_ext_scripts.dilution.settings import HamiltonRobotSettings
+from clarity_ext_scripts.dilution.settings import BiomekRobotSettings
 
 
 class TestDilutionBase(unittest.TestCase):
     def setUp(self):
         self.hamilton_robot_setting = HamiltonRobotSettings()
+        self.biomek_robot_setting = BiomekRobotSettings()
 
     def save_metadata_to_harddisk(self, extension, save_directory):
-        artifact_service = extension.context.artifact_service
-        upload_file_service = UploadFileService(
-            OSService(), artifact_service=artifact_service, disable_commits=True,
-        upload_dir=save_directory)
-
+        upload_file_service = self._upload_file_service(extension, save_directory)
         # Modified code taken from DilutionSession.execute()
         today = datetime.date.today().strftime("%y%m%d")
         metadata_file_handle = "Metadata"
@@ -30,3 +28,37 @@ class TestDilutionBase(unittest.TestCase):
         # Upload the metadata file:
         upload_file_service.upload_files(metadata_file_handle, metadata_files)
         self.assertEqual("", "Saving to harddisk makes it fail!")
+
+    def save_robot_files_to_harddisk(self, extension, save_directory):
+        upload_file_service = self._upload_file_service(extension, save_directory)
+        dilution_session = extension.dilution_session
+        print("Saving files to harddisk in folder {}".format(save_directory))
+
+        robot_files_by_type = dict()
+        for robot in dilution_session.robot_settings:
+            files = dilution_session.transfer_batches_by_robot[robot.name].driver_files
+            for ftype, f in files.items():
+                robot_files_by_type.setdefault(ftype, list())
+                robot_files_by_type[ftype].append(f)
+        map_batch_to_file_handle = \
+            {
+                "default": "Final",
+                "evaporate1": "Evaporate step 1",
+                "evaporate2": "Evaporate step 2",
+                "looped": "Intermediate"
+            }
+        for ftype, files in robot_files_by_type.items():
+            print("-"*40)
+            for f in files:
+                print(f.to_string(include_header=False))
+            files_with_name = [(f.file_name, f.to_string(include_header=False)) for f in files]
+            file_handle = map_batch_to_file_handle[ftype]
+            upload_file_service.upload_files(file_handle, files_with_name)
+        self.assertEqual("", "Saving to harddisk makes it fail!")
+
+    def _upload_file_service(self, extension, save_directory):
+        artifact_service = extension.context.artifact_service
+        upload_file_service = UploadFileService(
+            OSService(), artifact_service=artifact_service, disable_commits=True,
+            upload_dir=save_directory)
+        return upload_file_service

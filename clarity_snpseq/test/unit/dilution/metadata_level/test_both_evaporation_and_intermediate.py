@@ -8,7 +8,7 @@ from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBas
 
 
 class TestBothEvaporationAndIntermediate(TestDilutionBase):
-    def test__with_one_evaporation_one_multistep_one_ordinary__three_batches(self):
+    def test__with_one_evaporation_one_multistep_one_ordinary__four_batches(self):
         # Arrange
         builder = ExtensionBuilder.create_with_dna_extension()
         # ordinary
@@ -29,7 +29,7 @@ class TestBothEvaporationAndIntermediate(TestDilutionBase):
         batches = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name)
         gen = (b for b in batches if b.name == "default")
         default_batch = next(gen)
-        self.assertEqual(3, len(batches))
+        self.assertEqual(4, len(batches))
 
     def test__with_one_evaporation_one_multistep_one_ordinary__two_source_plates_in_final(self):
         # Arrange
@@ -55,6 +55,7 @@ class TestBothEvaporationAndIntermediate(TestDilutionBase):
 
         # Assert
         #self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2017\Augusti\Clarity\saves')
+        #self.save_robot_files_to_harddisk(builder.extension, r'C:\Smajobb\2017\Augusti\Clarity\saves')
         batches = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name)
         gen = (b for b in batches if b.name == "default")
         default_batch = next(gen)
