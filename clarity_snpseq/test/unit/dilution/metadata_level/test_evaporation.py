@@ -42,7 +42,7 @@ class TestEvaporation(TestDilutionBase):
         self.assertEqual(1, len([b for b in batches if b.name == "evaporate1"]))
         self.assertEqual(1, len([b for b in batches if b.name == "evaporate2"]))
 
-    def test__with_one_evaporate_sample__one_source_container_slot_in_final(self):
+    def test__with_one_evaporate_sample__one_source_container_slot_in_evaporate_step2(self):
         # Arrange
         builder = ExtensionBuilder.create_with_dna_extension()
         builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=30, target_vol=10,
@@ -54,10 +54,46 @@ class TestEvaporation(TestDilutionBase):
         # Assert
         batches = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name)
         gen = (b for b in batches if b.name == "evaporate2")
-        default_batch = next(gen)
-        self.assertEqual(1,len(default_batch.source_container_slots))
+        evap2_batch = next(gen)
+        self.assertEqual(1,len(evap2_batch.source_container_slots))
 
-    def test__with_two_evaporate_samples__one_source_container_slot_in_evaporate2(self):
+    def test__with_one_evaporate_sample__source_slot_in_evaporate_step2_ok(self):
+        # Arrange
+        builder = ExtensionBuilder.create_with_dna_extension()
+        builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=30, target_vol=10,
+                                  source_container_name="source1", target_container_name="target1")
+
+        # Act
+        builder.extension.execute()
+
+        # Assert
+        batches = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name)
+        gen = (b for b in batches if b.name == "evaporate2")
+        evap2_batch = next(gen)
+
+        print_list([t.source_location.container.name for t in evap2_batch.transfers], "source locations")
+
+        self.assertEqual(1,len(evap2_batch.source_container_slots))
+        self.assertEqual("DNA1", evap2_batch.source_container_slots[0].name)
+        self.assertEqual("source1", evap2_batch.source_container_slots[0].container.name)
+
+    def test__with_one_evaporate_sample__two_driver_files(self):
+        # Arrange
+        builder = ExtensionBuilder.create_with_dna_extension()
+        builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=30, target_vol=10,
+                                  source_container_name="source1", target_container_name="target1")
+
+        # Act
+        builder.extension.execute()
+
+        # Assert
+        files = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name).driver_files
+        print_list(files, "files")
+        self.assertEqual(2, len(files))
+        self.assertEqual(1, len([key for key in files if str(key) == "evaporate1"]))
+        self.assertEqual(1, len([key for key in files if str(key) == "evaporate2"]))
+
+    def test__with_two_evaporate_samples__one_source_container_slot_in_evaporate_step_2(self):
         # Arrange
         builder = ExtensionBuilder.create_with_dna_extension()
         builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=30, target_vol=10,

@@ -22,6 +22,23 @@ class TestIntermediateDilution(TestDilutionBase):
         self.assertEqual(1, len([b for b in batches if b.name == "default"]))
         self.assertEqual(1, len([b for b in batches if b.name == "looped"]))
 
+    def test__with_one_multistep_sample__original_source_plate_source_in_looped(self):
+        # Arrange
+        builder = ExtensionBuilder.create_with_dna_extension()
+        builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=10,
+                                  source_container_name="source1", target_container_name="target1")
+
+        # Act
+        builder.extension.execute()
+
+        # Assert
+        batches = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name)
+        gen = (b for b in batches if b.name == "looped")
+        looped_batch = next(gen)
+        self.assertEqual(1,len(looped_batch.target_container_slots))
+        self.assertEqual("DNA1", looped_batch.source_container_slots[0].name)
+        self.assertEqual("source1", looped_batch.source_container_slots[0].container.name)
+
     def test__with_one_multistep_sample__temp_plate_as_target_in_looped(self):
         # Arrange
         builder = ExtensionBuilder.create_with_dna_extension()
@@ -38,6 +55,21 @@ class TestIntermediateDilution(TestDilutionBase):
         self.assertEqual(1,len(looped_batch.target_container_slots))
         self.assertEqual("END1", looped_batch.target_container_slots[0].name)
         self.assertEqual("Temp", looped_batch.target_container_slots[0].container.name)
+
+    def test__with_one_multistep_sample__two_driver_files(self):
+        # Arrange
+        builder = ExtensionBuilder.create_with_dna_extension()
+        builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=10,
+                                  source_container_name="source1", target_container_name="target1")
+
+        # Act
+        builder.extension.execute()
+
+        # Assert
+        files = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name).driver_files
+        self.assertEqual(2, len(files))
+        self.assertEqual(1, len([key for key in files if str(key) == "looped"]))
+        self.assertEqual(1, len([key for key in files if str(key) == "default"]))
 
     def test__with_one_multistep_sample__temp_plate_as_source_in_final(self):
         # Arrange
@@ -56,11 +88,30 @@ class TestIntermediateDilution(TestDilutionBase):
         self.assertEqual("DNA1", default_batch.source_container_slots[0].name)
         self.assertEqual("Temp", default_batch.source_container_slots[0].container.name)
 
+    def test__with_one_multistep_sample__original_target_is_target_in_final(self):
+        # Arrange
+        builder = ExtensionBuilder.create_with_dna_extension()
+        builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=10,
+                                  source_container_name="source1", target_container_name="target1")
+
+        # Act
+        builder.extension.execute()
+
+        # Assert
+        batches = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name)
+        gen = (b for b in batches if b.name == "default")
+        default_batch = next(gen)
+        self.assertEqual(1, len(default_batch.source_container_slots))
+        self.assertEqual("END1", default_batch.target_container_slots[0].name)
+        self.assertEqual("target1", default_batch.target_container_slots[0].container.name)
+
     def test__with_one_multistep_one_ordinary__two_source_plates_in_final(self):
         # Arrange
         builder = ExtensionBuilder.create_with_dna_extension()
+        # ordinary
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=10, target_vol=40,
                                   source_container_name="source1", target_container_name="target1")
+        # multistep
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
 
@@ -80,10 +131,12 @@ class TestIntermediateDilution(TestDilutionBase):
     def test__with_mixed_samples_in_one_source_plate__two_source_plates_in_final(self):
         # Arrange
         builder = ExtensionBuilder.create_with_dna_extension()
+        # ordinary samples
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=10, target_vol=40,
                                   source_container_name="source1", target_container_name="target1")
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=10, target_vol=40,
                                   source_container_name="source1", target_container_name="target1")
+        # multistep sample
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=40,
                                   source_container_name="source1", target_container_name="target1")
 
