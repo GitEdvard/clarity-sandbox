@@ -70,6 +70,28 @@ class TestEvapTransfer(TestDilutionBase):
         self.assertEqual(3, transfer_default.pipette_sample_volume)
         self.assertEqual(7, transfer_default.pipette_buffer_volume)
 
+    def test__with_one_evap_one_control__hamilton_control_row_ok(self):
+        # Arrange
+        builder = ExtensionBuilder.create_with_dna_extension()
+        # evaporation sample
+        builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=30, target_vol=10,
+                                  source_container_name="source1", target_container_name="target1")
+        # control
+        builder.with_control_id_prefix("101C-")
+        builder.add_artifact_pair(source_container_name="control container",
+                                  target_container_name="target1", is_control=True)
+
+        # Act
+        builder.extension.execute()
+
+        # Assert
+        default_batch = self.default_batch(builder)
+        row = self.hamilton_robot_setting.map_transfer_to_row(default_batch.transfers[0])
+        self.assertEqual(1, len(default_batch.transfers))
+        self.assertEqual("Negative control", default_batch.transfers[0].source_location.artifact.name)
+        self.assertEqual("Negative control, 1, DNA1, 0.0, 35.0, 2, END1, source1, target1, 0",
+                         ", ".join(map(str, row)))
+
     def test__with_two_evap_one_ordinary__number_entries_in_files_ok(self):
         # Arrange
         builder = ExtensionBuilder.create_with_dna_extension()

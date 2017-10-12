@@ -1,5 +1,6 @@
 import unittest
 import datetime
+from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
 from clarity_ext_scripts.dilution.dna_dilution_start import Extension as ExtensionDna
 from clarity_ext_scripts.dilution.settings import HamiltonRobotSettings
 from clarity_ext.service.file_service import UploadFileService
@@ -9,7 +10,7 @@ from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
 from clarity_snpseq.test.utility.helpers import DilutionHelpers
 
 
-class TestDilution(unittest.TestCase):
+class TestDilution(TestDilutionBase):
 
     def test_instantiate_dilution2(self):
         conc1 = 22.8
@@ -60,6 +61,21 @@ class TestDilution(unittest.TestCase):
         # Upload the metadata file:
         upload_file_service.upload_files(metadata_file_handle, metadata_files)
 
+    @unittest.skip("One single control does not work")
+    def test__with_one_single_control__source_slot_ok(self):
+        # Arrange
+        builder = ExtensionBuilder.create_with_dna_extension()
+        builder.with_control_id_prefix("101C-")
+        builder.add_artifact_pair(source_container_name="control container", is_control=True)
+
+        # Act
+        builder.extension.execute()
+
+        # Assert
+        default_batch = self.default_batch(builder)
+        #self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2017\Oktober\clarity\saves')
+        self.assertEqual(1, len(default_batch.source_container_slots))
+
     def test__with_two_controls_and_one_normal_sample__examine_variables(self):
         # Arrange
         builder = ExtensionBuilder.create_with_dna_extension()
@@ -104,7 +120,41 @@ class TestDilution(unittest.TestCase):
         self.assertTrue("source1" in [m[0].container.name for m in metadata_info.container_mappings])
         self.assertFalse("control container" in [m[0].container.name for m in metadata_info.container_mappings])
 
-    def test__with_two_previous_added_controls_and_one_normal__controls_included_in_container_mapping(self):
+    def test__with_two_added_controls_and_one_normal_sample__source_slot_ok(self):
+        # Arrange
+        builder = ExtensionBuilder.create_with_dna_extension()
+        builder.with_control_id_prefix("101C-")
+        builder.add_artifact_pair(source_container_name="source1")
+        builder.add_artifact_pair(source_container_name="control container", is_control=True)
+        builder.add_artifact_pair(source_container_name="control container", is_control=True)
+
+        # Act
+        builder.extension.execute()
+
+        # Assert
+        default_batch = self.default_batch(builder)
+        self.assertEqual(1, len(default_batch.source_container_slots))
+        self.assertEqual("DNA1", default_batch.source_container_slots[0].name)
+        self.assertEqual("source1", default_batch.source_container_slots[0].container.name)
+
+    def test__with_two_added_controls_one_normal_sample__target_slot_ok(self):
+        # Arrange
+        builder = ExtensionBuilder.create_with_dna_extension()
+        builder.with_control_id_prefix("101C-")
+        builder.add_artifact_pair(source_container_name="source1")
+        builder.add_artifact_pair(source_container_name="control container", is_control=True)
+        builder.add_artifact_pair(source_container_name="control container", is_control=True)
+
+        # Act
+        builder.extension.execute()
+
+        # Assert
+        default_batch = self.default_batch(builder)
+        self.assertEqual(1, len(default_batch.target_container_slots))
+        self.assertEqual("END1", default_batch.target_container_slots[0].name)
+        self.assertEqual("target1", default_batch.target_container_slots[0].container.name)
+
+    def test__with_two_previous_added_controls_and_one_normal__source_slot_ok(self):
         """
         In this test, lims-id for control artifacts are updated with prefix 2- 
         """
@@ -120,5 +170,7 @@ class TestDilution(unittest.TestCase):
 
         # Assert
         metadata_info = builder.metadata_info("Metadata filename", HamiltonRobotSettings())
-        self.assertTrue("source1" in [m[0].container.name for m in metadata_info.container_mappings])
-        self.assertTrue("control container" in [m[0].container.name for m in metadata_info.container_mappings])
+        default_batch = self.default_batch(builder)
+        print("source slots: {}".format(default_batch.source_container_slots))
+        self.assertEqual(1, len(default_batch.source_container_slots))
+        self.assertEqual("source1",  default_batch.source_container_slots[0].container.name)

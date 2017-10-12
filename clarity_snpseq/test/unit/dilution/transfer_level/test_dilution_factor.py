@@ -112,5 +112,5 @@ class TestDilutionFactor(unittest.TestCase):
 
         # Assert
         self.assertEqual(
-            4, builder.ext_wrapper.context_wrapper.count_logged_validation_results_with_msg(
+            2, builder.ext_wrapper.context_wrapper.count_logged_validation_results_with_msg(
                 "Volume from sample exceeds current sample volume"))

@@ -62,3 +62,8 @@ class TestDilutionBase(unittest.TestCase):
             OSService(), artifact_service=artifact_service, disable_commits=True,
             upload_dir=save_directory)
         return upload_file_service
+
+    def default_batch(self, builder):
+        batches = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name)
+        gen = (b for b in batches if b.name == "default")
+        return next(gen)
