@@ -122,6 +122,7 @@ class TestIntermediateDilution(TestDilutionBase):
         batches = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name)
         gen = (b for b in batches if b.name == "default")
         default_batch = next(gen)
+
         self.assertEqual(2, len(default_batch.source_container_slots))
         self.assertEqual("DNA1", default_batch.source_container_slots[0].name)
         self.assertEqual("Temp", default_batch.source_container_slots[0].container.name)

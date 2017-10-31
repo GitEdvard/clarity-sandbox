@@ -1,6 +1,7 @@
 from __future__ import print_function
 import unittest
 import re
+from itertools import chain
 from test.unit.clarity_ext.helpers import *
 from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
@@ -46,3 +47,26 @@ class TestSingleBatch(TestDilutionBase):
         self.assertEqual(1, len(file_names))
         self.assertTrue(regexp is not None)
         self.assertEqual("hamilton_", regexp.group(0))
+
+    @unittest.skip("enable before committing")
+    def test__with_three_source_plates__slot_sort_order_correct(self):
+        # Arrange
+        builder = ExtensionBuilder.create_with_dna_extension()
+        # ordinary samples
+        builder.add_artifact_pair(source_container_name="8source1", target_container_name="target1")
+        builder.add_artifact_pair(source_container_name="9source1", target_container_name="target1")
+        builder.add_artifact_pair(source_container_name="10source1", target_container_name="target1")
+
+        # Act
+        builder.extension.execute()
+
+        # Assert
+        #self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2017\Augusti\Clarity\saves')
+        default_batch = self.default_batch(builder)
+        self.assertEqual(3, len(default_batch.source_container_slots))
+        self.assertEqual("DNA1", default_batch.source_container_slots[0].name)
+        self.assertEqual("8source1", default_batch.source_container_slots[0].container.name)
+        self.assertEqual("DNA2", default_batch.source_container_slots[1].name)
+        self.assertEqual("9source1", default_batch.source_container_slots[1].container.name)
+        self.assertEqual("DNA3", default_batch.source_container_slots[2].name)
+        self.assertEqual("10source1", default_batch.source_container_slots[2].container.name)
