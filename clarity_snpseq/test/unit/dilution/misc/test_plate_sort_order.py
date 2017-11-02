@@ -38,6 +38,18 @@ class TestPlateSortOrder(unittest.TestCase):
         sortlist = self.sort_key(c)
         self.assertEqual((True,  'text'), sortlist)
 
+    def test_with_empty_string__sort_tuple_ok(self):
+        s = ''
+        c = self.create_container(s, False)
+        sortlist = self.sort_key(c)
+        self.assertEqual((True, ), sortlist)
+
+    def test_with_none_string__sort_tuple_ok(self):
+        s = None
+        c = self.create_container(s, False)
+        sortlist = self.sort_key(c)
+        self.assertEqual((True, ), sortlist)
+
     def test__with_only_number__sort_tuple_ok(self):
         s = "123"
         c = self.create_container(s, False)
