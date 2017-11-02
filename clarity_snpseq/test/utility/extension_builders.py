@@ -6,6 +6,7 @@ from clarity_ext_scripts.dilution.factor_dilution_start import Extension as Exte
 from clarity_ext_scripts.dilution.settings import MetadataInfo
 from clarity_ext_scripts.dilution.settings import HamiltonRobotSettings
 from clarity_snpseq.test.utility.helpers import DilutionHelpers
+from clarity_snpseq.test.utility.helpers import MockedUploadService
 from clarity_snpseq.test.utility.pair_builders import DnaPairBuilder
 from clarity_snpseq.test.utility.pair_builders import FactorPairBuilder
 
@@ -20,9 +21,14 @@ class ExtensionBuilder(object):
         c = Container(container_type=Container.CONTAINER_TYPE_96_WELLS_PLATE)
         self.well_list = c.list_wells()
         self.pairs = list()
+        self.upload_service = MockedUploadService()
 
     def with_control_id_prefix(self, prefix):
         self.control_id_prefix = prefix
+
+    def monkey_patch_upload_files(self):
+        self.extension.context.upload_file_service.upload_files = \
+            self.upload_service.mock_upload_files
 
     @property
     def extension(self):

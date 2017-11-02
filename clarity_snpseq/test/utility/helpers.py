@@ -48,3 +48,11 @@ class DilutionHelpers:
         extension_wrapper.extension.logger.setLevel(logging_level)
         context_wrapper.context.dilution_service.logger.setLevel(logging_level)
         context_wrapper.context.upload_file_service.logger.setLevel(logging_level)
+
+
+class MockedUploadService:
+    def __init__(self):
+        self.call_stack = []
+
+    def mock_upload_files(self, file_handle, files_with_name):
+        self.call_stack.append((file_handle, files_with_name))
