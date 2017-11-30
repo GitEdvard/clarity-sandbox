@@ -3,7 +3,6 @@ import datetime
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
 from clarity_ext_scripts.dilution.dna_dilution_start import Extension as ExtensionDna
 from clarity_ext_scripts.dilution.settings import HamiltonRobotSettings
-from clarity_ext.service.file_service import UploadFileService
 from clarity_ext.service.file_service import OSService
 from test.unit.clarity_ext.helpers import *
 from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder

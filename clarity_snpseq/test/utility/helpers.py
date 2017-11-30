@@ -32,6 +32,8 @@ class DilutionHelpers:
         context_wrapper.add_shared_result_file(SharedResultFile(name="Intermediate"))
         context_wrapper.add_shared_result_file(SharedResultFile(name="Metadata"))
         context_wrapper.add_shared_result_file(SharedResultFile(name="Metadata"))
+        context_wrapper.context.file_service.upload_queue_path = r'C:\Smajobb\2017\Oktober\tmp'
+        context_wrapper.context.disable_commits = True
 
         if ext_type == ExtensionFixed:
             context_wrapper.add_udf_to_step("Volume in destination ul", 10)
@@ -47,7 +49,7 @@ class DilutionHelpers:
     def _handle_loggers(extension_wrapper, context_wrapper, logging_level):
         extension_wrapper.extension.logger.setLevel(logging_level)
         context_wrapper.context.dilution_service.logger.setLevel(logging_level)
-        context_wrapper.context.upload_file_service.logger.setLevel(logging_level)
+        context_wrapper.context.file_service.logger.setLevel(logging_level)
 
 
 class MockedUploadService:

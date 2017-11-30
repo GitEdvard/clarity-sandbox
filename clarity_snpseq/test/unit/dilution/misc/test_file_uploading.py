@@ -17,7 +17,7 @@ class TestFileUploading(TestDilutionBase):
         builder.extension.execute()
 
         # Assert
-        self.assertEqual(2, len(builder.upload_service.call_stack))
+        self.assertEqual(2, len(builder.file_service.call_stack))
 
     def test__with_one_ordinary_sample__file_handle_names_ok(self):
         # Arrange
@@ -31,7 +31,7 @@ class TestFileUploading(TestDilutionBase):
         builder.extension.execute()
 
         # Assert
-        file_handles = [call[0] for call in builder.upload_service.call_stack]
+        file_handles = [call[0] for call in builder.file_service.call_stack]
         self.assertEqual("Final", file_handles[0])
         self.assertEqual("Metadata", file_handles[1])
 
@@ -47,7 +47,7 @@ class TestFileUploading(TestDilutionBase):
         builder.extension.execute()
 
         # Assert
-        driver_files = utils.single([call[1] for call in builder.upload_service.call_stack if call[0] == "Final"])
+        driver_files = utils.single([call[1] for call in builder.file_service.call_stack if call[0] == "Final"])
         self.assertEqual(2, len(driver_files))
 
     def test__with_one_evap_sample__tree_file_handles(self):
@@ -62,7 +62,7 @@ class TestFileUploading(TestDilutionBase):
         builder.extension.execute()
 
         # Assert
-        self.assertEqual(3, len(builder.upload_service.call_stack))
+        self.assertEqual(3, len(builder.file_service.call_stack))
 
     def test__with_one_evap_sample__file_handle_names_ok(self):
         # Arrange
@@ -76,7 +76,7 @@ class TestFileUploading(TestDilutionBase):
         builder.extension.execute()
 
         # Assert
-        file_handles = sorted([call[0] for call in builder.upload_service.call_stack])
+        file_handles = sorted([call[0] for call in builder.file_service.call_stack])
         self.assertEqual("Evaporate step 1", file_handles[0])
         self.assertEqual("Evaporate step 2", file_handles[1])
         self.assertEqual("Metadata", file_handles[2])
@@ -93,7 +93,7 @@ class TestFileUploading(TestDilutionBase):
         builder.extension.execute()
 
         # Assert
-        self.assertEqual(3, len(builder.upload_service.call_stack))
+        self.assertEqual(3, len(builder.file_service.call_stack))
 
     def test__with_one_looped_sample__file_handle_names_ok(self):
         # Arrange
@@ -107,7 +107,7 @@ class TestFileUploading(TestDilutionBase):
         builder.extension.execute()
 
         # Assert
-        file_handles = sorted([call[0] for call in builder.upload_service.call_stack])
+        file_handles = sorted([call[0] for call in builder.file_service.call_stack])
         self.assertEqual("Final", file_handles[0])
         self.assertEqual("Intermediate", file_handles[1])
         self.assertEqual("Metadata", file_handles[2])

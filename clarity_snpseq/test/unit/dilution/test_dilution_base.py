@@ -1,7 +1,7 @@
 from __future__ import print_function
 import unittest
 import datetime
-from clarity_ext.service.file_service import UploadFileService
+from clarity_ext.service.file_service import FileService
 from clarity_ext.service.file_service import OSService
 from clarity_ext_scripts.dilution.settings import HamiltonRobotSettings
 from clarity_ext_scripts.dilution.settings import BiomekRobotSettings
@@ -13,7 +13,7 @@ class TestDilutionBase(unittest.TestCase):
         self.biomek_robot_setting = BiomekRobotSettings()
 
     def save_metadata_to_harddisk(self, extension, save_directory):
-        upload_file_service = self._upload_file_service(extension, save_directory)
+        upload_file_service = self._file_service(extension, save_directory)
         # Modified code taken from DilutionSession.execute()
         today = datetime.date.today().strftime("%y%m%d")
         metadata_file_handle = "Metadata"
@@ -30,7 +30,7 @@ class TestDilutionBase(unittest.TestCase):
         self.assertEqual("", "Saving to harddisk makes it fail!")
 
     def save_robot_files_to_harddisk(self, extension, save_directory):
-        upload_file_service = self._upload_file_service(extension, save_directory)
+        upload_file_service = self._file_service(extension, save_directory)
         dilution_session = extension.dilution_session
         print("Saving files to harddisk in folder {}".format(save_directory))
 
@@ -56,12 +56,13 @@ class TestDilutionBase(unittest.TestCase):
             upload_file_service.upload_files(file_handle, files_with_name)
         self.assertEqual("", "Saving to harddisk makes it fail!")
 
-    def _upload_file_service(self, extension, save_directory):
+    def _file_service(self, extension, save_directory):
         artifact_service = extension.context.artifact_service
-        upload_file_service = UploadFileService(
-            OSService(), artifact_service=artifact_service, disable_commits=True,
-            upload_dir=save_directory)
-        return upload_file_service
+        file_service = FileService(artifact_service=artifact_service,
+                                   file_repo=None, should_cache=False, os_service=OSService(),
+                                   uploaded_to_stdout=False, disable_commits=True)
+        file_service.temp_path = save_directory
+        return file_service
 
     def default_batch(self, builder):
         batches = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name)

@@ -21,14 +21,14 @@ class ExtensionBuilder(object):
         c = Container(container_type=Container.CONTAINER_TYPE_96_WELLS_PLATE)
         self.well_list = c.list_wells()
         self.pairs = list()
-        self.upload_service = MockedUploadService()
+        self.file_service = MockedUploadService()
 
     def with_control_id_prefix(self, prefix):
         self.control_id_prefix = prefix
 
     def monkey_patch_upload_files(self):
-        self.extension.context.upload_file_service.upload_files = \
-            self.upload_service.mock_upload_files
+        self.extension.context.file_service.upload_files = \
+            self.file_service.mock_upload_files
 
     @property
     def extension(self):
