@@ -176,6 +176,7 @@ class TestEvaporation(TestDilutionBase):
         builder.extension.execute()
 
         # Assert
+        #self.save_metadata_to_harddisk(builder.extension, r"C:\Smajobb\2017\Oktober\clarity\saves")
         batches = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name)
         for batch in batches:
             print("batch name: {}".format(batch.name))

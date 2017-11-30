@@ -20,7 +20,7 @@ class TestSingleBatch(TestDilutionBase):
         builder.extension.execute()
 
         # Assert
-        #self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2017\Augusti\Clarity\saves')
+        #self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2017\Oktober\clarity\saves')
         batches = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name)
         print_list(batches[0].container_mappings, "container mapping")
         self.assertEqual(1, len(batches))
