@@ -53,8 +53,22 @@ class DilutionHelpers:
 
 
 class MockedUploadService:
-    def __init__(self):
+    def __init__(self, file_service):
         self.call_stack = []
+        self.file_service = file_service
 
     def mock_upload_files(self, file_handle, files_with_name):
         self.call_stack.append((file_handle, files_with_name))
+
+    def mock_upload_single(self, artifact, file_handle, instance_name, content, file_prefix):
+        self.file_service.artifactid_by_filename[instance_name] = artifact.id
+        files_with_name = [(instance_name, content)]
+        self.call_stack.append((file_handle, files_with_name))
+
+    @property
+    def file_handles(self):
+        return sorted(list(set([call[0] for call in self.call_stack])))
+
+    @property
+    def file_handle_name_tuples(self):
+        return [(call[0], call[1][0]) for call in self.call_stack]

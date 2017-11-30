@@ -13,7 +13,7 @@ class TestDilutionBase(unittest.TestCase):
         self.biomek_robot_setting = BiomekRobotSettings()
 
     def save_metadata_to_harddisk(self, extension, save_directory):
-        upload_file_service = self._file_service(extension, save_directory)
+        file_service = self._file_service(extension, save_directory)
         # Modified code taken from DilutionSession.execute()
         today = datetime.date.today().strftime("%y%m%d")
         metadata_file_handle = "Metadata"
@@ -26,7 +26,7 @@ class TestDilutionBase(unittest.TestCase):
             print("file: {}".format(metadata_file_name))
 
         # Upload the metadata file:
-        upload_file_service.upload_files(metadata_file_handle, metadata_files)
+        file_service.upload_files(metadata_file_handle, metadata_files)
         self.assertEqual("", "Saving to harddisk makes it fail!")
 
     def save_robot_files_to_harddisk(self, extension, save_directory):

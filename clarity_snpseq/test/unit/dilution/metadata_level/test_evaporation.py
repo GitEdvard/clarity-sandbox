@@ -227,7 +227,7 @@ class TestEvaporation(TestDilutionBase):
         default_batch = self.default_batch(builder)
         self.assertEqual(1, len(default_batch.source_container_slots))
         self.assertEqual("DNA1", default_batch.source_container_slots[0].name)
-        self.assertEqual("source1", default_batch.source_container_slots[0].container.name)
+        self.assertEqual("control container", default_batch.source_container_slots[0].container.name)
 
     def test__with_three_source_plates_second_is_evaporation__final_slot_positioning_ok(self):
         # Arrange
