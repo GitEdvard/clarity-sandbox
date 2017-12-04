@@ -62,7 +62,7 @@ class TestSingleBatch(TestDilutionBase):
 
         # Assert
         #self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2017\Augusti\Clarity\saves')
-        default_batch = self.default_batch(builder)
+        default_batch = builder.default_batch
         self.assertEqual(3, len(default_batch.source_container_slots))
         self.assertEqual("DNA1", default_batch.source_container_slots[0].name)
         self.assertEqual("8source1", default_batch.source_container_slots[0].container.name)

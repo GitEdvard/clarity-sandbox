@@ -117,7 +117,7 @@ class TestEvapTransfer(TestDilutionBase):
         builder.extension.execute()
 
         # Assert
-        default_batch = self.default_batch(builder)
+        default_batch = builder.default_batch
         row = self.hamilton_robot_setting.map_transfer_to_row(default_batch.transfers[0])
         self.assertEqual(1, len(default_batch.transfers))
         self.assertEqual("Negative control", default_batch.transfers[0].source_location.artifact.name)

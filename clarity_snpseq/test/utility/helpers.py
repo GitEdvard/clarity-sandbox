@@ -32,7 +32,7 @@ class DilutionHelpers:
         context_wrapper.add_shared_result_file(SharedResultFile(name="Intermediate"))
         context_wrapper.add_shared_result_file(SharedResultFile(name="Metadata"))
         context_wrapper.add_shared_result_file(SharedResultFile(name="Metadata"))
-        context_wrapper.context.file_service.upload_queue_path = r'C:\Smajobb\2017\Oktober\tmp'
+        #context_wrapper.context.file_service.upload_queue_path = r'C:\Smajobb\2017\Oktober\tmp'
         context_wrapper.context.disable_commits = True
 
         if ext_type == ExtensionFixed:

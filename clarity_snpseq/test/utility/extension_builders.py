@@ -75,6 +75,27 @@ class ExtensionBuilder(object):
         artifacts_by_id = {a.id: a for a in update_queue}
         return [artifacts_by_id[pair.output_artifact.id] for pair in self.pairs]
 
+    def _get_from_hamilton_batches(self, batch_name):
+        h = HamiltonRobotSettings()
+        batches = self.extension.dilution_session.transfer_batches(h.name)
+        return (b for b in batches if b.name == batch_name)
+
+    @property
+    def default_batch(self):
+        return next(self._get_from_hamilton_batches("default"))
+
+    @property
+    def evap1_batch(self):
+        return next(self._get_from_hamilton_batches("evaporate1"))
+
+    @property
+    def evap2_batch(self):
+        return next(self._get_from_hamilton_batches("evaporate2"))
+
+    @property
+    def loop_batch(self):
+        return next(self._get_from_hamilton_batches("looped"))
+
     @abstractmethod
     def _create_pair_builder(self):
         pass

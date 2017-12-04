@@ -63,8 +63,3 @@ class TestDilutionBase(unittest.TestCase):
                                    uploaded_to_stdout=False, disable_commits=True)
         file_service.temp_path = save_directory
         return file_service
-
-    def default_batch(self, builder):
-        batches = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name)
-        gen = (b for b in batches if b.name == "default")
-        return next(gen)

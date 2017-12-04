@@ -125,6 +125,21 @@ class TestFileUploading(TestDilutionBase):
 
         # Assert
         upload_cache = builder.context_wrapper.context.file_service.artifactid_by_filename
-        default_batch = self.default_batch(builder)
+        default_batch = builder.default_batch
         self.assertTrue(default_batch.driver_file.file_name in upload_cache)
         #self.assertEqual("0", upload_cache[default_batch.driver_file.file_name])
+
+    def test__with_one_ordinary_sample__driver_file_name_in_metadata_ok(self):
+        # Arrange
+        builder = ExtensionBuilder.create_with_dna_extension()
+        # ordinary sample
+        builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=30, target_vol=10,
+                                  source_container_name="source1", target_container_name="target1")
+
+        # Act
+        builder.extension.execute()
+
+        # Assert
+        metadata_info = builder.metadata_info("metadata_filename", self.hamilton_robot_setting)
+        file_name = utils.single([tb.upload_file_name for tb in metadata_info.transfer_batches])
+        self.assertEqual("92-1_hamilton", file_name[:13])

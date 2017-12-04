@@ -71,7 +71,7 @@ class TestDilution(TestDilutionBase):
         builder.extension.execute()
 
         # Assert
-        default_batch = self.default_batch(builder)
+        default_batch = builder.default_batch
         #self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2017\Oktober\clarity\saves')
         self.assertEqual(1, len(default_batch.source_container_slots))
 
@@ -131,7 +131,7 @@ class TestDilution(TestDilutionBase):
         builder.extension.execute()
 
         # Assert
-        default_batch = self.default_batch(builder)
+        default_batch = builder.default_batch
         self.assertEqual(1, len(default_batch.source_container_slots))
         self.assertEqual("DNA1", default_batch.source_container_slots[0].name)
         self.assertEqual("source1", default_batch.source_container_slots[0].container.name)
@@ -148,7 +148,7 @@ class TestDilution(TestDilutionBase):
         builder.extension.execute()
 
         # Assert
-        default_batch = self.default_batch(builder)
+        default_batch = builder.default_batch
         self.assertEqual(1, len(default_batch.target_container_slots))
         self.assertEqual("END1", default_batch.target_container_slots[0].name)
         self.assertEqual("target1", default_batch.target_container_slots[0].container.name)
@@ -169,7 +169,7 @@ class TestDilution(TestDilutionBase):
 
         # Assert
         metadata_info = builder.metadata_info("Metadata filename", HamiltonRobotSettings())
-        default_batch = self.default_batch(builder)
+        default_batch = builder.default_batch
         print("source slots: {}".format(default_batch.source_container_slots))
         self.assertEqual(1, len(default_batch.source_container_slots))
         self.assertEqual("source1",  default_batch.source_container_slots[0].container.name)
