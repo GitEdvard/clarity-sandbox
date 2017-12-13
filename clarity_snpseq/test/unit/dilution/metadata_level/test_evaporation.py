@@ -131,6 +131,65 @@ class TestEvaporation(TestDilutionBase):
         self.assertEqual(1, len([key for key in files if str(key) == "evaporate2"]))
         self.assertEqual(1, len([key for key in files if str(key) == "default"]))
 
+    def test__with_one_evaporate_one_ordinary__one_sample_in_evap_slot(self):
+        # Arrange
+        builder = ExtensionBuilder.create_with_dna_extension()
+        # Ordinary sample
+        builder.add_artifact_pair(source_conc=22.8, source_vol=38, target_conc=22, target_vol=35,
+                                  source_container_name="source1", target_container_name="target1")
+        # Evaporation sample
+        builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=30, target_vol=10,
+                                  source_container_name="source1", target_container_name="target1")
+
+        # Act
+        builder.extension.execute()
+
+        # Assert
+        evap_batch = builder.evap2_batch
+        target_slot = utils.single(evap_batch.target_container_slots)
+        target_container = target_slot.container
+        self.assertEqual(1, len(target_container.occupied))
+
+    def test__with_one_evaporate_one_ordinary__correct_sample_names_in_evap_dest_plate(self):
+        # Arrange
+        builder = ExtensionBuilder.create_with_dna_extension()
+        # Ordinary sample
+        builder.add_artifact_pair(source_conc=22.8, source_vol=38, target_conc=22, target_vol=35,
+                                  source_container_name="source1", target_container_name="target1")
+        # Evaporation sample
+        builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=30, target_vol=10,
+                                  source_container_name="source1", target_container_name="target1")
+
+        # Act
+        builder.extension.execute()
+
+        # Assert
+        evap_batch = builder.evap2_batch
+        target_slot = utils.single(evap_batch.target_container_slots)
+        target_container = target_slot.container
+        self.assertEqual("out-FROM:B:1", target_container.occupied[0].artifact.name)
+
+    def test__with_one_evaporate_one_ordinary__two_samples_in_final_slot(self):
+        # Arrange
+        builder = ExtensionBuilder.create_with_dna_extension()
+        # Ordinary sample
+        builder.add_artifact_pair(source_conc=22.8, source_vol=38, target_conc=22, target_vol=35,
+                                  source_container_name="source1", target_container_name="target1")
+        # Evaporation sample
+        builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=30, target_vol=10,
+                                  source_container_name="source1", target_container_name="target1")
+
+        # Act
+        builder.extension.execute()
+
+        # Assert
+        #self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2017\Oktober\clarity\saves')
+
+        target_slot = utils.single(builder.default_batch.target_container_slots)
+        target_container = target_slot.container
+        self.assertEqual(2, len(target_container.occupied))
+
+
     @unittest.skip("")
     def test_test(self):
         def fnk(pos, *args):
@@ -224,7 +283,7 @@ class TestEvaporation(TestDilutionBase):
 
         # Assert
         #self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2017\Oktober\clarity\saves')
-        default_batch = self.default_batch(builder)
+        default_batch = builder.default_batch
         self.assertEqual(1, len(default_batch.source_container_slots))
         self.assertEqual("DNA1", default_batch.source_container_slots[0].name)
         self.assertEqual("control container", default_batch.source_container_slots[0].container.name)
