@@ -1,3 +1,4 @@
+import StringIO
 from abc import abstractmethod
 from clarity_ext.domain import *
 from clarity_ext.utils import *
@@ -17,11 +18,12 @@ class ExtensionBuilder(object):
         self.target_type = target_type
         self.control_id_prefix = None
         self.call_index = 1
-        self.ext_wrapper, self.dil_helper = DilutionHelpers.create_helpers(ext_type=extension_type)
+        dilution_helper_generator = DilutionHelpers()
+        self.ext_wrapper, self.dil_helper, self.file_service = \
+            dilution_helper_generator.create_helpers(ext_type=extension_type)
         c = Container(container_type=Container.CONTAINER_TYPE_96_WELLS_PLATE)
         self.well_list = c.list_wells()
         self.pairs = list()
-        self.file_service = MockedUploadService(self.extension.context.file_service)
 
     def with_control_id_prefix(self, prefix):
         self.control_id_prefix = prefix
@@ -29,6 +31,18 @@ class ExtensionBuilder(object):
     def monkey_patch_upload_single(self):
         self.extension.context.file_service._upload_single = \
             self.file_service.mock_upload_single
+
+    @property
+    def step_log_contents(self):
+        # Step log is in test replaced with a StringIO
+        # In production it's a file like object reading from hard disk
+        step_log = self.extension.context.validation_service.step_logger_service.step_log
+        step_log.seek(0)
+        return step_log.read()
+
+    @property
+    def step_log_calls(self):
+        return self.file_service.local_shared_file_buffer.write_calls
 
     @property
     def extension(self):
