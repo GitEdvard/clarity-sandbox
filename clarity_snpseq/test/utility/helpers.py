@@ -1,13 +1,18 @@
 from __future__ import print_function
 import functools
 import logging
-import StringIO
+import os
 from clarity_ext.domain import *
 from clarity_ext_scripts.dilution.dna_dilution_start import Extension as ExtensionDna
 from clarity_ext_scripts.dilution.fixed_dilution_start import Extension as ExtensionFixed
 from clarity_ext.utility.testing import TestExtensionWrapper
 from clarity_ext.utility.testing import DilutionTestDataHelper
 from clarity_ext.service.validation_service import ValidationService
+from clarity_snpseq.test.utility.fake_collaborators import FakeOsService
+from clarity_snpseq.test.utility.fake_collaborators import MockedUploadService
+from clarity_snpseq.test.utility.fake_collaborators import FakeLogger
+from clarity_ext.domain.validation import ValidationException
+from clarity_ext.service.file_service import FileService
 
 
 class DilutionHelpers:
@@ -18,8 +23,9 @@ class DilutionHelpers:
          """
         ext_wrapper = TestExtensionWrapper(ext_type)
 
-        mocked_file_service = MockedUploadService(ext_wrapper.extension.context.file_service)
-        self.monkey_patch_local_shared_file(ext_wrapper.extension, mocked_file_service)
+        file_service_initializer = FileServiceInitializer(
+            ext_wrapper.extension)
+        file_service_initializer.run()
 
         context_wrapper = ext_wrapper.context_wrapper
         context_wrapper.add_shared_result_file(SharedResultFile(name="Step log"))
@@ -52,8 +58,7 @@ class DilutionHelpers:
                                                             source_type=source_type,
                                                             target_type=target_type)
         DilutionHelpers._handle_loggers(ext_wrapper, context_wrapper, logging_level)
-        return ext_wrapper, dil_helper, mocked_file_service
-
+        return ext_wrapper, dil_helper, file_service_initializer.mocked_file_service
 
     def monkey_patch_local_shared_file(self, extension, mocked_file_service):
         extension.context.file_service.local_shared_file = \
@@ -63,44 +68,72 @@ class DilutionHelpers:
     def _handle_loggers(extension_wrapper, context_wrapper, logging_level):
         extension_wrapper.extension.logger.setLevel(logging_level)
         context_wrapper.context.dilution_service.logger.setLevel(logging_level)
-        context_wrapper.context.file_service.logger.setLevel(logging_level)
+        #context_wrapper.context.file_service.logger.setLevel(logging_level)
 
 
-class MockedUploadService:
-    def __init__(self, file_service):
-        self.call_stack = []
-        self.file_service = file_service
-        self.local_shared_file_buffer = MockedStreamCatcher()
+class FileServiceInitializer:
+    def __init__(self, extension):
+        self.extension = extension
+        self.os_service = FakeOsService()
+        self.mocked_file_service = MockedUploadService(extension.context.file_service, self.os_service)
 
-    def mock_upload_files(self, file_handle, files_with_name):
-        self.call_stack.append((file_handle, files_with_name))
+    def run(self):
+        CONTEXT_FILES_ROOT = self.extension.context.file_service.CONTEXT_FILES_ROOT
+        self.upload_queue_path = os.path.join(CONTEXT_FILES_ROOT, "upload_queue")
+        self.uploaded_path = os.path.join(CONTEXT_FILES_ROOT, "uploaded")
+        self.temp_path = os.path.join(CONTEXT_FILES_ROOT, "temp")
+        self.downloaded_path = os.path.join(CONTEXT_FILES_ROOT, "downloaded")
 
-    def mock_upload_single(self, artifact, file_handle, instance_name, content, file_prefix):
-        self.file_service.artifactid_by_filename[instance_name] = artifact.id
-        files_with_name = [(instance_name, content)]
-        self.call_stack.append((file_handle, files_with_name))
+        self.os_service.makedirs(self.upload_queue_path)
+        self.os_service.makedirs(self.uploaded_path)
+        self.os_service.makedirs(self.temp_path)
+        self.os_service.makedirs(self.downloaded_path)
 
-    def mock_local_shared_file(self, file_handle, mode='r', extension="", modify_attached=False, file_name_contains=None):
-        return self.local_shared_file_buffer
+        self._monkey_patch_local_shared_file()
+        self._inject_fake_os_service_to_file_service()
+        self._mock_logger()
+
+    def _monkey_patch_local_shared_file(self):
+        self.extension.context.file_service.local_shared_file = \
+            self.mocked_file_service.mock_local_shared_file
+
+    def _inject_fake_os_service_to_file_service(self):
+        self.extension.context.file_service.os_service = self.os_service
+
+    def _mock_logger(self):
+        self.extension.context.file_service.logger = FakeLogger()
+
+
+class StepLogService:
+    def __init__(self, extension, context_wrapper, os_service):
+        self.extension = extension
+        self.os_service = os_service
+        self.context_wrapper =context_wrapper
 
     @property
-    def file_handles(self):
-        return sorted(list(set([call[0] for call in self.call_stack])))
+    def step_log_contents(self):
+        # Step log is in test replaced with a StringIO
+        # In production it's a file like object reading from hard disk
+        step_log = self.context_wrapper.context.validation_service.step_logger_service.step_log
+        return step_log.read()
 
     @property
-    def file_handle_name_tuples(self):
-        return [(call[0], call[1][0]) for call in self.call_stack]
+    def step_log_calls(self):
+        return self.os_service.write_calls['Step_log.log']
 
+    def write_to_step_log_explicitly(self, text):
+        e = ValidationException(text)
+        self.context_wrapper.context.validation_service.handle_single_validation(e)
 
-class MockedStreamCatcher(StringIO.StringIO):
-    """
-    Acts as StringIO stream object, but also catches all calls to write
-    to be used in tests
-    """
-    def __init__(self):
-        StringIO.StringIO.__init__(self)
-        self.write_calls = list()
+    @property
+    def _artifact(self):
+        return utils.single([f for _, f in self.context_wrapper._shared_files if f.name == 'Step log'])
 
-    def write(self, s):
-        StringIO.StringIO.write(self, s)
-        self.write_calls.append(s)
+    def set_specific_lims_id(self, id):
+        """
+        id is without the prefix 92-
+        :param id:
+        :return:
+        """
+        artifact = self._artifact
+        artifact.id = '92-{}'.format(id)

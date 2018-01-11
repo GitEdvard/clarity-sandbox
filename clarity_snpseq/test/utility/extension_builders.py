@@ -7,9 +7,11 @@ from clarity_ext_scripts.dilution.factor_dilution_start import Extension as Exte
 from clarity_ext_scripts.dilution.settings import MetadataInfo
 from clarity_ext_scripts.dilution.settings import HamiltonRobotSettings
 from clarity_snpseq.test.utility.helpers import DilutionHelpers
-from clarity_snpseq.test.utility.helpers import MockedUploadService
+from clarity_snpseq.test.utility.helpers import StepLogService
 from clarity_snpseq.test.utility.pair_builders import DnaPairBuilder
 from clarity_snpseq.test.utility.pair_builders import FactorPairBuilder
+from clarity_ext.domain.validation import ValidationException
+from clarity_ext.service.file_service import FileService
 
 
 class ExtensionBuilder(object):
@@ -19,30 +21,31 @@ class ExtensionBuilder(object):
         self.control_id_prefix = None
         self.call_index = 1
         dilution_helper_generator = DilutionHelpers()
-        self.ext_wrapper, self.dil_helper, self.file_service = \
+        self.ext_wrapper, self.dil_helper, self.mocked_file_service = \
             dilution_helper_generator.create_helpers(ext_type=extension_type)
         c = Container(container_type=Container.CONTAINER_TYPE_96_WELLS_PLATE)
         self.well_list = c.list_wells()
         self.pairs = list()
+        self.step_log_service = StepLogService(self, self.context_wrapper, self.mocked_file_service.os_service)
 
     def with_control_id_prefix(self, prefix):
         self.control_id_prefix = prefix
 
     def monkey_patch_upload_single(self):
         self.extension.context.file_service._upload_single = \
-            self.file_service.mock_upload_single
+            self.mocked_file_service.mock_upload_single
 
     @property
     def step_log_contents(self):
-        # Step log is in test replaced with a StringIO
-        # In production it's a file like object reading from hard disk
-        step_log = self.extension.context.validation_service.step_logger_service.step_log
-        step_log.seek(0)
-        return step_log.read()
+        # not working, only returns the last call
+        return  self.step_log_service.step_log_contents
 
     @property
     def step_log_calls(self):
-        return self.file_service.local_shared_file_buffer.write_calls
+        return self.step_log_service.step_log_calls
+
+    def write_to_step_log_explicitly(self, text):
+        self.step_log_service.write_to_step_log_explicitly(text)
 
     @property
     def extension(self):

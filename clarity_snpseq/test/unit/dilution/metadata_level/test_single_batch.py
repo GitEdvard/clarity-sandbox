@@ -5,6 +5,7 @@ from itertools import chain
 from test.unit.clarity_ext.helpers import *
 from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
+from clarity_ext.domain.validation import UsageError
 
 
 class TestSingleBatch(TestDilutionBase):
@@ -47,6 +48,15 @@ class TestSingleBatch(TestDilutionBase):
         self.assertEqual(1, len(file_names))
         self.assertTrue(regexp is not None)
         self.assertEqual("hamilton_", regexp.group(0))
+
+    def test__with_one_single_sample_pipette_volume_too_high__exception_cast(self):
+        # Arrange
+        builder = ExtensionBuilder.create_with_dna_extension()
+        # ordinary sample, pipette volume too high
+        builder.add_artifact_pair(source_conc=22.8, source_vol=38, target_conc=22, target_vol=350,
+                                  source_container_name="source1", target_container_name="target1")
+
+        self.assertRaises(UsageError, builder.extension.execute)
 
     @unittest.skip("enable before committing")
     def test__with_three_source_plates__slot_sort_order_correct(self):

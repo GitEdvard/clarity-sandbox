@@ -2,6 +2,7 @@ import unittest
 from clarity_ext import utils
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
 from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
+from clarity_ext.domain.validation import UsageError
 
 
 class TestFileUploading(TestDilutionBase):
@@ -17,7 +18,7 @@ class TestFileUploading(TestDilutionBase):
         builder.extension.execute()
 
         # Assert
-        self.assertEqual(2, len(builder.file_service.file_handles))
+        self.assertEqual(2, len(builder.mocked_file_service.file_handles))
 
     def test__with_one_ordinary_sample__file_handle_names_ok(self):
         # Arrange
@@ -31,7 +32,7 @@ class TestFileUploading(TestDilutionBase):
         builder.extension.execute()
 
         # Assert
-        file_handles = builder.file_service.file_handles
+        file_handles = builder.mocked_file_service.file_handles
         self.assertEqual("Final", file_handles[0])
         self.assertEqual("Metadata", file_handles[1])
 
@@ -47,7 +48,7 @@ class TestFileUploading(TestDilutionBase):
         builder.extension.execute()
 
         # Assert
-        driver_files = [tuple for tuple in builder.file_service.file_handle_name_tuples
+        driver_files = [tuple for tuple in builder.mocked_file_service.file_handle_name_tuples
                         if tuple[0] == "Final"]
         self.assertEqual(2, len(driver_files))
 
@@ -63,7 +64,7 @@ class TestFileUploading(TestDilutionBase):
         builder.extension.execute()
 
         # Assert
-        self.assertEqual(3, len(builder.file_service.file_handles))
+        self.assertEqual(3, len(builder.mocked_file_service.file_handles))
 
     def test__with_one_evap_sample__file_handle_names_ok(self):
         # Arrange
@@ -77,7 +78,7 @@ class TestFileUploading(TestDilutionBase):
         builder.extension.execute()
 
         # Assert
-        file_handles = builder.file_service.file_handles
+        file_handles = builder.mocked_file_service.file_handles
         self.assertEqual("Evaporate step 1", file_handles[0])
         self.assertEqual("Evaporate step 2", file_handles[1])
         self.assertEqual("Metadata", file_handles[2])
@@ -94,7 +95,7 @@ class TestFileUploading(TestDilutionBase):
         builder.extension.execute()
 
         # Assert
-        self.assertEqual(3, len(builder.file_service.file_handles))
+        self.assertEqual(3, len(builder.mocked_file_service.file_handles))
 
     def test__with_one_looped_sample__file_handle_names_ok(self):
         # Arrange
@@ -108,7 +109,7 @@ class TestFileUploading(TestDilutionBase):
         builder.extension.execute()
 
         # Assert
-        file_handles = builder.file_service.file_handles
+        file_handles = builder.mocked_file_service.file_handles
         self.assertEqual("Final", file_handles[0])
         self.assertEqual("Intermediate", file_handles[1])
         self.assertEqual("Metadata", file_handles[2])
