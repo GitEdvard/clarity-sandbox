@@ -5,8 +5,8 @@ import os
 from clarity_ext.domain import *
 from clarity_ext_scripts.dilution.dna_dilution_start import Extension as ExtensionDna
 from clarity_ext_scripts.dilution.fixed_dilution_start import Extension as ExtensionFixed
-from clarity_ext.utility.testing import TestExtensionWrapper
-from clarity_ext.utility.testing import DilutionTestDataHelper
+from clarity_snpseq.test.utility.testing import TestExtensionWrapper
+from clarity_snpseq.test.utility.testing import DilutionTestDataHelper
 from clarity_ext.service.validation_service import ValidationService
 from clarity_snpseq.test.utility.fake_collaborators import FakeOsService
 from clarity_snpseq.test.utility.fake_collaborators import MockedUploadService
@@ -44,12 +44,6 @@ class DilutionHelpers:
         #context_wrapper.context.file_service.upload_queue_path = r'C:\Smajobb\2017\Oktober\tmp'
         context_wrapper.context.disable_commits = True
 
-        # Re-define handle single validation, it has been mocked out previously in clarity-ext!
-        validation_service = ValidationService(context_wrapper.context.validation_service.step_logger_service)
-        context_wrapper.context.validation_service.handle_single_validation = \
-            validation_service.handle_single_validation
-        context_wrapper.context.validation_service.messages = validation_service.messages
-
         if ext_type == ExtensionFixed:
             context_wrapper.add_udf_to_step("Volume in destination ul", 10)
 
@@ -68,6 +62,7 @@ class DilutionHelpers:
     def _handle_loggers(extension_wrapper, context_wrapper, logging_level):
         extension_wrapper.extension.logger.setLevel(logging_level)
         context_wrapper.context.dilution_service.logger.setLevel(logging_level)
+        context_wrapper.context.validation_service.logger.setLevel(logging_level)
         #context_wrapper.context.file_service.logger.setLevel(logging_level)
 
 

@@ -72,8 +72,9 @@ class FakeOsService:
     def listdir(self, path):
         return self.os_module.listdir(path)
 
-    def makedirs(self, path):
-        print('Creating directory: {}'.format(path))
+    def makedirs(self, path, printout=False):
+        if printout:
+            print('Creating directory: {}'.format(path))
         self.os_module.makedirs(path)
 
     def _add_call(self, path, text):
