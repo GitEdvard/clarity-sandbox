@@ -15,14 +15,15 @@ from clarity_ext.service.file_service import FileService
 
 
 class ExtensionBuilder(object):
-    def __init__(self, extension_type, source_type, target_type):
+    def __init__(self, extension_type, source_type, target_type, mock_file_service=False):
         self.source_type = source_type
         self.target_type = target_type
         self.control_id_prefix = None
         self.call_index = 1
         dilution_helper_generator = DilutionHelpers()
         self.ext_wrapper, self.dil_helper, self.mocked_file_service = \
-            dilution_helper_generator.create_helpers(ext_type=extension_type)
+            dilution_helper_generator.create_helpers(ext_type=extension_type,
+                                                     mock_file_service=mock_file_service)
         c = Container(container_type=Container.CONTAINER_TYPE_96_WELLS_PLATE)
         self.well_list = c.list_wells()
         self.pairs = list()
@@ -61,8 +62,9 @@ class ExtensionBuilder(object):
                             self.extension.context, shared_robot_settings)
 
     @classmethod
-    def create_with_dna_extension(cls):
-        return ExtensionBuilderDna(ExtensionDna, source_type=Analyte, target_type=Analyte)
+    def create_with_dna_extension(cls, mock_file_service=False):
+        return ExtensionBuilderDna(ExtensionDna, source_type=Analyte, target_type=Analyte,
+                                   mock_file_service=mock_file_service)
 
     @classmethod
     def create_with_factor_extension(cls):

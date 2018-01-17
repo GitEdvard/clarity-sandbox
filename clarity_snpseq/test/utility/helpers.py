@@ -16,7 +16,8 @@ from clarity_ext.service.file_service import FileService
 
 
 class DilutionHelpers:
-    def create_helpers(self, ext_type=ExtensionDna, source_type=Analyte, target_type=Analyte, logging_level=logging.CRITICAL):
+    def create_helpers(self, ext_type=ExtensionDna, source_type=Analyte, target_type=Analyte,
+                       logging_level=logging.CRITICAL, mock_file_service=False):
         """
         Copied from test_dilution...
          Returns a tuple of valid (TestExtensionWrapper, DilutionTestHelper)
@@ -25,7 +26,9 @@ class DilutionHelpers:
 
         file_service_initializer = FileServiceInitializer(
             ext_wrapper.extension)
-        file_service_initializer.run()
+        if mock_file_service:
+            # With many tests, this takes little bit more time
+            file_service_initializer.run()
 
         context_wrapper = ext_wrapper.context_wrapper
         context_wrapper.add_shared_result_file(SharedResultFile(name="Step log"))
@@ -41,7 +44,6 @@ class DilutionHelpers:
         context_wrapper.add_shared_result_file(SharedResultFile(name="Intermediate"))
         context_wrapper.add_shared_result_file(SharedResultFile(name="Metadata"))
         context_wrapper.add_shared_result_file(SharedResultFile(name="Metadata"))
-        #context_wrapper.context.file_service.upload_queue_path = r'C:\Smajobb\2017\Oktober\tmp'
         context_wrapper.context.disable_commits = True
 
         if ext_type == ExtensionFixed:
@@ -53,10 +55,6 @@ class DilutionHelpers:
                                                             target_type=target_type)
         DilutionHelpers._handle_loggers(ext_wrapper, context_wrapper, logging_level)
         return ext_wrapper, dil_helper, file_service_initializer.mocked_file_service
-
-    def monkey_patch_local_shared_file(self, extension, mocked_file_service):
-        extension.context.file_service.local_shared_file = \
-            mocked_file_service.mock_local_shared_file
 
     @staticmethod
     def _handle_loggers(extension_wrapper, context_wrapper, logging_level):

@@ -8,7 +8,7 @@ from clarity_ext.domain.validation import UsageError
 class CommitTests(TestDilutionBase):
     def test_commit__with_normal_dilution__5_files_uploaded(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilder.create_with_dna_extension(mock_file_service=True)
         # Ordinary sample
         builder.add_artifact_pair(source_conc=22.8, source_vol=38, target_conc=22, target_vol=35,
                                   source_container_name="source1", target_container_name="target1")
@@ -26,7 +26,7 @@ class CommitTests(TestDilutionBase):
 
     def test_commit__with_normal_dilution__2_uploaded_files_is_for_hamilton(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilder.create_with_dna_extension(mock_file_service=True)
         # Ordinary sample
         builder.add_artifact_pair(source_conc=22.8, source_vol=38, target_conc=22, target_vol=35,
                                   source_container_name="source1", target_container_name="target1")
@@ -44,7 +44,7 @@ class CommitTests(TestDilutionBase):
 
     def test_commit__with_normal_dilution__2_uplaoded_files_is_for_biomek(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilder.create_with_dna_extension(mock_file_service=True)
         # Ordinary sample
         builder.add_artifact_pair(source_conc=22.8, source_vol=38, target_conc=22, target_vol=35,
                                   source_container_name="source1", target_container_name="target1")
@@ -62,7 +62,7 @@ class CommitTests(TestDilutionBase):
 
     def test_commit__with_dilution_has_usage_error__only_step_log_uploaded(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilder.create_with_dna_extension(mock_file_service=True)
         # ordinary sample, pipette volume too high
         builder.add_artifact_pair(source_conc=22.8, source_vol=38, target_conc=22, target_vol=350,
                                   source_container_name="source1", target_container_name="target1")
