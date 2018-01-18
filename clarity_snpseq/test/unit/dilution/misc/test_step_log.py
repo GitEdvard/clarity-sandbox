@@ -3,6 +3,8 @@ import datetime
 from unittest import skip
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
 from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
+from clarity_ext.service.step_logger_service import AggregatedStepLoggerService
+from clarity_ext.service.step_logger_service import StepLoggerService
 from clarity_ext.domain.validation import UsageError
 
 
@@ -66,34 +68,3 @@ class TestStepLog(TestDilutionBase):
 
         # Assert
         self.assertTrue('Error' in builder.step_log_contents)
-
-    def test__with_text_to_step_log_explicitly__step_log_saved_in_upload_queue(self):
-        # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension(mock_file_service=True)
-        # Ordinary sample
-        builder.add_artifact_pair(source_conc=22.8, source_vol=38, target_conc=22, target_vol=35,
-                                  source_container_name="source1", target_container_name="target1")
-        # Act
-        # execute() not needed!
-        #builder.extension.execute()
-        builder.step_log_service.set_specific_lims_id(9876)
-        builder.write_to_step_log_explicitly('my message')
-
-        # Assert
-        queue_path = r'./context_files\upload_queue\92-9876\Step_log.log'
-        #print(builder.extension.context.file_service.artifactid_by_filename)
-        self.assertTrue(builder.mocked_file_service.os_service.exists(queue_path))
-
-    def test_commit__with_normal_dilution__printouts_from_commit(self):
-        # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension(mock_file_service=True)
-        # Ordinary sample
-        builder.add_artifact_pair(source_conc=22.8, source_vol=38, target_conc=22, target_vol=35,
-                                  source_container_name="source1", target_container_name="target1")
-        # Act
-        builder.extension.execute()
-        builder.extension.context.file_service.commit(disable_commits=True)
-
-        # Assert
-        # Set to fail to see printouts
-        self.assertEqual(1, 1)

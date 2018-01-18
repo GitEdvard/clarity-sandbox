@@ -81,3 +81,17 @@ class CommitTests(TestDilutionBase):
         commit_uploads = [m for m in messages if 'Uploading (disabled) file:' in m]
         steplog_uploads = [m for m in commit_uploads if 'step_log' in m.lower()]
         self.assertEqual(1, len(steplog_uploads))
+
+    def test_commit__with_normal_dilution__printouts_from_commit(self):
+        # Arrange
+        builder = ExtensionBuilder.create_with_dna_extension(mock_file_service=True)
+        # Ordinary sample
+        builder.add_artifact_pair(source_conc=22.8, source_vol=38, target_conc=22, target_vol=35,
+                                  source_container_name="source1", target_container_name="target1")
+        # Act
+        builder.extension.execute()
+        builder.extension.context.file_service.commit(disable_commits=True)
+
+        # Assert
+        # Set to fail to see printouts
+        self.assertEqual(1, 1)
