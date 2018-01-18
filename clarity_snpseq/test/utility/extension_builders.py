@@ -27,7 +27,7 @@ class ExtensionBuilder(object):
         c = Container(container_type=Container.CONTAINER_TYPE_96_WELLS_PLATE)
         self.well_list = c.list_wells()
         self.pairs = list()
-        self.step_log_service = StepLogService(self, self.context_wrapper, self.mocked_file_service.os_service)
+        self.step_log_service = StepLogService(self.context_wrapper, self.mocked_file_service.os_service)
 
     def with_control_id_prefix(self, prefix):
         self.control_id_prefix = prefix

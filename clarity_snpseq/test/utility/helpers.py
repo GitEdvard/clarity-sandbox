@@ -7,12 +7,11 @@ from clarity_ext_scripts.dilution.dna_dilution_start import Extension as Extensi
 from clarity_ext_scripts.dilution.fixed_dilution_start import Extension as ExtensionFixed
 from clarity_snpseq.test.utility.testing import TestExtensionWrapper
 from clarity_snpseq.test.utility.testing import DilutionTestDataHelper
-from clarity_ext.service.validation_service import ValidationService
 from clarity_snpseq.test.utility.fake_collaborators import FakeOsService
 from clarity_snpseq.test.utility.fake_collaborators import MockedUploadService
 from clarity_snpseq.test.utility.fake_collaborators import FakeLogger
 from clarity_ext.domain.validation import ValidationException
-from clarity_ext.service.file_service import FileService
+from clarity_snpseq.test.utility.misc_builders import ContextWrapperBuilder
 
 
 class DilutionHelpers:
@@ -98,8 +97,7 @@ class FileServiceInitializer:
 
 
 class StepLogService:
-    def __init__(self, extension, context_wrapper, os_service):
-        self.extension = extension
+    def __init__(self, context_wrapper, os_service):
         self.os_service = os_service
         self.context_wrapper =context_wrapper
 
@@ -130,3 +128,25 @@ class StepLogService:
         """
         artifact = self._artifact
         artifact.id = '92-{}'.format(id)
+
+    @staticmethod
+    def create():
+        builder = ContextWrapperBuilder()
+        builder.with_shared_result_file('Step log')
+        os_service = FakeOsService()
+        return StepLogService(context_wrapper=builder.context_wrapper,
+                                             os_service=os_service)
+
+
+class SimpleStepLogService:
+    def __init__(self):
+        self.messages = list()
+
+    def log(self, msg):
+        self.messages.append(msg)
+
+    def warning(self, msg):
+        self.messages.append(msg)
+
+    def error(self, msg):
+        self.messages.append(msg)
