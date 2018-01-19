@@ -8,7 +8,7 @@ from clarity_ext_scripts.dilution.fixed_dilution_start import Extension as Exten
 from clarity_snpseq.test.utility.testing import TestExtensionWrapper
 from clarity_snpseq.test.utility.testing import DilutionTestDataHelper
 from clarity_snpseq.test.utility.fake_collaborators import FakeOsService
-from clarity_snpseq.test.utility.fake_collaborators import MockedUploadService
+from clarity_snpseq.test.utility.fake_collaborators import MonkeyMethodsForFileService
 from clarity_snpseq.test.utility.fake_collaborators import FakeLogger
 from clarity_ext.domain.validation import ValidationException
 from clarity_snpseq.test.utility.misc_builders import ContextWrapperBuilder
@@ -67,7 +67,7 @@ class FileServiceInitializer:
     def __init__(self, extension):
         self.extension = extension
         self.os_service = FakeOsService()
-        self.mocked_file_service = MockedUploadService(extension.context.file_service, self.os_service)
+        self.mocked_file_service = MonkeyMethodsForFileService(extension.context.file_service, self.os_service)
 
     def run(self):
         CONTEXT_FILES_ROOT = self.extension.context.file_service.CONTEXT_FILES_ROOT
@@ -86,7 +86,7 @@ class FileServiceInitializer:
         self._mock_logger()
 
     def _monkey_patch_local_shared_file(self):
-        self.extension.context.file_service.local_shared_file = \
+        self.extension.context.file_service.local_shared_file2 = \
             self.mocked_file_service.mock_local_shared_file
 
     def _inject_fake_os_service_to_file_service(self):
@@ -114,6 +114,7 @@ class StepLogService:
 
     def write_to_step_log_explicitly(self, text):
         e = ValidationException(text)
+        print('write to step log')
         self.context_wrapper.context.validation_service.handle_single_validation(e)
 
     @property
@@ -133,7 +134,7 @@ class StepLogService:
     def create():
         builder = ContextWrapperBuilder()
         builder.with_shared_result_file('Step log')
-        os_service = FakeOsService()
+        os_service = builder.context_wrapper.context.file_service.os_service
         return StepLogService(context_wrapper=builder.context_wrapper,
                                              os_service=os_service)
 

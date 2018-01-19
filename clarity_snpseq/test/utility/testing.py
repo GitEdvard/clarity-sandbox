@@ -5,6 +5,71 @@ from clarity_ext.domain import *
 from clarity_ext.service.dilution.service import *
 from mock import MagicMock
 from clarity_ext.context import ExtensionContext
+from clarity_snpseq.test.utility.fake_collaborators import FakeOsService
+from clarity_snpseq.test.utility.fake_collaborators import FakeFileRepository
+
+
+class TestExtensionContext(object):
+    """
+    A helper (wrapper) for creating test ExtensionContext objects, which are used for integration tests of the
+    type where you want to mock all repositories, but keep the services hooked up as they would be in production.
+
+    Wraps that kind of mocked ExtensionContext and provides various convenience methods for adding data to the mocked
+    repositories.
+
+    The idea is that this should be usable by users that have little knowledge about how the framework works.
+    """
+
+    def __init__(self):
+        self.os_service = FakeOsService()
+        session = MagicMock()
+        step_repo = MagicMock()
+        step_repo.all_artifacts = self._all_artifacts
+        user = User("Integration", "Tester", "no-reply@medsci.uu.se", "IT")
+        step_repo.get_process = MagicMock(return_value=Process(None, "24-1234", user, None, "http://not-avail"))
+        file_repository = FakeFileRepository()
+        clarity_service = MagicMock()
+        process_type = ProcessType(None, None, name="Some process")
+        step_repo.current_user = MagicMock(return_value=user)
+        step_repo.get_process_type = MagicMock(return_value=process_type)
+        self.context = ExtensionContext.create_mocked(session, step_repo, self.os_service,
+                                                      file_repository, clarity_service)
+
+        self._shared_files = list()
+        self._analytes = list()
+
+    def logged_validation_results(self):
+        return [call[0][0] for call in self.context.validation_service.handle_single_validation.call_args_list]
+
+    def count_logged_validation_results_of_type(self, t):
+        return len([result for result in self.logged_validation_results() if type(result) == t])
+
+    def count_logged_validation_results_with_msg(self, msg):
+        return len([result for result in self.logged_validation_results()
+                    if result.msg == msg])
+
+    def _all_artifacts(self):
+        return self._shared_files + self._analytes
+
+    def add_shared_result_file(self, f):
+        assert f.name is not None, "You need to supply a name"
+        f.id = "92-{}".format(len(self._shared_files))
+        self._shared_files.append((None, f))
+
+    def add_udf_to_step(self, key, value):
+        if self.context.current_step.udf_map is None:
+            self.context.current_step.udf_map = UdfMapping()
+        self.context.current_step.udf_map.add(key, value)
+
+    def set_user(self, user_name):
+        pass
+
+    def add_analyte_pair(self, input, output):
+        # TODO: Set id and name if not provided
+        self._analytes.append((input, output))
+
+    def add_analyte_pairs(self, pairs):
+        self._analytes.extend((pair.input_artifact, pair.output_artifact) for pair in pairs)
 
 
 class DilutionTestDataHelper:
@@ -146,77 +211,6 @@ class DilutionTestDataHelper:
                                                    "Dil. calc target conc.": None,
                                                    "Dil. calc source vol": None})
         return pair
-
-def mock_context(**kwargs):
-    """Creates a mock with the service provided as keyword arguments, filling the rest with MagicMock"""
-    # TODO: Needs to be updated when the signature is updated. Fix that (or use a better approach)
-    for arg in ["session", "artifact_service", "file_service", "current_user", "step_logger_service",
-                "step_repo", "clarity_service", "dilution_service", "process_service",
-                "upload_file_service", "validation_service"]:
-        kwargs.setdefault(arg, MagicMock())
-    return ExtensionContext(**kwargs)
-
-
-class TestExtensionContext(object):
-    """
-    A helper (wrapper) for creating test ExtensionContext objects, which are used for integration tests of the
-    type where you want to mock all repositories, but keep the services hooked up as they would be in production.
-
-    Wraps that kind of mocked ExtensionContext and provides various convenience methods for adding data to the mocked
-    repositories.
-
-    The idea is that this should be usable by users that have little knowledge about how the framework works.
-    """
-
-    def __init__(self):
-        session = MagicMock()
-        step_repo = MagicMock()
-        step_repo.all_artifacts = self._all_artifacts
-        user = User("Integration", "Tester", "no-reply@medsci.uu.se", "IT")
-        step_repo.get_process = MagicMock(return_value=Process(None, "24-1234", user, None, "http://not-avail"))
-        os_service = MagicMock()
-        file_repository = MagicMock()
-        clarity_service = MagicMock()
-        process_type = ProcessType(None, None, name="Some process")
-        step_repo.current_user = MagicMock(return_value=user)
-        step_repo.get_process_type = MagicMock(return_value=process_type)
-        self.context = ExtensionContext.create_mocked(session, step_repo, os_service, file_repository, clarity_service)
-
-        self._shared_files = list()
-        self._analytes = list()
-
-    def logged_validation_results(self):
-        return [call[0][0] for call in self.context.validation_service.handle_single_validation.call_args_list]
-
-    def count_logged_validation_results_of_type(self, t):
-        return len([result for result in self.logged_validation_results() if type(result) == t])
-
-    def count_logged_validation_results_with_msg(self, msg):
-        return len([result for result in self.logged_validation_results()
-                    if result.msg == msg])
-
-    def _all_artifacts(self):
-        return self._shared_files + self._analytes
-
-    def add_shared_result_file(self, f):
-        assert f.name is not None, "You need to supply a name"
-        f.id = "92-{}".format(len(self._shared_files))
-        self._shared_files.append((None, f))
-
-    def add_udf_to_step(self, key, value):
-        if self.context.current_step.udf_map is None:
-            self.context.current_step.udf_map = UdfMapping()
-        self.context.current_step.udf_map.add(key, value)
-
-    def set_user(self, user_name):
-        pass
-
-    def add_analyte_pair(self, input, output):
-        # TODO: Set id and name if not provided
-        self._analytes.append((input, output))
-
-    def add_analyte_pairs(self, pairs):
-        self._analytes.extend((pair.input_artifact, pair.output_artifact) for pair in pairs)
 
 
 class TestExtensionWrapper(object):

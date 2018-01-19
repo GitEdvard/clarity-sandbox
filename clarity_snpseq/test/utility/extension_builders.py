@@ -10,8 +10,7 @@ from clarity_snpseq.test.utility.helpers import DilutionHelpers
 from clarity_snpseq.test.utility.helpers import StepLogService
 from clarity_snpseq.test.utility.pair_builders import DnaPairBuilder
 from clarity_snpseq.test.utility.pair_builders import FactorPairBuilder
-from clarity_ext.domain.validation import ValidationException
-from clarity_ext.service.file_service import FileService
+from clarity_snpseq.test.utility.helpers import FileServiceInitializer
 
 
 class ExtensionBuilder(object):

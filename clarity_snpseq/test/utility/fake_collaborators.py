@@ -1,15 +1,50 @@
 from __future__ import print_function
 import StringIO
 import os
+from mock import MagicMock
 from pyfakefs import fake_filesystem
 from pyfakefs.fake_filesystem import FakeOsModule
 from pyfakefs.fake_filesystem_shutil import FakeShutilModule
 from pyfakefs.fake_filesystem import FakeFileOpen
 from contextlib import contextmanager
 from clarity_ext.service.file_service import FileService
+from clarity_ext.service.artifact_service import ArtifactService
 
 
-class MockedUploadService:
+class FakeFileService:
+    def __init__(self):
+        artifact_service = MagicMock()
+        artifact_service.shared_files = self._shared_files_method
+        file_repository = FakeFileRepository()
+        os_service = FakeOsService()
+        self.file_service = FileService(artifact_service=artifact_service,
+                                        file_repo=file_repository, should_cache=False,
+                                        os_service=os_service)
+
+        self._shared_files = list()
+        self._analytes = list()
+
+    def _all_artifacts(self):
+        return self._shared_files + self._analytes
+
+    def _shared_files_method(self):
+        return self._shared_files
+
+
+class FakeFileRepository:
+    def __init__(self):
+        pass
+
+    def copy_remote_file(self, remote_file_id, local_path):
+        print('fake copy remote')
+        pass
+
+    def open_local_file(self, local_path, mode):
+        print('fake open local file')
+        pass
+
+
+class MonkeyMethodsForFileService:
     def __init__(self, file_service, os_service):
         self.call_stack = []
         self.file_service = file_service
@@ -128,6 +163,9 @@ class FakeOsService:
 
     def create_file(self, file_path, contents=''):
         self.filesystem.CreateFile(file_path, contents=contents)
+
+    def abspath(self, path):
+        return path
 
 
 class FakeLogger:
