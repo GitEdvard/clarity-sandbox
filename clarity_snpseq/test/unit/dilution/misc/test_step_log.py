@@ -26,7 +26,8 @@ class TestStepLog(TestDilutionBase):
 
     def test__with_dilution_has_usage_error__two_write_calls_to_step_log(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension(mock_file_service=True)
+        builder = ExtensionBuilder.create_with_dna_extension()
+        builder.with_mocked_step_log_service()
         # ordinary sample, pipette volume too high
         builder.add_artifact_pair(source_conc=22.8, source_vol=38, target_conc=22, target_vol=350,
                                   source_container_name="source1", target_container_name="target1")
@@ -43,7 +44,8 @@ class TestStepLog(TestDilutionBase):
 
     def test__with_normal_dilution__two_write_calls_to_step_log(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension(mock_file_service=True)
+        builder = ExtensionBuilder.create_with_dna_extension()
+        builder.with_mocked_step_log_service()
         # Ordinary sample
         builder.add_artifact_pair(source_conc=22.8, source_vol=38, target_conc=22, target_vol=35,
                                   source_container_name="source1", target_container_name="target1")
@@ -56,7 +58,8 @@ class TestStepLog(TestDilutionBase):
 
     def test__with_dilution_has_usage_error__usage_error_written_to_step_log(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension(mock_file_service=True)
+        builder = ExtensionBuilder.create_with_dna_extension()
+        builder.with_mocked_step_log_service()
         # ordinary sample, pipette volume too high
         builder.add_artifact_pair(source_conc=22.8, source_vol=38, target_conc=22, target_vol=350,
                                   source_container_name="source1", target_container_name="target1")

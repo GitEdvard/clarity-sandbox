@@ -16,18 +16,12 @@ from clarity_snpseq.test.utility.misc_builders import ContextWrapperBuilder
 
 class DilutionHelpers:
     def create_helpers(self, ext_type=ExtensionDna, source_type=Analyte, target_type=Analyte,
-                       logging_level=logging.CRITICAL, mock_file_service=False):
+                       logging_level=logging.CRITICAL):
         """
         Copied from test_dilution...
          Returns a tuple of valid (TestExtensionWrapper, DilutionTestHelper)
          """
         ext_wrapper = TestExtensionWrapper(ext_type)
-
-        file_service_initializer = FileServiceInitializer(
-            ext_wrapper.extension)
-        if mock_file_service:
-            # With many tests, this takes little bit more time
-            file_service_initializer.run()
 
         context_wrapper = ext_wrapper.context_wrapper
         context_wrapper.add_shared_result_file(SharedResultFile(name="Step log"))
@@ -53,7 +47,7 @@ class DilutionHelpers:
                                                             source_type=source_type,
                                                             target_type=target_type)
         DilutionHelpers._handle_loggers(ext_wrapper, context_wrapper, logging_level)
-        return ext_wrapper, dil_helper, file_service_initializer.mocked_file_service
+        return ext_wrapper, dil_helper
 
     @staticmethod
     def _handle_loggers(extension_wrapper, context_wrapper, logging_level):

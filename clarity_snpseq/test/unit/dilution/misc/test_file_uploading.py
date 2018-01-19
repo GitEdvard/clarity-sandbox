@@ -9,6 +9,7 @@ class TestFileUploading(TestDilutionBase):
     def test__with_one_ordinary_sample__two_file_handles(self):
         # Arrange
         builder = ExtensionBuilder.create_with_dna_extension()
+        builder.with_mocked_file_service()
         # ordinary sample
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=30, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
@@ -23,6 +24,7 @@ class TestFileUploading(TestDilutionBase):
     def test__with_one_ordinary_sample__file_handle_names_ok(self):
         # Arrange
         builder = ExtensionBuilder.create_with_dna_extension()
+        builder.with_mocked_file_service()
         # ordinary sample
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=30, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
@@ -39,6 +41,7 @@ class TestFileUploading(TestDilutionBase):
     def test__with_one_ordinary_sample__two_driver_files_in_final(self):
         # Arrange
         builder = ExtensionBuilder.create_with_dna_extension()
+        builder.with_mocked_file_service()
         # ordinary sample
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=30, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
@@ -55,6 +58,7 @@ class TestFileUploading(TestDilutionBase):
     def test__with_one_evap_sample__tree_file_handles(self):
         # Arrange
         builder = ExtensionBuilder.create_with_dna_extension()
+        builder.with_mocked_file_service()
         # evaporation sample
         builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=30, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
@@ -69,6 +73,7 @@ class TestFileUploading(TestDilutionBase):
     def test__with_one_evap_sample__file_handle_names_ok(self):
         # Arrange
         builder = ExtensionBuilder.create_with_dna_extension()
+        builder.with_mocked_file_service()
         # evaporation sample
         builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=30, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
@@ -86,6 +91,7 @@ class TestFileUploading(TestDilutionBase):
     def test__with_one_looped_sample__three_file_handles(self):
         # Arrange
         builder = ExtensionBuilder.create_with_dna_extension()
+        builder.with_mocked_file_service()
         # looped sample
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
@@ -100,6 +106,7 @@ class TestFileUploading(TestDilutionBase):
     def test__with_one_looped_sample__file_handle_names_ok(self):
         # Arrange
         builder = ExtensionBuilder.create_with_dna_extension()
+        builder.with_mocked_file_service()
         # looped sample
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
@@ -117,6 +124,7 @@ class TestFileUploading(TestDilutionBase):
     def test__with_one_ordinary_sample__robot_file_found_in_upload_cache(self):
         # Arrange
         builder = ExtensionBuilder.create_with_dna_extension()
+        builder.with_mocked_file_service()
         # ordinary sample
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=30, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
@@ -133,6 +141,7 @@ class TestFileUploading(TestDilutionBase):
     def test__with_one_ordinary_sample__driver_file_name_in_metadata_ok(self):
         # Arrange
         builder = ExtensionBuilder.create_with_dna_extension()
+        builder.with_mocked_file_service()
         # ordinary sample
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=30, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")

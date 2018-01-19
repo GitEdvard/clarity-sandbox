@@ -18,7 +18,7 @@ class TestDilution(TestDilutionBase):
         vol2 = 35
 
         helper = DilutionHelpers()
-        ext_wrapper, dil_helper, _ = helper.create_helpers(ExtensionDna)
+        ext_wrapper, dil_helper = helper.create_helpers(ExtensionDna)
         pair = dil_helper.create_dilution_pair(
             conc1=conc1, vol1=vol1, conc2=conc2, vol2=vol2,
             source_type=Analyte, target_type=Analyte)
