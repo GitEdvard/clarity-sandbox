@@ -64,6 +64,7 @@ class FileServiceInitializer:
         self.mocked_file_service = MonkeyMethodsForFileService(extension.context.file_service, self.os_service)
 
     def run(self):
+        print('run file service initializer')
         CONTEXT_FILES_ROOT = self.extension.context.file_service.CONTEXT_FILES_ROOT
         self.upload_queue_path = os.path.join(CONTEXT_FILES_ROOT, "upload_queue")
         self.uploaded_path = os.path.join(CONTEXT_FILES_ROOT, "uploaded")
@@ -80,7 +81,9 @@ class FileServiceInitializer:
         self._mock_logger()
 
     def _monkey_patch_local_shared_file(self):
-        self.extension.context.file_service.local_shared_file2 = \
+        self.extension.context.file_service.local_shared_file_search_or_create = \
+            self.mocked_file_service.mock_local_shared_file
+        self.extension.context.file_service.local_shared_file = \
             self.mocked_file_service.mock_local_shared_file
 
     def _inject_fake_os_service_to_file_service(self):
@@ -99,7 +102,8 @@ class StepLogService:
     def step_log_contents(self):
         # Step log is in test replaced with a StringIO
         # In production it's a file like object reading from hard disk
-        step_log = self.context_wrapper.context.validation_service.step_logger_service.step_log
+        step_log = self.context_wrapper.context.validation_service.\
+            step_logger_service.default_step_logger_service.step_log
         return step_log.read()
 
     @property
@@ -145,3 +149,13 @@ class SimpleStepLogService:
 
     def error(self, msg):
         self.messages.append(msg)
+
+
+class OsUtility:
+    def __init__(self, os_service):
+        self.os_service = os_service
+
+    def get_contents(self, path):
+        with self.os_service.open_file(path, 'r') as f:
+            c = f.read()
+        return c

@@ -52,7 +52,7 @@ class ExtensionBuilder(object):
     @property
     def step_log_contents(self):
         # not working, only returns the last call
-        return  self.step_log_service.step_log_contents
+        return self.step_log_service.step_log_contents
 
     @property
     def step_log_calls(self):

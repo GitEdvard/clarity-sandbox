@@ -15,8 +15,8 @@ class FakeFileService:
     def __init__(self):
         artifact_service = MagicMock()
         artifact_service.shared_files = self._shared_files_method
-        file_repository = FakeFileRepository()
         os_service = FakeOsService()
+        file_repository = FakeFileRepository(os_service)
         self.file_service = FileService(artifact_service=artifact_service,
                                         file_repo=file_repository, should_cache=False,
                                         os_service=os_service)
@@ -32,16 +32,38 @@ class FakeFileService:
 
 
 class FakeFileRepository:
-    def __init__(self):
-        pass
+    def __init__(self, os_service):
+        self.os_service = os_service
+        self.file_by_id = dict()
 
     def copy_remote_file(self, remote_file_id, local_path):
-        print('fake copy remote')
-        pass
+        self.os_service.create_file(local_path, self.file_by_id[remote_file_id].contents)
 
     def open_local_file(self, local_path, mode):
-        print('fake open local file')
-        pass
+        with self.os_service.open_file(local_path, 'r') as f:
+            contents = f.read()
+            f_out = f
+        return f_out
+
+    def add_file(self, id, filename, contents):
+        file = FakeFile(id=id, contents=contents, filename=filename)
+        self.file_by_id[id] = file
+
+
+class FakeFile:
+    """
+    Represent a genologics File object
+    """
+    def __init__(self, id, contents, filename=None):
+        self.id = id
+        self.contents = contents
+        self.original_location = filename
+        self.api_resource = None
+
+
+class FakeApiResource:
+    def __init__(self):
+        self.files = list()
 
 
 class MonkeyMethodsForFileService:
@@ -60,14 +82,14 @@ class MonkeyMethodsForFileService:
         self.call_stack.append((file_handle, files_with_name))
 
     def mock_local_shared_file(self, file_handle, mode='r', extension="", modify_attached=False,
-                               file_name_contains=None):
-        artifact = self.file_service._artifact_by_name(file_handle, file_name_contains)
+                               file_name_contains=None, filename=None):
+        artifact = self.file_service.local_shared_file_provider._artifact_by_name(file_handle, file_name_contains)
         local_file_name = "{}_{}.{}".format(artifact.id, file_handle.replace(" ", "_"), extension)
         downloaded_path = os.path.join(self.file_service.downloaded_path, local_file_name)
         if not self.os_service.exists(downloaded_path):
             self.os_service.create_file(downloaded_path)
         if modify_attached is True:
-            source_file = self.file_service._queue(downloaded_path, artifact, FileService.FILE_PREFIX_NONE)
+            source_file = self.file_service.queue(downloaded_path, artifact, FileService.FILE_PREFIX_NONE)
         else:
             source_file = downloaded_path
         with self.os_service.open_file(source_file, mode=mode) as f:
@@ -108,9 +130,14 @@ class FakeOsService:
         return self.os_module.listdir(path)
 
     def makedirs(self, path, printout=False):
+        if self.exists(path):
+            return
         if printout:
             print('Creating directory: {}'.format(path))
         self.os_module.makedirs(path)
+
+    def mkdir(self, path):
+        self.makedirs(path)
 
     def _add_call(self, path, text):
         file_name = os.path.basename(path)
@@ -154,6 +181,14 @@ class FakeOsService:
             self.remove_file(dst)
         self.filesystem.CreateFile(dst, contents=c)
         #self.fake_shutils_module.copyfile(src, dst)
+
+    def copy(self, src, dst):
+        src_base = os.path.basename(src)
+        dst_base = os.path.basename(dst)
+        if src_base != dst_base:
+            basename = os.path.basename(src)
+            dst = os.path.join(dst, basename)
+        self.copy_file(src, dst)
 
     def exists(self, path):
         return self.os_module.path.exists(path)

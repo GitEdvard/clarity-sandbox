@@ -1,21 +1,43 @@
+import os
 from clarity_snpseq.test.utility.testing import TestExtensionContext
 from clarity_ext.domain.shared_result_file import SharedResultFile
 from clarity_ext.utils import single
+from clarity_snpseq.test.utility.fake_collaborators import FakeApiResource
 
 
 class ContextWrapperBuilder:
     def __init__(self):
         self.context_wrapper = TestExtensionContext()
+        self.file_repository = self.context_wrapper.context.file_service.file_repo
+        self.file_service = self.context_wrapper.context.file_service
+        self.id_counter = 0
 
-    def with_shared_result_file(self, file_handle, with_id=None):
-        self.context_wrapper.add_shared_result_file(SharedResultFile(name=file_handle))
+    def with_shared_result_file(self, file_handle, with_id=None, existing_file_name=None,
+                                existing_contents=None):
+        artifact = SharedResultFile(name=file_handle)
+        self.context_wrapper.add_shared_result_file(artifact)
         if with_id is not None:
-            self._update_artifact_id(file_handle, with_id)
+            artifact.id = '92-{}'.format(with_id)
+        if existing_contents is not None:
+            self._add_existing_file(artifact, existing_file_name, existing_contents)
 
-    def _update_artifact_id(self, file_handle, new_id):
-        file_service = self.context_wrapper.context.file_service
-        artifact = self._artifact(file_service)
-        artifact.id = '92-{}'.format(9876)
+    def with_cached_file(self, filename, contents):
+        cached_path = os.path.join(r'.cache\{}'.format(filename))
+        self.context_wrapper.os_service.create_file(cached_path, contents)
 
-    def _artifact(self, file_service):
-        return single([f for f in file_service.artifact_service.shared_files() if f.name == 'Step log'])
+    def with_should_cache(self, should_cache):
+        """Update file service and local shared file provider"""
+        self.context_wrapper.context.file_service.should_cache = should_cache
+        self.context_wrapper.context.file_service.local_shared_file_provider.should_cache = should_cache
+
+    def _add_existing_file(self, artifact, existing_file_name, existing_contents):
+        self.file_repository.add_file(self.id_counter, existing_file_name, existing_contents)
+        existing_file = self.file_repository.file_by_id[self.id_counter]
+        artifact.files.append(existing_file)
+        api_resource = FakeApiResource()
+        api_resource.files.append(existing_file)
+        artifact.api_resource = api_resource
+        self.id_counter += 1
+
+    def _artifact(self, file_service, file_handle):
+        return single([f for f in file_service.artifact_service.shared_files() if f.name == file_handle])

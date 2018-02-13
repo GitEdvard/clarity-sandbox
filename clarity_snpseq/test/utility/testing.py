@@ -21,22 +21,21 @@ class TestExtensionContext(object):
     """
 
     def __init__(self):
+        self._shared_files = list()
+        self._analytes = list()
         self.os_service = FakeOsService()
         session = MagicMock()
         step_repo = MagicMock()
         step_repo.all_artifacts = self._all_artifacts
         user = User("Integration", "Tester", "no-reply@medsci.uu.se", "IT")
         step_repo.get_process = MagicMock(return_value=Process(None, "24-1234", user, None, "http://not-avail"))
-        file_repository = FakeFileRepository()
+        file_repository = FakeFileRepository(self.os_service)
         clarity_service = MagicMock()
         process_type = ProcessType(None, None, name="Some process")
         step_repo.current_user = MagicMock(return_value=user)
         step_repo.get_process_type = MagicMock(return_value=process_type)
         self.context = ExtensionContext.create_mocked(session, step_repo, self.os_service,
                                                       file_repository, clarity_service)
-
-        self._shared_files = list()
-        self._analytes = list()
 
     def logged_validation_results(self):
         return [call[0][0] for call in self.context.validation_service.handle_single_validation.call_args_list]
