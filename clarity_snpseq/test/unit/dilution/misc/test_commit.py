@@ -63,7 +63,8 @@ class CommitTests(TestDilutionBase):
         biomek_uploads = [m for m in commit_uploads if 'biomek' in m.lower()]
         self.assertEqual(2, len(biomek_uploads))
 
-    def test_commit__with_dilution_has_usage_error__only_step_log_uploaded(self):
+    def test_commit__with_dilution_has_usage_error__two_step_logs_uploaded(self):
+        # Ordinary step log and error step log is uploaded
         # Arrange
         builder = ExtensionBuilder.create_with_dna_extension()
         builder.with_mocked_step_log_service()
@@ -84,7 +85,7 @@ class CommitTests(TestDilutionBase):
         messages = builder.extension.context.file_service.logger.info_messages
         commit_uploads = [m for m in messages if 'Uploading (disabled) file:' in m]
         steplog_uploads = [m for m in commit_uploads if 'step_log' in m.lower()]
-        self.assertEqual(1, len(steplog_uploads))
+        self.assertEqual(2, len(steplog_uploads))
 
     def test_commit__with_normal_dilution__printouts_from_commit(self):
         # Arrange
