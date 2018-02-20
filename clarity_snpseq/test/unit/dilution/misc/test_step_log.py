@@ -6,6 +6,7 @@ from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
 from clarity_ext.service.step_logger_service import AggregatedStepLoggerService
 from clarity_ext.service.step_logger_service import StepLoggerService
 from clarity_ext.domain.validation import UsageError
+from clarity_snpseq.test.utility.fake_collaborators import FakeLogger
 
 
 class TestStepLog(TestDilutionBase):
@@ -28,6 +29,10 @@ class TestStepLog(TestDilutionBase):
         # Arrange
         builder = ExtensionBuilder.create_with_dna_extension()
         builder.with_mocked_step_log_service()
+        #todo: fix this in builder setup
+        logger = FakeLogger()
+        builder.extension.context.logger = logger
+        builder.extension.context.validation_service.step_logger_service = logger
         # ordinary sample, pipette volume too high
         builder.add_artifact_pair(source_conc=22.8, source_vol=38, target_conc=22, target_vol=350,
                                   source_container_name="source1", target_container_name="target1")
@@ -40,12 +45,14 @@ class TestStepLog(TestDilutionBase):
         #                                r'C:\Smajobb\2018\Januari\clarity\saves')
 
         # Assert
-        self.assertEqual(2, len(builder.step_log_calls))
+        self.assertEqual(2, len(builder.extension.context.logger.log_messages))
 
     def test__with_normal_dilution__two_write_calls_to_step_log(self):
         # Arrange
         builder = ExtensionBuilder.create_with_dna_extension()
         builder.with_mocked_step_log_service()
+
+        builder.extension.context.logger = FakeLogger()
         # Ordinary sample
         builder.add_artifact_pair(source_conc=22.8, source_vol=38, target_conc=22, target_vol=35,
                                   source_container_name="source1", target_container_name="target1")
@@ -54,12 +61,14 @@ class TestStepLog(TestDilutionBase):
         builder.extension.execute()
 
         # Assert
-        self.assertEqual(2, len(builder.step_log_calls))
+        self.assertEqual(2, len(builder.extension.context.logger.log_messages))
 
     def test__with_dilution_has_usage_error__usage_error_written_to_step_log(self):
         # Arrange
         builder = ExtensionBuilder.create_with_dna_extension()
         builder.with_mocked_step_log_service()
+        logger = FakeLogger()
+        builder.extension.context.validation_service.step_logger_service = logger
         # ordinary sample, pipette volume too high
         builder.add_artifact_pair(source_conc=22.8, source_vol=38, target_conc=22, target_vol=350,
                                   source_container_name="source1", target_container_name="target1")
@@ -70,4 +79,4 @@ class TestStepLog(TestDilutionBase):
             pass
 
         # Assert
-        self.assertTrue('Error' in builder.step_log_contents)
+        self.assertTrue('Error' in logger.log_messages[-1])

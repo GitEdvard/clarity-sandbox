@@ -24,7 +24,7 @@ class TestStepLog(unittest.TestCase):
         step_logger_service.log('my message')
 
         # Assert
-        queue_path = r'./context_files\upload_queue\92-9876\Step_log.log'
+        queue_path = r'./context_files\upload_queue\92-9876\Step_log.txt'
         self.assertTrue(self.builder.context_wrapper.os_service.exists(queue_path))
 
     def test_write_to_step_log__with_one_message__contents_from_step_log_ok(self):
@@ -36,7 +36,7 @@ class TestStepLog(unittest.TestCase):
         step_logger_service.log('my message')
 
         # Assert
-        queue_path = r'./context_files\upload_queue\92-9876\Step_log.log'
+        queue_path = r'./context_files\upload_queue\92-9876\Step_log.txt'
         contents = self.os_utility.get_contents(queue_path)
         match = re.match('^\d+-\d+-\d+ \d+:\d+:\d+ - my message\r\n$', contents)
         self.assertTrue(match is not None)
@@ -137,3 +137,4 @@ class TestStepLog(unittest.TestCase):
         self.assertEqual(1, len(default_service.messages))
         self.assertEqual(0, len(warning_service.messages))
         self.assertEqual(1, len(error_service.messages))
+

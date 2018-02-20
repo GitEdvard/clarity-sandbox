@@ -152,4 +152,4 @@ class TestFileUploading(TestDilutionBase):
         # Assert
         metadata_info = builder.metadata_info("metadata_filename", self.hamilton_robot_setting)
         file_name = utils.single([tb.upload_file_name for tb in metadata_info.transfer_batches])
-        self.assertEqual("92-1_hamilton", file_name[:13])
+        self.assertEqual("92-3_hamilton", file_name[:13])
