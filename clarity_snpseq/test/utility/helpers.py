@@ -2,6 +2,7 @@ from __future__ import print_function
 import functools
 import logging
 import os
+from mock import MagicMock
 from clarity_ext.domain import *
 from clarity_ext_scripts.dilution.dna_dilution_start import Extension as ExtensionDna
 from clarity_ext_scripts.dilution.fixed_dilution_start import Extension as ExtensionFixed
@@ -21,23 +22,27 @@ class DilutionHelpers:
         Copied from test_dilution...
          Returns a tuple of valid (TestExtensionWrapper, DilutionTestHelper)
          """
-        ext_wrapper = TestExtensionWrapper(ext_type)
+        builder = ContextWrapperBuilder()
+        ext_wrapper = TestExtensionWrapper(ext_type, builder)
 
         context_wrapper = ext_wrapper.context_wrapper
-        context_wrapper.add_shared_result_file(SharedResultFile(name="Step log"))
-        context_wrapper.add_shared_result_file(SharedResultFile(name="Final"))
-        context_wrapper.add_shared_result_file(SharedResultFile(name="Final"))
-        context_wrapper.add_shared_result_file(SharedResultFile(name="Final"))
-        context_wrapper.add_shared_result_file(SharedResultFile(name="Final"))
-        context_wrapper.add_shared_result_file(SharedResultFile(name="Evaporate step 1"))
-        context_wrapper.add_shared_result_file(SharedResultFile(name="Evaporate step 1"))
-        context_wrapper.add_shared_result_file(SharedResultFile(name="Evaporate step 2"))
-        context_wrapper.add_shared_result_file(SharedResultFile(name="Evaporate step 2"))
-        context_wrapper.add_shared_result_file(SharedResultFile(name="Intermediate"))
-        context_wrapper.add_shared_result_file(SharedResultFile(name="Intermediate"))
-        context_wrapper.add_shared_result_file(SharedResultFile(name="Metadata"))
-        context_wrapper.add_shared_result_file(SharedResultFile(name="Metadata"))
-        context_wrapper.context.disable_commits = True
+
+        builder.with_shared_result_file(file_handle="Step log", with_id=9876, existing_file_name='Step_log.txt')
+        builder.with_shared_result_file(file_handle="Step log", with_id=9877, existing_file_name='Warnings.txt')
+        builder.with_shared_result_file(file_handle="Step log", with_id=9878, existing_file_name='Errors.txt')
+        builder.with_shared_result_file(file_handle="Final")
+        builder.with_shared_result_file(file_handle="Final")
+        builder.with_shared_result_file(file_handle="Final")
+        builder.with_shared_result_file(file_handle="Final")
+        builder.with_shared_result_file(file_handle="Evaporate step 1")
+        builder.with_shared_result_file(file_handle="Evaporate step 1")
+        builder.with_shared_result_file(file_handle="Evaporate step 2")
+        builder.with_shared_result_file(file_handle="Evaporate step 2")
+        builder.with_shared_result_file(file_handle="Intermediate")
+        builder.with_shared_result_file(file_handle="Intermediate")
+        builder.with_shared_result_file(file_handle="Metadata")
+        builder.with_shared_result_file(file_handle="Metadata")
+        builder.context_wrapper.context.disable_commits = True
 
         if ext_type == ExtensionFixed:
             context_wrapper.add_udf_to_step("Volume in destination ul", 10)
@@ -82,9 +87,9 @@ class FileServiceInitializer:
 
     def _monkey_patch_local_shared_file(self):
         self.extension.context.file_service.local_shared_file_search_or_create = \
-            self.mocked_file_service.mock_local_shared_file
+            self.mocked_file_service.mock_search_or_create
         self.extension.context.file_service.local_shared_file = \
-            self.mocked_file_service.mock_local_shared_file
+            self.mocked_file_service.mock_search_existing
 
     def _inject_fake_os_service_to_file_service(self):
         self.extension.context.file_service.os_service = self.os_service
@@ -108,7 +113,10 @@ class StepLogService:
 
     @property
     def step_log_calls(self):
-        return self.os_service.write_calls['Step_log.log']
+        print('write_calls')
+        keys = [key for key in self.os_service.write_calls]
+        print(keys)
+        return self.os_service.write_calls['Step_log.txt']
 
     def write_to_step_log_explicitly(self, text):
         e = ValidationException(text)

@@ -59,6 +59,7 @@ class FakeFile:
         self.contents = contents
         self.original_location = filename
         self.api_resource = None
+        self.uri = r'www.something/{}'.format(filename)
 
 
 class FakeApiResource:
@@ -81,9 +82,22 @@ class MonkeyMethodsForFileService:
         files_with_name = [(instance_name, content)]
         self.call_stack.append((file_handle, files_with_name))
 
-    def mock_local_shared_file(self, file_handle, mode='r', extension="", modify_attached=False,
-                               file_name_contains=None, filename=None):
+    def mock_search_existing(self, file_handle, mode='r', extension="", modify_attached=False,
+                               file_name_contains=None):
         artifact = self.file_service.local_shared_file_provider._artifact_by_name(file_handle, file_name_contains)
+        self._local_shared_file(file_handle, artifact, mode=mode, extension=extension,
+                                modify_attached=modify_attached)
+
+    def mock_search_or_create(self, file_handle, mode='r', extension="", modify_attached=False,
+                               filename=None):
+        provider = self.file_service.local_shared_file_provider
+        artifact = provider._artifact_by_name(file_handle,
+                                              filename,
+                                              fallback_on_first_unassigned=True)
+        self._local_shared_file(file_handle, artifact, mode=mode, extension=extension,
+                                modify_attached=modify_attached)
+
+    def _local_shared_file(self, file_handle, artifact, mode='r', extension="", modify_attached=False):
         local_file_name = "{}_{}.{}".format(artifact.id, file_handle.replace(" ", "_"), extension)
         downloaded_path = os.path.join(self.file_service.downloaded_path, local_file_name)
         if not self.os_service.exists(downloaded_path):
@@ -217,4 +231,7 @@ class FakeLogger:
 
     def log(self, text):
         print('from fake logger log: {}'.format(text))
+        self.log_messages.append(text)
+
+    def error(self, text):
         self.log_messages.append(text)
