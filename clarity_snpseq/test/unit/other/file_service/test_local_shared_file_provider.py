@@ -239,3 +239,20 @@ class TestStepLog(unittest.TestCase):
         copied_path = r'./.cache\92-9876_FileHandleX.txt'
         self.assertTrue(self.os_service.exists(copied_path))
         self.assertEqual('downloaded contents', self.os_utility.get_contents(copied_path))
+
+    def test_write_to_search_or_create__with_existing_file_removed__only_new_contents(self):
+        # Note, it is never created a local file in production or test until it's already removed.
+        # Arrange
+        self.builder.with_shared_result_file('Step log', with_id=9876, existing_file_name='Warnings',
+                                        existing_contents='previous text ')
+        file_service = self.builder.context_wrapper.context.file_service
+        file_service.remove_files('Step log', disabled=True)
+        # Act
+        f = file_service.local_shared_file_search_or_create('Step log', mode='ab', filename='Warnings',
+                                      extension='txt', modify_attached=True)
+        f.write('new contents')
+
+        # Assert
+        queue_path = r'./context_files\upload_queue\92-9876\Warnings.txt'
+        contents = self.os_utility.get_contents(queue_path)
+        self.assertEqual('new contents', contents)
