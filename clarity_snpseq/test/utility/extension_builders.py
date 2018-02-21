@@ -1,5 +1,6 @@
 import StringIO
 from abc import abstractmethod
+from mock import MagicMock
 from clarity_ext.domain import *
 from clarity_ext.utils import *
 from clarity_ext_scripts.dilution.dna_dilution_start import Extension as ExtensionDna
@@ -14,14 +15,15 @@ from clarity_snpseq.test.utility.helpers import FileServiceInitializer
 
 
 class ExtensionBuilder(object):
-    def __init__(self, extension_type, source_type, target_type):
+    def __init__(self, extension_type, source_type, target_type, context_builder=None):
         self.source_type = source_type
         self.target_type = target_type
         self.control_id_prefix = None
         self.call_index = 1
         dilution_helper_generator = DilutionHelpers()
         self.ext_wrapper, self.dil_helper = \
-            dilution_helper_generator.create_helpers(ext_type=extension_type)
+            dilution_helper_generator.create_helpers(ext_type=extension_type,
+                                                     context_builder=context_builder)
         c = Container(container_type=Container.CONTAINER_TYPE_96_WELLS_PLATE)
         self.well_list = c.list_wells()
         self.pairs = list()
@@ -44,6 +46,12 @@ class ExtensionBuilder(object):
 
     def with_control_id_prefix(self, prefix):
         self.control_id_prefix = prefix
+
+    def with_evaluate_and_log_only(self):
+        self.extension._queue_robot_files_for_upload = MagicMock()
+        self.extension._generate_metadata_files = MagicMock(return_value=(None, None))
+        self.extension._queue_metadata_files_for_upload = MagicMock()
+        self.extension._queue_udf_for_update = MagicMock()
 
     def monkey_patch_upload_single(self):
         self.extension.context.file_service._upload_single = \
@@ -75,12 +83,14 @@ class ExtensionBuilder(object):
                             self.extension.context, shared_robot_settings)
 
     @classmethod
-    def create_with_dna_extension(cls):
-        return ExtensionBuilderDna(ExtensionDna, source_type=Analyte, target_type=Analyte)
+    def create_with_dna_extension(cls, context_builder=None):
+        return ExtensionBuilderDna(ExtensionDna, source_type=Analyte, target_type=Analyte,
+                                   context_builder=context_builder)
 
     @classmethod
-    def create_with_factor_extension(cls):
-        return ExtensionBuilderFactor(ExtensionFactor, source_type=Analyte, target_type=Analyte)
+    def create_with_factor_extension(cls, context_builder=None):
+        return ExtensionBuilderFactor(ExtensionFactor, source_type=Analyte, target_type=Analyte,
+                                      context_builder=context_builder)
 
     @property
     def sorted_transfers(self):
