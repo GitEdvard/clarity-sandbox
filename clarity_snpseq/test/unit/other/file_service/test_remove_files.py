@@ -1,12 +1,12 @@
 import unittest
 from unittest import skip
-from clarity_snpseq.test.utility.misc_builders import ContextWrapperBuilder
+from clarity_snpseq.test.utility.misc_builders import ContextBuilder
 from clarity_snpseq.test.utility.helpers import OsUtility
 
 
 class TestRemoveFiles(unittest.TestCase):
     def setUp(self):
-        self.builder = ContextWrapperBuilder()
+        self.builder = ContextBuilder()
         self.os_utility = OsUtility(self.builder.context_wrapper.os_service)
         self.os_service = self.builder.context_wrapper.os_service
 

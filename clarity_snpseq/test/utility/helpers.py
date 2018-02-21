@@ -12,7 +12,7 @@ from clarity_snpseq.test.utility.fake_collaborators import FakeOsService
 from clarity_snpseq.test.utility.fake_collaborators import MonkeyMethodsForFileService
 from clarity_snpseq.test.utility.fake_collaborators import FakeLogger
 from clarity_ext.domain.validation import ValidationException
-from clarity_snpseq.test.utility.misc_builders import ContextWrapperBuilder
+from clarity_snpseq.test.utility.misc_builders import ContextBuilder
 
 
 class DilutionHelpers:
@@ -22,7 +22,7 @@ class DilutionHelpers:
         Copied from test_dilution...
          Returns a tuple of valid (TestExtensionWrapper, DilutionTestHelper)
          """
-        builder = ContextWrapperBuilder()
+        builder = ContextBuilder()
         ext_wrapper = TestExtensionWrapper(ext_type, builder)
 
         context_wrapper = ext_wrapper.context_wrapper
@@ -138,7 +138,7 @@ class StepLogService:
 
     @staticmethod
     def create():
-        builder = ContextWrapperBuilder()
+        builder = ContextBuilder()
         builder.with_shared_result_file('Step log')
         os_service = builder.context_wrapper.context.file_service.os_service
         return StepLogService(context_wrapper=builder.context_wrapper,

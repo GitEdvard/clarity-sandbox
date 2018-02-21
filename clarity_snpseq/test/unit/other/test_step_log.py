@@ -6,12 +6,12 @@ from clarity_ext.service.step_logger_service import StepLoggerService
 from clarity_snpseq.test.utility.helpers import SimpleStepLogService
 from clarity_snpseq.test.utility.helpers import OsUtility
 from clarity_snpseq.test.utility.helpers import StepLogService as MockedStepLogService
-from clarity_snpseq.test.utility.helpers import ContextWrapperBuilder
+from clarity_snpseq.test.utility.helpers import ContextBuilder
 
 
 class TestStepLog(unittest.TestCase):
     def setUp(self):
-        self.builder = ContextWrapperBuilder()
+        self.builder = ContextBuilder()
         self.os_utility = OsUtility(self.builder.context_wrapper.os_service)
         self.os_service = self.builder.context_wrapper.os_service
 

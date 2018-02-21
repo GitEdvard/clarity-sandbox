@@ -7,7 +7,7 @@ from clarity_snpseq.test.utility.fake_collaborators import FakeApiResource
 from clarity_snpseq.test.utility.fake_collaborators import FakeLogger
 
 
-class ContextWrapperBuilder:
+class ContextBuilder:
     def __init__(self):
         self.context_wrapper = TestExtensionContext()
         self.file_repository = self.context_wrapper.context.file_service.file_repo
