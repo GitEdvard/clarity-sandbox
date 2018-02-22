@@ -18,7 +18,7 @@ class TestEvaporation(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         metadata_info = builder.metadata_info("Metadata filename", HamiltonRobotSettings())
@@ -32,7 +32,7 @@ class TestEvaporation(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         #self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2017\Augusti\Clarity\saves')
@@ -49,7 +49,7 @@ class TestEvaporation(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         batches = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name)
@@ -64,7 +64,7 @@ class TestEvaporation(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         batches = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name)
@@ -84,7 +84,7 @@ class TestEvaporation(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         files = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name).driver_files
@@ -102,7 +102,7 @@ class TestEvaporation(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         batches = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name)
@@ -119,7 +119,7 @@ class TestEvaporation(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         robot_setting = HamiltonRobotSettings()
@@ -142,7 +142,7 @@ class TestEvaporation(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         evap_batch = builder.evap2_batch
@@ -161,7 +161,7 @@ class TestEvaporation(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         evap_batch = builder.evap2_batch
@@ -180,7 +180,7 @@ class TestEvaporation(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         #self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2017\Oktober\clarity\saves')
@@ -232,7 +232,7 @@ class TestEvaporation(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         #self.save_metadata_to_harddisk(builder.extension, r"C:\Smajobb\2017\Oktober\clarity\saves")
@@ -255,7 +255,7 @@ class TestEvaporation(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         #self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2017\Augusti\Clarity\saves')
@@ -279,7 +279,7 @@ class TestEvaporation(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         #self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2017\Oktober\clarity\saves')
@@ -301,7 +301,7 @@ class TestEvaporation(TestDilutionBase):
                                   source_container_name="3source3", target_container_name="2target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         #self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2017\Augusti\Clarity\saves')

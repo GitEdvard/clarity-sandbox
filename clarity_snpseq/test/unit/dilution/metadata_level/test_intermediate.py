@@ -1,7 +1,5 @@
 from __future__ import print_function
 import unittest
-from clarity_ext.domain import *
-from test.unit.clarity_ext.helpers import *
 from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
 
@@ -14,7 +12,7 @@ class TestIntermediateDilution(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         batches = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name)
@@ -29,7 +27,7 @@ class TestIntermediateDilution(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         batches = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name)
@@ -46,7 +44,7 @@ class TestIntermediateDilution(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         batches = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name)
@@ -63,7 +61,7 @@ class TestIntermediateDilution(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         files = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name).driver_files
@@ -78,7 +76,7 @@ class TestIntermediateDilution(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         batches = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name)
@@ -95,7 +93,7 @@ class TestIntermediateDilution(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         batches = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name)
@@ -116,7 +114,7 @@ class TestIntermediateDilution(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         batches = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name)
@@ -142,7 +140,7 @@ class TestIntermediateDilution(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         #self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2017\Augusti\Clarity\saves')
@@ -164,7 +162,7 @@ class TestIntermediateDilution(TestDilutionBase):
                                   source_container_name="source2", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         #self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2017\Augusti\Clarity\saves')
@@ -184,7 +182,7 @@ class TestIntermediateDilution(TestDilutionBase):
                                   source_container_name="source3", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         #self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2017\Augusti\Clarity\saves')
@@ -210,7 +208,7 @@ class TestIntermediateDilution(TestDilutionBase):
                                   source_container_name="source3", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         #self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2017\Augusti\Clarity\saves')
@@ -234,7 +232,7 @@ class TestIntermediateDilution(TestDilutionBase):
                                   source_container_name="source3", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         #self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2017\Augusti\Clarity\saves')

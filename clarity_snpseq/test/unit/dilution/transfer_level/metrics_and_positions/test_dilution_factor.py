@@ -1,10 +1,10 @@
 import unittest
-from clarity_ext.domain.validation import *
 from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
+from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
+from clarity_snpseq.test.utility.misc_builders import ContextBuilder
 
 
-class TestDilutionFactor(unittest.TestCase):
-
+class TestDilutionFactor(TestDilutionBase):
     def test___with_no_split_rows_not_looped___pipette_volumes_ok(self):
         # Arrange
         builder = ExtensionBuilder.create_with_factor_extension()
@@ -13,7 +13,7 @@ class TestDilutionFactor(unittest.TestCase):
         builder.add_artifact_pair(source_conc=60, source_vol=40, dilute_factor=4, target_vol=10)
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         transfers = builder.sorted_transfers
@@ -26,7 +26,7 @@ class TestDilutionFactor(unittest.TestCase):
 
     def test___without_source_conc___target_conc_is_none(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_factor_extension()
+        builder = self.builder_with_factor_ext_and_all_files()
         builder.add_artifact_pair(source_vol=40, dilute_factor=4, target_vol=10)
 
         # Act
@@ -39,7 +39,7 @@ class TestDilutionFactor(unittest.TestCase):
 
     def test___with_no_split_rows_not_looped___updates_ok(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_factor_extension()
+        builder = self.builder_with_factor_ext_and_all_files()
         builder.add_artifact_pair(source_conc=80, source_vol=40, dilute_factor=3, target_vol=10)
         # Act
         builder.extension.execute()
@@ -60,7 +60,7 @@ class TestDilutionFactor(unittest.TestCase):
         builder.add_artifact_pair(source_conc=80, source_vol=80, dilute_factor=10, target_vol=80)
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         transfers = builder.sorted_transfers
@@ -72,7 +72,7 @@ class TestDilutionFactor(unittest.TestCase):
 
     def test___with_split_row___updates_ok(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_factor_extension()
+        builder = self.builder_with_factor_ext_and_all_files()
         builder.add_artifact_pair(source_conc=80, source_vol=80, dilute_factor=10, target_vol=80)
 
         # Act

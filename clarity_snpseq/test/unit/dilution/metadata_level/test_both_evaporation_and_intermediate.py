@@ -22,7 +22,7 @@ class TestBothEvaporationAndIntermediate(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         #self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2017\Augusti\Clarity\saves')
@@ -51,7 +51,7 @@ class TestBothEvaporationAndIntermediate(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         files = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name).driver_files
@@ -81,7 +81,7 @@ class TestBothEvaporationAndIntermediate(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         #self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2017\Augusti\Clarity\saves')
@@ -107,7 +107,7 @@ class TestBothEvaporationAndIntermediate(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         #self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2017\Augusti\Clarity\saves')

@@ -5,12 +5,27 @@ from clarity_ext.service.file_service import FileService
 from clarity_ext.service.file_service import OSService
 from clarity_ext_scripts.dilution.settings import HamiltonRobotSettings
 from clarity_ext_scripts.dilution.settings import BiomekRobotSettings
+from clarity_snpseq.test.utility.misc_builders import ContextBuilder
+from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
 
 
 class TestDilutionBase(unittest.TestCase):
     def setUp(self):
         self.hamilton_robot_setting = HamiltonRobotSettings()
         self.biomek_robot_setting = BiomekRobotSettings()
+
+    def execute_short(self, builder):
+        dummy = builder.extension.dilution_session
+
+    def builder_with_factor_ext_and_all_files(self):
+        b = ContextBuilder()
+        b.with_all_files()
+        return ExtensionBuilder.create_with_factor_extension(b)
+
+    def builder_with_dna_ext_all_files(self):
+        b = ContextBuilder()
+        b.with_all_files()
+        return ExtensionBuilder.create_with_dna_extension(b)
 
     def save_metadata_to_harddisk(self, extension, save_directory):
         file_service = self._file_service(extension, save_directory)

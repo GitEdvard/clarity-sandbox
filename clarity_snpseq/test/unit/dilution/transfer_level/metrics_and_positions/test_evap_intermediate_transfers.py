@@ -19,7 +19,7 @@ class TestEvapIntermediateTransfer(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         batches = builder.extension.dilution_session.transfer_batches(self.biomek_robot_setting.name)
@@ -47,7 +47,7 @@ class TestEvapIntermediateTransfer(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         batches = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name)

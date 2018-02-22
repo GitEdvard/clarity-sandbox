@@ -1,6 +1,5 @@
 import unittest
 from unittest import skip
-from test.unit.clarity_ext.helpers import *
 from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
 
@@ -12,7 +11,7 @@ class TestDilutionDNA(TestDilutionBase):
         builder.add_artifact_pair(source_conc=22.8, source_vol=38, target_conc=22, target_vol=35,
                                   source_container_name="source1", target_container_name="target1")
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         transfers = builder.sorted_transfers

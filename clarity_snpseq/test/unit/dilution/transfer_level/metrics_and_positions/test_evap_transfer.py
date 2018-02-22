@@ -14,7 +14,7 @@ class TestEvapTransfer(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         batches = builder.extension.dilution_session.transfer_batches(self.biomek_robot_setting.name)
@@ -31,7 +31,7 @@ class TestEvapTransfer(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         batches = builder.extension.dilution_session.transfer_batches(self.biomek_robot_setting.name)
@@ -51,7 +51,7 @@ class TestEvapTransfer(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         batches = builder.extension.dilution_session.transfer_batches(self.biomek_robot_setting.name)
@@ -66,7 +66,7 @@ class TestEvapTransfer(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         batches = builder.extension.dilution_session.transfer_batches(self.biomek_robot_setting.name)
@@ -85,7 +85,7 @@ class TestEvapTransfer(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         batches = builder.extension.dilution_session.transfer_batches(self.biomek_robot_setting.name)
@@ -114,7 +114,7 @@ class TestEvapTransfer(TestDilutionBase):
                                   target_container_name="target1", is_control=True)
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         default_batch = builder.default_batch
@@ -137,7 +137,7 @@ class TestEvapTransfer(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         batches = builder.extension.dilution_session.transfer_batches(self.biomek_robot_setting.name)
@@ -160,7 +160,7 @@ class TestEvapTransfer(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         batches = builder.extension.dilution_session.transfer_batches(self.biomek_robot_setting.name)
@@ -179,7 +179,7 @@ class TestEvapTransfer(TestDilutionBase):
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         batches = builder.extension.dilution_session.transfer_batches(self.biomek_robot_setting.name)

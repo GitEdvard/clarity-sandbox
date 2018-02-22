@@ -5,7 +5,6 @@ from clarity_ext.service.step_logger_service import AggregatedStepLoggerService
 from clarity_ext.service.step_logger_service import StepLoggerService
 from clarity_snpseq.test.utility.helpers import SimpleStepLogService
 from clarity_snpseq.test.utility.helpers import OsUtility
-from clarity_snpseq.test.utility.helpers import StepLogService as MockedStepLogService
 from clarity_snpseq.test.utility.helpers import ContextBuilder
 
 

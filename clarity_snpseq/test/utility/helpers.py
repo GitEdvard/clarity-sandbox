@@ -39,7 +39,6 @@ class DilutionHelpers:
 
     def _init_default_context(self):
         builder = ContextBuilder()
-        builder.with_all_files()
         return builder
 
     @staticmethod

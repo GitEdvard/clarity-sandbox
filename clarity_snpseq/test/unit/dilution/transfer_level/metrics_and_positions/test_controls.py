@@ -1,6 +1,5 @@
 from __future__ import print_function
 import unittest
-from test.unit.clarity_ext.helpers import *
 from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
 
@@ -16,7 +15,7 @@ class TestControls(TestDilutionBase):
         builder.add_artifact_pair(source_container_name="source2")
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         transfers = builder.sorted_transfers
@@ -32,7 +31,7 @@ class TestControls(TestDilutionBase):
         builder.add_artifact_pair(source_container_name="control container", is_control=True)
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         transfers = builder.sorted_transfers
@@ -52,7 +51,7 @@ class TestControls(TestDilutionBase):
         builder.add_artifact_pair(source_container_name="control container", is_control=True)
 
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         transfers = builder.sorted_transfers

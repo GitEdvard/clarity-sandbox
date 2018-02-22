@@ -8,11 +8,11 @@ from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBas
 class TestDilutionDNA(TestDilutionBase):
     def test__with_target_volume_less_than_2__1_warning(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = self.builder_with_dna_ext_all_files()
         builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=20, target_vol=1,
                                   source_container_name="source1", target_container_name="target1")
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         warning_count = builder.extension.dilution_session.validation_service.warning_count
@@ -25,11 +25,11 @@ class TestDilutionDNA(TestDilutionBase):
     @skip('Wait to implement this case')
     def test__with_target_volume_less_than_2__warning_for_scale_up(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = self.builder_with_dna_ext_all_files()
         builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=20, target_vol=1,
                                   source_container_name="source1", target_container_name="target1")
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         messages = list(builder.extension.dilution_session.validation_service.messages)
@@ -38,11 +38,11 @@ class TestDilutionDNA(TestDilutionBase):
 
     def test__with_looped_not_enough__1_warning(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = self.builder_with_dna_ext_all_files()
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=5,
                                   source_container_name="source1", target_container_name="target1")
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         #self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2018\Januari\clarity\saves')
@@ -53,11 +53,11 @@ class TestDilutionDNA(TestDilutionBase):
 
     def test__with_looped_not_enough__warning_message_has_scaled_up(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = self.builder_with_dna_ext_all_files()
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=5,
                                   source_container_name="source1", target_container_name="target1")
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         messages = list(builder.extension.dilution_session.validation_service.messages)
@@ -65,11 +65,11 @@ class TestDilutionDNA(TestDilutionBase):
 
     def test__with_sample_volume_too_small_at_single_batch__1_warning(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = self.builder_with_dna_ext_all_files()
         builder.add_artifact_pair(source_conc=10, source_vol=4, target_conc=10, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         warning_count = builder.extension.dilution_session.validation_service.warning_count
@@ -79,11 +79,11 @@ class TestDilutionDNA(TestDilutionBase):
 
     def test__with_sample_volume_too_small_at_looped__1_warning(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = self.builder_with_dna_ext_all_files()
         builder.add_artifact_pair(source_conc=100, source_vol=2, target_conc=2, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
         # Act
-        builder.extension.execute()
+        self.execute_short(builder)
 
         # Assert
         warning_count = builder.extension.dilution_session.validation_service.warning_count
