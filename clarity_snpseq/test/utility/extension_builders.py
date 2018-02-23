@@ -5,6 +5,7 @@ from clarity_ext.domain import *
 from clarity_ext.utils import *
 from clarity_ext_scripts.dilution.dna_dilution_start import Extension as ExtensionDna
 from clarity_ext_scripts.dilution.factor_dilution_start import Extension as ExtensionFactor
+from clarity_ext_scripts.dilution.fixed_dilution_start import Extension as ExtensionFixed
 from clarity_ext_scripts.dilution.settings import MetadataInfo
 from clarity_ext_scripts.dilution.settings import HamiltonRobotSettings
 from clarity_snpseq.test.utility.helpers import DilutionHelpers
@@ -12,6 +13,7 @@ from clarity_snpseq.test.utility.helpers import StepLogService
 from clarity_snpseq.test.utility.pair_builders import DnaPairBuilder
 from clarity_snpseq.test.utility.pair_builders import FactorPairBuilder
 from clarity_snpseq.test.utility.helpers import FileServiceInitializer
+from clarity_snpseq.test.utility.misc_builders import ContextBuilder
 
 
 class ExtensionBuilder(object):
@@ -20,27 +22,39 @@ class ExtensionBuilder(object):
         self.target_type = target_type
         self.control_id_prefix = None
         self.call_index = 1
+        if context_builder is None:
+            context_builder = ContextBuilder()
+        self.context_builder = context_builder
+
+        if extension_type == ExtensionFixed:
+            context_builder.with_udf_on_step("Volume in destination ul", 10)
+        self.extension = extension_type(self.context_builder.context)
+
+        self._handle_loggers(logging.CRITICAL)
         dilution_helper_generator = DilutionHelpers()
-        self.ext_wrapper, self.dil_helper = \
-            dilution_helper_generator.create_helpers(ext_type=extension_type,
-                                                     context_builder=context_builder)
-        self.context_builder = dilution_helper_generator.context_builder
+        self.dil_helper = \
+            dilution_helper_generator.create_helper(extension=self.extension)
         c = Container(container_type=Container.CONTAINER_TYPE_96_WELLS_PLATE)
         self.well_list = c.list_wells()
         self.pairs = list()
         self.step_log_service = None
         self.mocked_file_service = None
 
+    def _handle_loggers(self, logging_level):
+        self.extension.logger.setLevel(logging_level)
+        self.context_builder.context.dilution_service.logger.setLevel(logging_level)
+        self.context_builder.context.validation_service.logger.setLevel(logging_level)
+
     def with_mocked_file_service(self):
         file_service_initializer = FileServiceInitializer(
-            self.ext_wrapper.extension)
+            self.extension)
         self.mocked_file_service = file_service_initializer.mocked_file_service
 
     def with_mocked_step_log_service(self):
         # This is only one variation of mocking step logger service!
         # With many tests, this takes little bit more time
         file_service_initializer = FileServiceInitializer(
-            self.ext_wrapper.extension)
+            self.extension)
         file_service_initializer.run()
         os_service = file_service_initializer.mocked_file_service.os_service
         self.step_log_service = StepLogService(self.context_builder.context, os_service)
@@ -70,14 +84,6 @@ class ExtensionBuilder(object):
     def write_to_step_log_explicitly(self, text):
         self.step_log_service.write_to_step_log_explicitly(text)
 
-    @property
-    def extension(self):
-        return self.ext_wrapper.extension
-
-    @property
-    def context_wrapper(self):
-        return self.ext_wrapper.context_wrapper
-    
     def metadata_info(self, filename, shared_robot_settings):
         return MetadataInfo(self.extension.dilution_session,
                             filename, self.extension.context.current_user,

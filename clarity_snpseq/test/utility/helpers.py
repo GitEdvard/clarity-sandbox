@@ -1,12 +1,7 @@
 from __future__ import print_function
 import functools
-import logging
 import os
-from mock import MagicMock
 from clarity_ext.domain import *
-from clarity_ext_scripts.dilution.dna_dilution_start import Extension as ExtensionDna
-from clarity_ext_scripts.dilution.fixed_dilution_start import Extension as ExtensionFixed
-from clarity_snpseq.test.utility.testing import TestExtensionWrapper
 from clarity_snpseq.test.utility.testing import DilutionTestDataHelper
 from clarity_snpseq.test.utility.fake_collaborators import FakeOsService
 from clarity_snpseq.test.utility.fake_collaborators import MonkeyMethodsForFileService
@@ -16,29 +11,13 @@ from clarity_snpseq.test.utility.misc_builders import ContextBuilder
 
 
 class DilutionHelpers:
-    def create_helpers(self, ext_type=ExtensionDna, source_type=Analyte, target_type=Analyte,
-                       logging_level=logging.CRITICAL, context_builder=None):
-        if context_builder is None:
-            context_builder = ContextBuilder()
-        self.context_builder = context_builder
-        ext_wrapper = TestExtensionWrapper(ext_type, context_builder)
+    def create_helper(self, extension=None, source_type=Analyte, target_type=Analyte):
 
-        if ext_type == ExtensionFixed:
-            context_builder.with_udf_on_step("Volume in destination ul", 10)
-
-        dil_helper = DilutionTestDataHelper(ext_wrapper.extension.get_dilution_settings().concentration_ref)
+        dil_helper = DilutionTestDataHelper(extension.get_dilution_settings().concentration_ref)
         dil_helper.create_dilution_pair = functools.partial(dil_helper.create_dilution_pair,
                                                             source_type=source_type,
                                                             target_type=target_type)
-        DilutionHelpers._handle_loggers(ext_wrapper, context_builder.context, logging_level)
-        return ext_wrapper, dil_helper
-
-    @staticmethod
-    def _handle_loggers(extension_wrapper, context, logging_level):
-        extension_wrapper.extension.logger.setLevel(logging_level)
-        context.dilution_service.logger.setLevel(logging_level)
-        context.validation_service.logger.setLevel(logging_level)
-        #context_wrapper.context.file_service.logger.setLevel(logging_level)
+        return dil_helper
 
 
 class FileServiceInitializer:

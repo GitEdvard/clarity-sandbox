@@ -144,9 +144,3 @@ class DilutionTestDataHelper:
                                                    "Dil. calc target conc.": None,
                                                    "Dil. calc source vol": None})
         return pair
-
-
-class TestExtensionWrapper(object):
-    def __init__(self, extension_type, context_builder):
-        self.context_builder = context_builder
-        self.extension = extension_type(self.context_builder.context)
