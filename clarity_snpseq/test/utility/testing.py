@@ -147,9 +147,6 @@ class DilutionTestDataHelper:
 
 
 class TestExtensionWrapper(object):
-    """Similar to TestExtensionContext, but wraps an entire extension"""
-
     def __init__(self, extension_type, context_builder):
         self.context_builder = context_builder
-        self.context_wrapper = self.context_builder.context_wrapper
-        self.extension = extension_type(self.context_wrapper.context)
+        self.extension = extension_type(self.context_builder.context)

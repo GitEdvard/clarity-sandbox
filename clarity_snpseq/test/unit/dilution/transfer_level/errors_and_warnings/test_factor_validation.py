@@ -32,7 +32,7 @@ class TestDilutionFactor(TestDilutionBase):
         self.execute_short(builder)
 
         # Assert
-        messages = list(builder.ext_wrapper.context_wrapper.context.validation_service.messages)
+        messages = list(builder.context_builder.context.validation_service.messages)
         print(messages)
         self.assertEqual(1, len(messages))
         self.assertTrue("Volume from sample exceeds current sample volume" in messages[0])

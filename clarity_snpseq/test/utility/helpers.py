@@ -18,31 +18,26 @@ from clarity_snpseq.test.utility.misc_builders import ContextBuilder
 class DilutionHelpers:
     def create_helpers(self, ext_type=ExtensionDna, source_type=Analyte, target_type=Analyte,
                        logging_level=logging.CRITICAL, context_builder=None):
-        """
-        Copied from test_dilution...
-         Returns a tuple of valid (TestExtensionWrapper, DilutionTestHelper)
-         """
         if context_builder is None:
             context_builder = ContextBuilder()
         self.context_builder = context_builder
         ext_wrapper = TestExtensionWrapper(ext_type, context_builder)
-        context_wrapper = ext_wrapper.context_wrapper
 
         if ext_type == ExtensionFixed:
-            context_wrapper.add_udf_to_step("Volume in destination ul", 10)
+            context_builder.with_udf_on_step("Volume in destination ul", 10)
 
         dil_helper = DilutionTestDataHelper(ext_wrapper.extension.get_dilution_settings().concentration_ref)
         dil_helper.create_dilution_pair = functools.partial(dil_helper.create_dilution_pair,
                                                             source_type=source_type,
                                                             target_type=target_type)
-        DilutionHelpers._handle_loggers(ext_wrapper, context_wrapper, logging_level)
+        DilutionHelpers._handle_loggers(ext_wrapper, context_builder.context, logging_level)
         return ext_wrapper, dil_helper
 
     @staticmethod
-    def _handle_loggers(extension_wrapper, context_wrapper, logging_level):
+    def _handle_loggers(extension_wrapper, context, logging_level):
         extension_wrapper.extension.logger.setLevel(logging_level)
-        context_wrapper.context.dilution_service.logger.setLevel(logging_level)
-        context_wrapper.context.validation_service.logger.setLevel(logging_level)
+        context.dilution_service.logger.setLevel(logging_level)
+        context.validation_service.logger.setLevel(logging_level)
         #context_wrapper.context.file_service.logger.setLevel(logging_level)
 
 
@@ -83,15 +78,15 @@ class FileServiceInitializer:
 
 
 class StepLogService:
-    def __init__(self, context_wrapper, os_service):
+    def __init__(self, context, os_service):
         self.os_service = os_service
-        self.context_wrapper =context_wrapper
+        self.context = context
 
     @property
     def step_log_contents(self):
         # Step log is in test replaced with a StringIO
         # In production it's a file like object reading from hard disk
-        step_log = self.context_wrapper.context.validation_service.\
+        step_log = self.context.validation_service.\
             step_logger_service.default_step_logger_service.step_log
         return step_log.read()
 
@@ -105,11 +100,11 @@ class StepLogService:
     def write_to_step_log_explicitly(self, text):
         e = ValidationException(text)
         print('write to step log')
-        self.context_wrapper.context.validation_service.handle_single_validation(e)
+        self.context.validation_service.handle_single_validation(e)
 
     @property
     def _artifact(self):
-        return utils.single([f for _, f in self.context_wrapper._shared_files if f.name == 'Step log'])
+        return utils.single([f for _, f in self.context.step_repo._shared_files if f.name == 'Step log'])
 
     def set_specific_lims_id(self, id):
         """
@@ -124,9 +119,9 @@ class StepLogService:
     def create():
         builder = ContextBuilder()
         builder.with_shared_result_file('Step log')
-        os_service = builder.context_wrapper.context.file_service.os_service
-        return StepLogService(context_wrapper=builder.context_wrapper,
-                                             os_service=os_service)
+        os_service = builder.os_service
+        return StepLogService(context=builder.context,
+                              os_service=os_service)
 
 
 class SimpleStepLogService:

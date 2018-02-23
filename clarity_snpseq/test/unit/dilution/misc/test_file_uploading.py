@@ -133,7 +133,7 @@ class TestFileUploading(TestDilutionBase):
         builder.extension.execute()
 
         # Assert
-        upload_cache = builder.context_wrapper.context.file_service.artifactid_by_filename
+        upload_cache = builder.context_builder.context.file_service.artifactid_by_filename
         default_batch = builder.default_batch
         self.assertTrue(default_batch.driver_file.file_name in upload_cache)
         #self.assertEqual("0", upload_cache[default_batch.driver_file.file_name])

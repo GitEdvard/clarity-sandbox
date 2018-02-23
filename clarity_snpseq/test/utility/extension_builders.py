@@ -43,7 +43,7 @@ class ExtensionBuilder(object):
             self.ext_wrapper.extension)
         file_service_initializer.run()
         os_service = file_service_initializer.mocked_file_service.os_service
-        self.step_log_service = StepLogService(self.context_wrapper, os_service)
+        self.step_log_service = StepLogService(self.context_builder.context, os_service)
 
     def with_control_id_prefix(self, prefix):
         self.control_id_prefix = prefix
@@ -166,7 +166,7 @@ class ExtensionBuilder(object):
         pair = pair_builder.pair
         self.pairs.append(pair)
         self.call_index += 1
-        self.context_builder.add_analyte_pair(pair.input_artifact, pair.output_artifact)
+        self.context_builder.with_analyte_pair(pair.input_artifact, pair.output_artifact)
 
 
 class ExtensionBuilderDna(ExtensionBuilder):

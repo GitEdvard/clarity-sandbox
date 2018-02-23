@@ -11,25 +11,25 @@ from clarity_snpseq.test.utility.helpers import ContextBuilder
 class TestStepLog(unittest.TestCase):
     def setUp(self):
         self.builder = ContextBuilder()
-        self.os_utility = OsUtility(self.builder.context_wrapper.os_service)
-        self.os_service = self.builder.context_wrapper.os_service
+        self.os_utility = OsUtility(self.builder.os_service)
+        self.os_service = self.builder.os_service
 
     def test_write_to_step_log__with_one_message__step_log_saved_in_upload_queue(self):
         # Arrange
         self.builder.with_shared_result_file('Step log', with_id=9876)
-        file_service = self.builder.context_wrapper.context.file_service
+        file_service = self.builder.context.file_service
         step_logger_service = StepLoggerService('Step log', file_service)
         # Act
         step_logger_service.log('my message')
 
         # Assert
         queue_path = r'./context_files\upload_queue\92-9876\Step_log.txt'
-        self.assertTrue(self.builder.context_wrapper.os_service.exists(queue_path))
+        self.assertTrue(self.builder.os_service.exists(queue_path))
 
     def test_write_to_step_log__with_one_message__contents_from_step_log_ok(self):
         # Arrange
         self.builder.with_shared_result_file('Step log', with_id=9876)
-        file_service = self.builder.context_wrapper.context.file_service
+        file_service = self.builder.context.file_service
         step_logger_service = StepLoggerService('Step log', file_service)
         # Act
         step_logger_service.log('my message')
@@ -43,20 +43,20 @@ class TestStepLog(unittest.TestCase):
     def test_write_to_step_log__with_filename_and_handle_different__file_saved_in_upload_queue(self):
         # Arrange
         self.builder.with_shared_result_file('Step log', with_id=9876)
-        file_service = self.builder.context_wrapper.context.file_service
+        file_service = self.builder.context.file_service
         step_logger_service = StepLoggerService('Step log', file_service, extension='txt', filename='Warnings')
         # Act
         step_logger_service.warning('my message')
 
         # Assert
         queue_path = r'./context_files\upload_queue\92-9876\Warnings.txt'
-        self.assertTrue(self.builder.context_wrapper.os_service.exists(queue_path))
+        self.assertTrue(self.builder.os_service.exists(queue_path))
 
     def test_real_aggregated__with_one_warning__warning_step_log_saved_in_upload_queue(self):
         # Arrange
         self.builder.with_shared_result_file('Step log', with_id=9876)
         self.builder.with_shared_result_file('Step log', with_id=9877)
-        file_service = self.builder.context_wrapper.context.file_service
+        file_service = self.builder.context.file_service
         default_step_log = StepLoggerService('Step log', file_service, extension='txt')
         warning_step_log = StepLoggerService('Step log', file_service, extension='txt', filename='Warnings')
         aggregated_service = AggregatedStepLoggerService(default_step_log)
@@ -66,13 +66,13 @@ class TestStepLog(unittest.TestCase):
 
         # Assert
         queue_path = r'./context_files\upload_queue\92-9877\Warnings.txt'
-        self.assertTrue(self.builder.context_wrapper.os_service.exists(queue_path))
+        self.assertTrue(self.builder.os_service.exists(queue_path))
 
     def test_real_aggregated__with_one_warning__warning_contents_ok(self):
         # Arrange
         self.builder.with_shared_result_file('Step log', with_id=9876)
         self.builder.with_shared_result_file('Step log', with_id=9877)
-        file_service = self.builder.context_wrapper.context.file_service
+        file_service = self.builder.context.file_service
         default_step_log = StepLoggerService('Step log', file_service, extension='txt')
         warning_step_log = StepLoggerService('Step log', file_service, extension='txt', filename='Warnings')
         aggregated_service = AggregatedStepLoggerService(default_step_log)

@@ -49,7 +49,7 @@ class ContextBuilder:
         self.with_shared_result_file(file_handle="Intermediate")
         self.with_shared_result_file(file_handle="Metadata")
         self.with_shared_result_file(file_handle="Metadata")
-        self.context_wrapper.context.disable_commits = True
+        self.context.disable_commits = True
 
     def with_shared_result_file(self, file_handle, with_id=None, existing_file_name=None,
                                 existing_contents=None):
@@ -63,12 +63,12 @@ class ContextBuilder:
 
     def with_cached_file(self, filename, contents):
         cached_path = os.path.join(r'.cache\{}'.format(filename))
-        self.context_wrapper.os_service.create_file(cached_path, contents)
+        self.os_service.create_file(cached_path, contents)
 
     def with_should_cache(self, should_cache):
         """Update file service and local shared file provider"""
-        self.context_wrapper.context.file_service.should_cache = should_cache
-        self.context_wrapper.context.file_service.local_shared_file_provider.should_cache = should_cache
+        self.context.file_service.should_cache = should_cache
+        self.context.file_service.local_shared_file_provider.should_cache = should_cache
 
     def _add_existing_file(self, artifact, existing_file_name, existing_contents):
         self.file_repository.add_file(self.id_counter, existing_file_name, existing_contents)
@@ -82,11 +82,13 @@ class ContextBuilder:
     def _artifact(self, file_service, file_handle):
         return single([f for f in file_service.artifact_service.shared_files() if f.name == file_handle])
 
-    def add_analyte_pair(self, input, output):
+    def with_analyte_pair(self, input, output):
         self.step_repo.add_analyte_pair(input, output)
 
-    def add_shared_result_file(self, f):
-        self.step_repo.add_shared_result_file(f)
+    def with_udf_on_step(self, key, value):
+        if self.context.current_step.udf_map is None:
+            self.context.current_step.udf_map = UdfMapping()
+        self.context.current_step.udf_map.add(key, value)
 
     def with_mocked_logger(self):
         logger = FakeLogger()

@@ -8,13 +8,13 @@ from clarity_ext.service.file_service import SharedFileNotFound
 class TestStepLog(unittest.TestCase):
     def setUp(self):
         self.builder = ContextBuilder()
-        self.os_utility = OsUtility(self.builder.context_wrapper.os_service)
-        self.os_service = self.builder.context_wrapper.os_service
+        self.os_utility = OsUtility(self.builder.os_service)
+        self.os_service = self.builder.os_service
 
     def test_search_existing__with_one_artifact_unassigned__file_saved_in_upload_queue(self):
         # Arrange
         self.builder.with_shared_result_file('Step log', with_id=9876)
-        file_service = self.builder.context_wrapper.context.file_service
+        file_service = self.builder.context.file_service
         # Act
         file_service.local_shared_file('Step log', mode='ab', extension='txt',
                                                        modify_attached=True)
@@ -26,7 +26,7 @@ class TestStepLog(unittest.TestCase):
     def test_search_existing__with_one_artifact_already_assign__file_saved_in_upload_queue(self):
         # Arrange
         self.builder.with_shared_result_file('Step log', with_id=9876, existing_contents='existing')
-        file_service = self.builder.context_wrapper.context.file_service
+        file_service = self.builder.context.file_service
         # Act
         file_service.local_shared_file('Step log', mode='ab', extension='txt',
                                                        modify_attached=True)
@@ -38,7 +38,7 @@ class TestStepLog(unittest.TestCase):
     def test_search_existing__with_one_artifact_already_assigned__file_contents_OK(self):
         # Arrange
         self.builder.with_shared_result_file('Step log', with_id=9876, existing_contents='existing')
-        file_service = self.builder.context_wrapper.context.file_service
+        file_service = self.builder.context.file_service
         # Act
         # Assert
         f = file_service.local_shared_file('Step log', mode='r', extension='txt',
@@ -53,7 +53,7 @@ class TestStepLog(unittest.TestCase):
                                         existing_contents='existing1')
         self.builder.with_shared_result_file('FileHandleX', with_id=9877, existing_file_name='file2',
                                         existing_contents='existing2')
-        file_service = self.builder.context_wrapper.context.file_service
+        file_service = self.builder.context.file_service
 
         # Act
         file_service.local_shared_file('FileHandleX', mode='r', extension='txt',
@@ -70,7 +70,7 @@ class TestStepLog(unittest.TestCase):
                                         existing_contents='existing1')
         self.builder.with_shared_result_file('FileHandleX', with_id=9877, existing_file_name='file2',
                                         existing_contents='existing2')
-        file_service = self.builder.context_wrapper.context.file_service
+        file_service = self.builder.context.file_service
 
         # Act
         # Assert
@@ -82,7 +82,7 @@ class TestStepLog(unittest.TestCase):
         # Arrange
         self.builder.with_shared_result_file('FileHandleX', with_id=9876)
         self.builder.with_shared_result_file('FileHandleX', with_id=9877)
-        file_service = self.builder.context_wrapper.context.file_service
+        file_service = self.builder.context.file_service
 
         # Act
         # Assert
@@ -93,7 +93,7 @@ class TestStepLog(unittest.TestCase):
     def test_search_or_create__with_one_artifact_unassigned__file_saved_in_upload_queue(self):
         # Arrange
         self.builder.with_shared_result_file('Step log', with_id=9876)
-        file_service = self.builder.context_wrapper.context.file_service
+        file_service = self.builder.context.file_service
         # Act
         file_service.local_shared_file_search_or_create('Step log', mode='ab', filename='Warnings',
                                       extension='txt', modify_attached=True)
@@ -106,7 +106,7 @@ class TestStepLog(unittest.TestCase):
         # Arrange
         self.builder.with_shared_result_file('Step log', with_id=9876, existing_file_name='Warnings',
                                         existing_contents='x')
-        file_service = self.builder.context_wrapper.context.file_service
+        file_service = self.builder.context.file_service
         # Act
         file_service.local_shared_file_search_or_create('Step log', mode='ab', filename='Warnings',
                                       extension='txt', modify_attached=True)
@@ -119,7 +119,7 @@ class TestStepLog(unittest.TestCase):
         # Arrange
         self.builder.with_shared_result_file('Step log', with_id=9876, existing_file_name='Warnings',
                                         existing_contents='x')
-        file_service = self.builder.context_wrapper.context.file_service
+        file_service = self.builder.context.file_service
         # Act
         file = file_service.local_shared_file_search_or_create('Step log', mode='ab', filename='Warnings',
                                       extension='txt', modify_attached=True)
@@ -134,7 +134,7 @@ class TestStepLog(unittest.TestCase):
         self.builder.with_shared_result_file('Step log', with_id=9876,
                                         existing_file_name='another_file',
                                         existing_contents='x')
-        file_service = self.builder.context_wrapper.context.file_service
+        file_service = self.builder.context.file_service
         # Act
         # Assert
         with self.assertRaises(SharedFileNotFound):
@@ -144,7 +144,7 @@ class TestStepLog(unittest.TestCase):
     def test_search_or_create__two_calls_with_diff_files_and_only_one_artifact__exception(self):
         # Arrange
         self.builder.with_shared_result_file('Step log', with_id=9876)
-        file_service = self.builder.context_wrapper.context.file_service
+        file_service = self.builder.context.file_service
         # Act
         file_service.local_shared_file_search_or_create('Step log', mode='ab', filename='Warnings',
                                       extension='txt', modify_attached=True)
@@ -157,7 +157,7 @@ class TestStepLog(unittest.TestCase):
         # Arrange
         self.builder.with_shared_result_file('Step log', with_id=9876)
         self.builder.with_shared_result_file('Step log', with_id=9877)
-        file_service = self.builder.context_wrapper.context.file_service
+        file_service = self.builder.context.file_service
         # Act
         file_service.local_shared_file_search_or_create('Step log', mode='ab', filename='Warnings',
                                       extension='txt', modify_attached=True)
@@ -171,7 +171,7 @@ class TestStepLog(unittest.TestCase):
         self.builder.with_shared_result_file('Step log', with_id=9876, existing_file_name='Step_log')
         self.builder.with_shared_result_file('Step log', with_id=9877, existing_file_name='Warnings',
                                         existing_contents='previous text')
-        file_service = self.builder.context_wrapper.context.file_service
+        file_service = self.builder.context.file_service
         # Act
         file_service.local_shared_file_search_or_create('Step log', mode='ab', filename='Warnings',
                                       extension='txt', modify_attached=True)
@@ -185,7 +185,7 @@ class TestStepLog(unittest.TestCase):
         self.builder.with_shared_result_file('Step log', with_id=9876)
         self.builder.with_shared_result_file('Step log', with_id=9877, existing_file_name='Warnings',
                                         existing_contents='previous text')
-        file_service = self.builder.context_wrapper.context.file_service
+        file_service = self.builder.context.file_service
         # Act
         file_service.local_shared_file_search_or_create('Step log', mode='ab', filename='Warnings',
                                       extension='txt', modify_attached=True)
@@ -199,7 +199,7 @@ class TestStepLog(unittest.TestCase):
         self.builder.with_shared_result_file('Step log', with_id=9876)
         self.builder.with_shared_result_file('Step log', with_id=9877, existing_file_name='Warnings',
                                         existing_contents='previous text ')
-        file_service = self.builder.context_wrapper.context.file_service
+        file_service = self.builder.context.file_service
         # Act
         f = file_service.local_shared_file_search_or_create('Step log', mode='ab', filename='Warnings',
                                       extension='txt', modify_attached=True)
@@ -212,7 +212,7 @@ class TestStepLog(unittest.TestCase):
 
     def test_search_existing__with_cache_on_and_cache_path_exists__cache_file_copied_to_current_dir(self):
         # Arrange
-        file_service = self.builder.context_wrapper.context.file_service
+        file_service = self.builder.context.file_service
         self.builder.with_shared_result_file('FileHandleX', with_id=9876)
         self.builder.with_should_cache(True)
         self.builder.with_cached_file('92-9876_FileHandleX.txt', contents='cached contents')
@@ -227,7 +227,7 @@ class TestStepLog(unittest.TestCase):
 
     def test_search_existing__with_cache_on_and_cache_path_non_existing__file_copied_to_cache(self):
         # Arrange
-        file_service = self.builder.context_wrapper.context.file_service
+        file_service = self.builder.context.file_service
         self.builder.with_shared_result_file('FileHandleX', with_id=9876, existing_file_name='FileHandleX',
                                              existing_contents='downloaded contents')
         self.builder.with_should_cache(True)
@@ -245,7 +245,7 @@ class TestStepLog(unittest.TestCase):
         # Arrange
         self.builder.with_shared_result_file('Step log', with_id=9876, existing_file_name='Warnings',
                                         existing_contents='previous text ')
-        file_service = self.builder.context_wrapper.context.file_service
+        file_service = self.builder.context.file_service
         file_service.remove_files('Step log', disabled=True)
         # Act
         f = file_service.local_shared_file_search_or_create('Step log', mode='ab', filename='Warnings',

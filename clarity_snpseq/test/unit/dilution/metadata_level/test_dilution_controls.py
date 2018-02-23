@@ -24,7 +24,7 @@ class TestDilution(TestDilutionBase):
         pair = dil_helper.create_dilution_pair(
             conc1=conc1, vol1=vol1, conc2=conc2, vol2=vol2,
             source_type=Analyte, target_type=Analyte)
-        ext_wrapper.context_wrapper.add_analyte_pair(pair.input_artifact, pair.output_artifact)
+        ext_wrapper.context_builder.with_analyte_pair(pair.input_artifact, pair.output_artifact)
         ext_wrapper.extension.execute()
 
         # Now test that instantiation of dilution_session is ok
