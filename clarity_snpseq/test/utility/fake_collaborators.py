@@ -8,7 +8,9 @@ from pyfakefs.fake_filesystem_shutil import FakeShutilModule
 from pyfakefs.fake_filesystem import FakeFileOpen
 from contextlib import contextmanager
 from clarity_ext.service.file_service import FileService
-from clarity_ext.service.artifact_service import ArtifactService
+from clarity_ext.domain.process import Process
+from clarity_ext.domain.user import User
+from clarity_ext.domain.process import ProcessType
 
 
 class FakeFileService:
@@ -235,3 +237,30 @@ class FakeLogger:
 
     def error(self, text):
         self.log_messages.append(text)
+
+
+class FakeStepRepo:
+    def __init__(self):
+        self._shared_files = list()
+        self._analytes = list()
+        self.user = User("Integration", "Tester", "no-reply@medsci.uu.se", "IT")
+
+    def all_artifacts(self):
+        return self._shared_files + self._analytes
+
+    def add_shared_result_file(self, f):
+        assert f.name is not None, "You need to supply a name"
+        f.id = "92-{}".format(len(self._shared_files))
+        self._shared_files.append((None, f))
+
+    def add_analyte_pair(self, input, output):
+        self._analytes.append((input, output))
+
+    def get_process(self):
+        return Process(None, "24-1234", self.user, None, "http://not-avail")
+
+    def current_user(self):
+        return self.user
+
+    def get_process_type(self):
+        return ProcessType(None, None, name="Some process")

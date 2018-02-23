@@ -24,6 +24,7 @@ class ExtensionBuilder(object):
         self.ext_wrapper, self.dil_helper = \
             dilution_helper_generator.create_helpers(ext_type=extension_type,
                                                      context_builder=context_builder)
+        self.context_builder = dilution_helper_generator.context_builder
         c = Container(container_type=Container.CONTAINER_TYPE_96_WELLS_PLATE)
         self.well_list = c.list_wells()
         self.pairs = list()
@@ -165,7 +166,7 @@ class ExtensionBuilder(object):
         pair = pair_builder.pair
         self.pairs.append(pair)
         self.call_index += 1
-        self.ext_wrapper.context_wrapper.add_analyte_pair(pair.input_artifact, pair.output_artifact)
+        self.context_builder.add_analyte_pair(pair.input_artifact, pair.output_artifact)
 
 
 class ExtensionBuilderDna(ExtensionBuilder):

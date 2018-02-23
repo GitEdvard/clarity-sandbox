@@ -23,7 +23,8 @@ class DilutionHelpers:
          Returns a tuple of valid (TestExtensionWrapper, DilutionTestHelper)
          """
         if context_builder is None:
-            context_builder = self._init_default_context()
+            context_builder = ContextBuilder()
+        self.context_builder = context_builder
         ext_wrapper = TestExtensionWrapper(ext_type, context_builder)
         context_wrapper = ext_wrapper.context_wrapper
 
@@ -36,10 +37,6 @@ class DilutionHelpers:
                                                             target_type=target_type)
         DilutionHelpers._handle_loggers(ext_wrapper, context_wrapper, logging_level)
         return ext_wrapper, dil_helper
-
-    def _init_default_context(self):
-        builder = ContextBuilder()
-        return builder
 
     @staticmethod
     def _handle_loggers(extension_wrapper, context_wrapper, logging_level):
