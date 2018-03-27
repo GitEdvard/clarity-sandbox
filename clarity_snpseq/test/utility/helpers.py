@@ -106,6 +106,7 @@ class StepLogService:
 class SimpleStepLogService:
     def __init__(self):
         self.messages = list()
+        self.file_handle = ''
 
     def log(self, msg):
         self.messages.append(msg)

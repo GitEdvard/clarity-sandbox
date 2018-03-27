@@ -1,7 +1,9 @@
 import unittest
+from unittest import skip
 from clarity_ext.domain.validation import *
 from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
+from clarity_snpseq.test.utility.misc_builders import ContextBuilder
 
 
 class TestDilutionFactor(TestDilutionBase):
@@ -22,6 +24,22 @@ class TestDilutionFactor(TestDilutionBase):
         # Act
         # Assert
         self.assertRaises(UsageError, lambda: self.execute_short(builder))
+
+    @skip
+    def test_capture_output(self):
+        # Arrange
+        b = ContextBuilder()
+        b.with_all_files()
+        builder = ExtensionBuilder.create_with_factor_extension(b)
+        builder.add_artifact_pair(source_conc=10, source_vol=10, dilute_factor=None, target_vol=40)
+
+        try:
+            self.execute_short(builder)
+        except UsageError:
+            self.copy_to_clipboard(b.context.validation_service.messages)
+        # Act
+        # Assert
+        self.assertEqual(1, 2)
 
     def test___with_one_transfer_exceeding_source_volume___warning(self):
         # Arrange

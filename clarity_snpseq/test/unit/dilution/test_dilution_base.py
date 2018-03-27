@@ -1,6 +1,7 @@
 from __future__ import print_function
 import unittest
 import datetime
+import pyperclip
 from clarity_ext.service.file_service import FileService
 from clarity_ext.service.file_service import OSService
 from clarity_ext_scripts.dilution.settings import HamiltonRobotSettings
@@ -70,6 +71,15 @@ class TestDilutionBase(unittest.TestCase):
             file_handle = map_batch_to_file_handle[ftype]
             upload_file_service.upload_files(file_handle, files_with_name)
         self.assertEqual("", "Saving to harddisk makes it fail!")
+
+    def copy_to_clipboard(self, var):
+
+        if isinstance(var, set):
+            var = list(var)
+        if isinstance(var, list):
+            var = '\n\n'.join(var)
+        print('copied to clipboard:\n{}'.format(var))
+        pyperclip.copy('{}'.format(var))
 
     def _file_service(self, extension, save_directory):
         artifact_service = extension.context.artifact_service

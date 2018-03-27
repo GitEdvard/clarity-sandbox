@@ -224,6 +224,7 @@ class FakeLogger:
         self.info_messages = list()
         self.debug_messages = list()
         self.log_messages = list()
+        self.file_handle = ''
 
     def info(self, text):
         self.info_messages.append(text)
