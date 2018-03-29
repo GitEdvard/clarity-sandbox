@@ -2,8 +2,8 @@ import unittest
 from clarity_ext import utils
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
 from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
-from clarity_ext_scripts.dilution.settings import TRANSFER_COMMAND_NEW_TIPS
-from clarity_ext_scripts.dilution.settings import TRANSFER_COMMAND_NONE
+from clarity_ext_scripts.dilution.settings.file_rendering import TRANSFER_COMMAND_NEW_TIPS
+from clarity_ext_scripts.dilution.settings.file_rendering import TRANSFER_COMMAND_NONE
 
 
 class TestEvapTransfer(TestDilutionBase):
@@ -121,7 +121,7 @@ class TestEvapTransfer(TestDilutionBase):
         row = self.hamilton_robot_setting.map_transfer_to_row(default_batch.transfers[0])
         self.assertEqual(1, len(default_batch.transfers))
         self.assertEqual("Negative control", default_batch.transfers[0].source_location.artifact.name)
-        self.assertEqual("Negative control, 1, DNA1, 0.0, 35.0, 2, END1, control container, target1, 0",
+        self.assertEqual("Negative control, 1, DNA1, 0.0, 40.0, 2, END1, control container, target1, 0",
                          ", ".join(map(str, row)))
 
     def test__with_two_evap_one_ordinary__number_entries_in_files_ok(self):

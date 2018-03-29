@@ -4,8 +4,8 @@ import datetime
 import pyperclip
 from clarity_ext.service.file_service import FileService
 from clarity_ext.service.file_service import OSService
-from clarity_ext_scripts.dilution.settings import HamiltonRobotSettings
-from clarity_ext_scripts.dilution.settings import BiomekRobotSettings
+from clarity_ext_scripts.dilution.settings.file_rendering import HamiltonRobotSettings
+from clarity_ext_scripts.dilution.settings.file_rendering import BiomekRobotSettings
 from clarity_snpseq.test.utility.misc_builders import ContextBuilder
 from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
 
@@ -36,10 +36,18 @@ class TestDilutionBase(unittest.TestCase):
         metadata_files = list()
         dilution_session = extension.dilution_session
         print("Saving files to harddisk in folder {}".format(save_directory))
-        for robot in dilution_session.robot_settings:
-            metadata_file_name = "{}_{}_{}_{}.xml".format(robot.name, today, "EE", "1234")
-            metadata_files.append((metadata_file_name, extension.generate_metadata_file(robot, metadata_file_name)))
-            print("file: {}".format(metadata_file_name))
+        try:
+            for robot in dilution_session.robot_settings:
+                metadata_file_name = "{}_{}_{}_{}.xml".format(robot.name, today, "EE", "1234")
+                metadata_files.append((metadata_file_name, extension.generate_metadata_file(robot, metadata_file_name)))
+                print("file: {}".format(metadata_file_name))
+        except:
+            raise Exception('Could not export to hard disk. Preparation to export to harddisk:\n'
+                            '1) call builder.extension.execute() instead of self.execute_short(builder)\n'
+                            '2) File handles must be initialized in ExtensionBuilder, \n'
+                            'context_builder = ContextBuilder()\n'
+                            'context_builder.with_all_files()\n'
+                            'builder = ExtensionBuilder.create_with_dna_extension(context_builder=context_builder)')
 
         # Upload the metadata file:
         file_service.upload_files(metadata_file_handle, metadata_files)

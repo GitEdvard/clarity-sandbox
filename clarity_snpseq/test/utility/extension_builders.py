@@ -6,8 +6,9 @@ from clarity_ext.utils import *
 from clarity_ext_scripts.dilution.dna_dilution_start import Extension as ExtensionDna
 from clarity_ext_scripts.dilution.factor_dilution_start import Extension as ExtensionFactor
 from clarity_ext_scripts.dilution.fixed_dilution_start import Extension as ExtensionFixed
-from clarity_ext_scripts.dilution.settings import MetadataInfo
-from clarity_ext_scripts.dilution.settings import HamiltonRobotSettings
+from clarity_ext_scripts.clustering.driverfile import Extension as ExtensionClustering
+from clarity_ext_scripts.dilution.settings.file_rendering import MetadataInfo
+from clarity_ext_scripts.dilution.settings.file_rendering import HamiltonRobotSettings
 from clarity_snpseq.test.utility.helpers import DilutionHelpers
 from clarity_snpseq.test.utility.helpers import StepLogService
 from clarity_snpseq.test.utility.pair_builders import DnaPairBuilder
@@ -99,6 +100,11 @@ class ExtensionBuilder(object):
         return ExtensionBuilderFactor(ExtensionFactor, source_type=Analyte, target_type=Analyte,
                                       context_builder=context_builder)
 
+    @classmethod
+    def create_with_clustering_extension(cls, context_builder=None):
+        return ExtensionBuilderDna(ExtensionClustering, source_type=Analyte, target_type=Analyte,
+                                          context_builder=context_builder)
+
     @property
     def sorted_transfers(self):
         transfer_batches = single(
@@ -176,7 +182,7 @@ class ExtensionBuilder(object):
 
 
 class ExtensionBuilderDna(ExtensionBuilder):
-    def add_artifact_pair(self, source_conc=22.8, source_vol=38, target_conc=22, target_vol=35,
+    def add_artifact_pair(self, source_conc=100, source_vol=40, target_conc=10, target_vol=40,
                           source_container_name="source1", target_container_name="target1", is_control=False):
         self._add_artifact_pair(
             source_conc=source_conc, source_vol=source_vol, target_conc=target_conc,
@@ -196,6 +202,8 @@ class ExtensionBuilderDna(ExtensionBuilder):
 
 
 class ExtensionBuilderFactor(ExtensionBuilder):
+    # Make intellisense detect the specific parameters for factor dilution,
+    # ie target_conc is replaced with dilute_factor
     def add_artifact_pair(self, source_conc=None, source_vol=None, target_vol=None,
                           dilute_factor=None,source_container_name=None,
                           target_container_name=None, is_control=False):

@@ -1,9 +1,10 @@
 from __future__ import print_function
 import unittest
 from clarity_ext.domain import *
-from clarity_ext_scripts.dilution.settings import HamiltonRobotSettings
+from clarity_ext_scripts.dilution.settings.file_rendering import HamiltonRobotSettings
 from test.unit.clarity_ext.helpers import *
 from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
+from clarity_snpseq.test.utility.misc_builders import ContextBuilder
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
 
 
@@ -27,15 +28,19 @@ class TestEvaporation(TestDilutionBase):
 
     def test__with_one_evaporate_sample__two_transfer_batches(self):
         # Arrange
+        # context_builder = ContextBuilder()
+        # context_builder.with_all_files()
+        # builder = ExtensionBuilder.create_with_dna_extension(context_builder=context_builder)
         builder = ExtensionBuilder.create_with_dna_extension()
         builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=30, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
         self.execute_short(builder)
+        #builder.extension.execute()
 
         # Assert
-        #self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2017\Augusti\Clarity\saves')
+        #self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2018\Januari\clarity\saves')
         #self.save_robot_files_to_harddisk(builder.extension, r'C:\Smajobb\2017\Augusti\Clarity\saves')
         batches = builder.extension.dilution_session.transfer_batches(self.biomek_robot_setting.name)
         self.assertEqual(2, len(batches))

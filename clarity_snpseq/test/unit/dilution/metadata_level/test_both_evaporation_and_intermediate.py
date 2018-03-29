@@ -1,7 +1,4 @@
 from __future__ import print_function
-import unittest
-from clarity_ext.domain import *
-from clarity_ext_scripts.dilution.settings import HamiltonRobotSettings
 from test.unit.clarity_ext.helpers import *
 from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase

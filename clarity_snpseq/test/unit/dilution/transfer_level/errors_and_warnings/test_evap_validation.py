@@ -1,8 +1,4 @@
-from clarity_ext import utils
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
-from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
-from clarity_ext_scripts.dilution.settings import TRANSFER_COMMAND_NEW_TIPS
-from clarity_ext_scripts.dilution.settings import TRANSFER_COMMAND_NONE
 
 
 class TestEvapTransfer(TestDilutionBase):

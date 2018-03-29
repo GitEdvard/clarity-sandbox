@@ -1,9 +1,6 @@
 from __future__ import print_function
 import unittest
-import re
-from itertools import chain
-from clarity_ext.domain import Container
-from clarity_ext_scripts.dilution.settings import HandleSlotPositioning
+from clarity_ext_scripts.dilution.settings.transfer_batch_handlers import HandleSlotPositioning
 
 
 class TestPlateSortOrder(unittest.TestCase):
