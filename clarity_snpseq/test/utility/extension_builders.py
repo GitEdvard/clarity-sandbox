@@ -7,6 +7,7 @@ from clarity_ext_scripts.dilution.dna_dilution_start import Extension as Extensi
 from clarity_ext_scripts.dilution.factor_dilution_start import Extension as ExtensionFactor
 from clarity_ext_scripts.dilution.fixed_dilution_start import Extension as ExtensionFixed
 from clarity_ext_scripts.clustering.driverfile import Extension as ExtensionClustering
+from clarity_ext_scripts.fragment_analyzer.analyze_quality_table import Extension as AnalyzeQualityTable
 from clarity_ext_scripts.dilution.settings.file_rendering import MetadataInfo
 from clarity_ext_scripts.dilution.settings.file_rendering import HamiltonRobotSettings
 from clarity_ext_scripts.dilution.settings.file_rendering import BiomekRobotSettings
@@ -33,9 +34,6 @@ class ExtensionBuilder(object):
         self.extension = extension_type(self.context_builder.context)
 
         self._handle_loggers(logging.CRITICAL)
-        dilution_helper_generator = DilutionHelpers()
-        self.dil_helper = \
-            dilution_helper_generator.create_helper(extension=self.extension)
         c = Container(container_type=Container.CONTAINER_TYPE_96_WELLS_PLATE)
         self.well_list = c.list_wells()
         self.pairs = list()
@@ -105,6 +103,11 @@ class ExtensionBuilder(object):
     def create_with_clustering_extension(cls, context_builder=None):
         return ExtensionBuilderDna(ExtensionClustering, source_type=Analyte, target_type=Analyte,
                                           context_builder=context_builder)
+
+    @classmethod
+    def create_with_analyze_quality_table(cls, context_builder=None):
+        return ExtensionBuilder(AnalyzeQualityTable, source_type=Analyte, target_type=Analyte,
+                                context_builder=context_builder)
 
     @property
     def sorted_transfers(self):
@@ -188,6 +191,13 @@ class ExtensionBuilder(object):
 
 
 class ExtensionBuilderDna(ExtensionBuilder):
+    def __init__(self, extension_type, source_type, target_type, context_builder=None):
+        super(ExtensionBuilderDna, self).__init__(extension_type=extension_type, source_type=source_type,
+                                                  target_type=target_type, context_builder=context_builder)
+        dilution_helper_generator = DilutionHelpers()
+        self.dil_helper = \
+            dilution_helper_generator.create_helper(extension=self.extension)
+
     def add_artifact_pair(self, source_conc=100, source_vol=40, target_conc=10, target_vol=40,
                           source_container_name="source1", target_container_name="target1", is_control=False):
         self._add_artifact_pair(
@@ -208,6 +218,13 @@ class ExtensionBuilderDna(ExtensionBuilder):
 
 
 class ExtensionBuilderFactor(ExtensionBuilder):
+    def __init__(self, extension_type, source_type, target_type, context_builder=None):
+        super(ExtensionBuilderFactor, self).__init__(extension_type=extension_type, source_type=source_type,
+                                                  target_type=target_type, context_builder=context_builder)
+        dilution_helper_generator = DilutionHelpers()
+        self.dil_helper = \
+            dilution_helper_generator.create_helper(extension=self.extension)
+
     # Make intellisense detect the specific parameters for factor dilution,
     # ie target_conc is replaced with dilute_factor
     def add_artifact_pair(self, source_conc=None, source_vol=None, target_vol=None,
