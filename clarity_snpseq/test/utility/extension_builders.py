@@ -9,6 +9,7 @@ from clarity_ext_scripts.dilution.fixed_dilution_start import Extension as Exten
 from clarity_ext_scripts.clustering.driverfile import Extension as ExtensionClustering
 from clarity_ext_scripts.dilution.settings.file_rendering import MetadataInfo
 from clarity_ext_scripts.dilution.settings.file_rendering import HamiltonRobotSettings
+from clarity_ext_scripts.dilution.settings.file_rendering import BiomekRobotSettings
 from clarity_snpseq.test.utility.helpers import DilutionHelpers
 from clarity_snpseq.test.utility.helpers import StepLogService
 from clarity_snpseq.test.utility.pair_builders import DnaPairBuilder
@@ -132,6 +133,11 @@ class ExtensionBuilder(object):
     def _get_from_hamilton_batches(self, batch_name):
         h = HamiltonRobotSettings()
         batches = self.extension.dilution_session.transfer_batches(h.name)
+        return (b for b in batches if b.name == batch_name)
+
+    def get_from_biomek_batches(self, batch_name):
+        b = BiomekRobotSettings()
+        batches = self.extension.dilution_session.transfer_batches(b.name)
         return (b for b in batches if b.name == batch_name)
 
     @property

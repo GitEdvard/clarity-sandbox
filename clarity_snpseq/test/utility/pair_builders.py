@@ -42,9 +42,11 @@ class DilutionPairBuilder:
 
     def make_it_control_pair(self, control_id_prefix, control_id_index):
         self.pair.input_artifact.name = "Negative control"
+        self.pair.input_artifact.view_name = "Negative control"
         self.pair.input_artifact.is_control = True
         self.pair.input_artifact.id = "{}{}".format(control_id_prefix, control_id_index)
         self.pair.output_artifact.name = "Negative control"
+        self.pair.output_artifact.view_name = "Negative control"
         self.pair.output_artifact.is_control = True
 
 

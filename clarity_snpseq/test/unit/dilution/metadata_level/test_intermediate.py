@@ -1,6 +1,7 @@
 from __future__ import print_function
 import unittest
 from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
+from clarity_snpseq.test.utility.misc_builders import ContextBuilder
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
 
 
@@ -129,6 +130,9 @@ class TestIntermediateDilution(TestDilutionBase):
 
     def test__with_mixed_samples_in_one_source_plate__two_source_plates_in_final(self):
         # Arrange
+        # context_builder = ContextBuilder()
+        # context_builder.with_all_files()
+        # builder = ExtensionBuilder.create_with_dna_extension(context_builder=context_builder)
         builder = ExtensionBuilder.create_with_dna_extension()
         # ordinary samples
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=10, target_vol=40,
@@ -141,9 +145,10 @@ class TestIntermediateDilution(TestDilutionBase):
 
         # Act
         self.execute_short(builder)
+        # builder.extension.execute()
 
         # Assert
-        #self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2017\Augusti\Clarity\saves')
+        # self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2018\Januari\clarity\saves')
         batches = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name)
         gen = (b for b in batches if b.name == "default")
         default_batch = next(gen)

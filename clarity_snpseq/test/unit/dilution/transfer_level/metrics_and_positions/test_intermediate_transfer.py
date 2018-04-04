@@ -2,6 +2,7 @@ import unittest
 from clarity_ext import utils
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
 from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
+from clarity_snpseq.test.utility.misc_builders import ContextBuilder
 
 
 class TestIntermediateTransfers(TestDilutionBase):
@@ -41,6 +42,38 @@ class TestIntermediateTransfers(TestDilutionBase):
         self.assertEqual(36, transfer_loop.pipette_buffer_volume)
         self.assertEqual(2, transfer_default.pipette_sample_volume)
         self.assertEqual(8, transfer_default.pipette_buffer_volume)
+
+    def test__with_one_looped__looped_hamilton_driver_file_ok(self):
+        # Arrange
+        # context_builder = ContextBuilder()
+        # context_builder.with_all_files()
+        # builder = ExtensionBuilder.create_with_dna_extension(context_builder)
+        builder = ExtensionBuilder.create_with_dna_extension()
+        builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=10,
+                                  source_container_name="source1", target_container_name="target1")
+
+        # Act
+        self.execute_short(builder)
+        # builder.extension.execute()
+
+        # Assert
+        # self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2018\Januari\clarity\saves')
+        content = builder.loop_batch.driver_file.to_string(include_header=False)
+        self.assertEqual('in-FROM:A:1\t1\tDNA1\t4.0\t36.0\t1\tEND1\tsource1\t1111111111\t0', content)
+
+    def test__with_one_looped__final_hamilton_driver_file_ok(self):
+        # Arrange
+        builder = ExtensionBuilder.create_with_dna_extension()
+        builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=10,
+                                  source_container_name="source1", target_container_name="target1")
+
+        # Act
+        self.execute_short(builder)
+
+        # Assert
+        content = builder.default_batch.driver_file.to_string(include_header=False)
+        self.copy_to_clipboard(content)
+        self.assertEqual('in-FROM:A:1-looped\t1\tDNA1\t2.0\t8.0\t1\tEND1\t1111111111\ttarget1\t0', content)
 
     def test__with_one_looped_one_ordinary__pipette_volumes_ok(self):
         # Arrange

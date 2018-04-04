@@ -258,7 +258,7 @@ class FakeStepRepo:
         self._analytes.append((input, output))
 
     def get_process(self):
-        return Process(None, "24-1234", self.user, None, "http://not-avail")
+        return Process(None, "24-1234", self.user, dict(), "http://not-avail")
 
     def current_user(self):
         return self.user
