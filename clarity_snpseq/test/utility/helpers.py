@@ -2,7 +2,8 @@ from __future__ import print_function
 import functools
 import os
 from clarity_ext.domain import *
-from clarity_snpseq.test.utility.testing import DilutionTestDataHelper
+from clarity_snpseq.test.utility.fake_artifacts import FakeArtifactRepository
+from clarity_snpseq.test.utility.fake_artifacts import DilutionAnalyteCreator
 from clarity_snpseq.test.utility.fake_collaborators import FakeOsService
 from clarity_snpseq.test.utility.fake_collaborators import MonkeyMethodsForFileService
 from clarity_snpseq.test.utility.fake_collaborators import FakeLogger
@@ -13,7 +14,7 @@ from clarity_snpseq.test.utility.misc_builders import ContextBuilder
 class DilutionHelpers:
     def create_helper(self, extension=None, source_type=Analyte, target_type=Analyte):
 
-        dil_helper = DilutionTestDataHelper(extension.get_dilution_settings().concentration_ref)
+        dil_helper = DilutionAnalyteCreator(extension.get_dilution_settings().concentration_ref)
         dil_helper.create_dilution_pair = functools.partial(dil_helper.create_dilution_pair,
                                                             source_type=source_type,
                                                             target_type=target_type)
