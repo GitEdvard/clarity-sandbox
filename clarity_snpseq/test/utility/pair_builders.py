@@ -1,6 +1,7 @@
 from clarity_ext.utility.testing import DilutionTestDataHelper
 from clarity_ext.domain import *
 from clarity_ext.service.dilution.service import DilutionSettings
+from clarity_snpseq.test.utility.fake_artifacts import FakeArtifactRepository
 
 
 class DilutionPairBuilder:
@@ -77,3 +78,51 @@ class DnaPairBuilder(DilutionPairBuilder):
         self.with_source_volume(source_vol)
         self.with_target_concentration(target_conc)
         self.with_target_volume(target_vol)
+
+
+class FragmentPairBuilder:
+    def __init__(self, fake_artifact_repo=None):
+        self.artifact_repo = fake_artifact_repo or FakeArtifactRepository()
+        self.udf_dict = {
+            "GQN": None,
+            "FA Total Conc. (ng/uL)": None,
+            "Dil. calc source vol": None
+        }
+        self.pos_from = None
+        self.pos_to = None
+        self.source_container_name = None
+        self.target_container_name = None
+        self.source_type = Analyte
+        self.target_type = Analyte
+        self.source_artifact_name = None
+        self.target_artifact_name = None
+        self.source_id = None
+        self.target_id = None
+
+    def create(self):
+        pair = self.artifact_repo.create_pair(pos_from=self.pos_from,
+                                  pos_to=self.pos_to,
+                                  source_container_name=self.source_container_name,
+                                  target_container_name=self.target_container_name,
+                                  source_type=self.source_type,
+                                  target_type=self.target_type,
+                                  source_id=self.source_id,
+                                  target_id=self.target_id)
+        pair.output_artifact.udf_map = UdfMapping(self.udf_dict)
+        if self.source_artifact_name is not None:
+            pair.input_artifact.name = self.source_artifact_name
+        if self.target_artifact_name is not None:
+            pair.output_artifact.name = self.target_artifact_name
+        return pair
+
+    def with_target_id(self, target_id):
+        self.target_id = target_id
+
+    def with_target_container_name(self, target_container_name):
+        self.target_container_name = target_container_name
+
+    def with_source_artifact_name(self, source_name):
+        self.source_artifact_name = source_name
+
+    def with_target_artifact_name(self, target_name):
+        self.target_artifact_name = target_name
