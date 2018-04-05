@@ -9,12 +9,15 @@ from clarity_ext.service.dilution.service import DilutionService
 from clarity_ext.service.process_service import ProcessService
 from clarity_ext.context import ExtensionContext
 from clarity_ext.utils import single
+from clarity_ext.domain.udf import UdfMapping
+from clarity_ext.domain.process import Process
+from clarity_ext.domain.container import Container
 from clarity_snpseq.test.utility.fake_collaborators import FakeApiResource
 from clarity_snpseq.test.utility.fake_collaborators import FakeLogger
 from clarity_snpseq.test.utility.fake_collaborators import FakeFileRepository
 from clarity_snpseq.test.utility.fake_collaborators import FakeOsService
 from clarity_snpseq.test.utility.fake_collaborators import FakeStepRepo
-from clarity_ext.domain.udf import UdfMapping
+from clarity_snpseq.test.utility.context_monkey_patching import LocalSharedFilePatcher
 
 
 class ContextBuilder:
@@ -94,15 +97,30 @@ class ContextBuilder:
         logger = FakeLogger()
         self.file_service.logger = logger
 
+    def with_mocked_local_shared_file(self, filename, contents):
+        monkey = LocalSharedFilePatcher()
+        monkey.cache[filename] = contents
+        self.context.local_shared_file = monkey.local_shared_file
+
+    def with_output_container(self, container=None):
+        container = container or Container(container_type=Container.CONTAINER_TYPE_96_WELLS_PLATE,
+                              container_id=self.id_counter, name='output-container', is_source=False)
+        self.id_counter += 1
+
+        def output_container(self):
+            return container
+        setattr(ExtensionContext, 'output_container', property(output_container))
+
 
 class ContextInitializor:
     """
     Initiate repositories of context to either fake instances or real instances.
     Create context with the configured repositories at the time chosen by the client.
     """
-    def __init__(self):
+    def __init__(self, fake_step_repo_builder=None):
         self.session = MagicMock()
         self.clarity_service = MagicMock()
+        self.fake_step_repo_builder = fake_step_repo_builder or FakeStepRepoBuilder()
         self.step_repo = None
         self.os_service = None
         self.step_logger_service = None
@@ -126,7 +144,8 @@ class ContextInitializor:
         with_os_service() and with_get_all_artifacts() must have been called prior of this call!
         :return:
         """
-        self.step_repo = FakeStepRepo()
+        self.fake_step_repo_builder.create()
+        self.step_repo = self.fake_step_repo_builder.fake_step_repo
         self.file_repository = FakeFileRepository(self.os_service)
         self.artifact_service = ArtifactService(self.step_repo)
         self.current_user = self.step_repo.current_user()
@@ -145,3 +164,20 @@ class ContextInitializor:
                                 self.step_logger_service, self.step_repo, self.clarity_service,
                                 self.dilution_service, self.process_service, self.validation_service,
                                 test_mode=False, disable_commits=True)
+
+
+class FakeStepRepoBuilder:
+    def __init__(self):
+        self.fake_step_repo = None
+        self.process_udf_dict = dict()
+
+    def with_process_udf(self, lims_udf_name, udf_value):
+        self.process_udf_dict[lims_udf_name] = udf_value
+
+    def create(self):
+        self.fake_step_repo = FakeStepRepo()
+        udf_map = UdfMapping(self.process_udf_dict)
+        self.fake_step_repo.process = Process(None, "24-1234",
+                                              self.fake_step_repo.user,
+                                              udf_map,
+                                              "http://not-avail")

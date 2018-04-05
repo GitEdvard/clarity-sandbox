@@ -245,6 +245,7 @@ class FakeStepRepo:
         self._shared_files = list()
         self._analytes = list()
         self.user = User("Integration", "Tester", "no-reply@medsci.uu.se", "IT")
+        self.process = None
 
     def all_artifacts(self):
         return self._shared_files + self._analytes
@@ -258,7 +259,7 @@ class FakeStepRepo:
         self._analytes.append((input, output))
 
     def get_process(self):
-        return Process(None, "24-1234", self.user, dict(), "http://not-avail")
+        return self.process or Process(None, "24-1234", self.user, dict(), "http://not-avail")
 
     def current_user(self):
         return self.user
