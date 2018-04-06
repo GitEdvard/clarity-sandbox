@@ -80,14 +80,10 @@ class DnaPairBuilder(DilutionPairBuilder):
         self.with_target_volume(target_vol)
 
 
-class FragmentPairBuilder:
-    def __init__(self, fake_artifact_repo=None):
+class PairBuilderBase(object):
+    def __init__(self, fake_artifact_repo=None, udf_dict=None):
         self.artifact_repo = fake_artifact_repo or FakeArtifactRepository()
-        self.udf_dict = {
-            "GQN": None,
-            "FA Total Conc. (ng/uL)": None,
-            "Dil. calc source vol": None
-        }
+        self.udf_dict = udf_dict or dict()
         self.pos_from = None
         self.pos_to = None
         self.source_container_name = None
@@ -126,3 +122,22 @@ class FragmentPairBuilder:
 
     def with_target_artifact_name(self, target_name):
         self.target_artifact_name = target_name
+
+
+class AnalyzeQpcrPairBuilder(PairBuilderBase):
+    def __init__(self, fake_artifact_repo=None):
+        udf_dict = {
+            "Percentage difference": None,
+            "Initial qpcr conc pm": None
+        }
+        super(AnalyzeQpcrPairBuilder, self).__init__(fake_artifact_repo, udf_dict)
+
+
+class FragmentPairBuilder(PairBuilderBase):
+    def __init__(self, fake_artifact_repo=None):
+        udf_dict = {
+            "GQN": None,
+            "FA Total Conc. (ng/uL)": None,
+            "Dil. calc source vol": None
+        }
+        super(FragmentPairBuilder, self).__init__(fake_artifact_repo, udf_dict)
