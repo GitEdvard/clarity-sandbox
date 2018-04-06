@@ -3,7 +3,7 @@ import unittest
 from clarity_ext.domain import *
 from clarity_ext_scripts.dilution.settings.file_rendering import HamiltonRobotSettings
 from test.unit.clarity_ext.helpers import *
-from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
+from clarity_snpseq.test.utility.factories import ExtensionBuilderFactory
 from clarity_snpseq.test.utility.misc_builders import ContextBuilder
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
 
@@ -12,7 +12,7 @@ class TestEvaporation(TestDilutionBase):
     @unittest.skip("")
     def test__with_one_evaporate_one_ordinary__investigate_variables(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         builder.add_artifact_pair(source_conc=22.8, source_vol=38, target_conc=22, target_vol=35,
                                   source_container_name="source1", target_container_name="target1")
         builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=30, target_vol=10,
@@ -30,8 +30,8 @@ class TestEvaporation(TestDilutionBase):
         # Arrange
         # context_builder = ContextBuilder()
         # context_builder.with_all_files()
-        # builder = ExtensionBuilder.create_with_dna_extension(context_builder=context_builder)
-        builder = ExtensionBuilder.create_with_dna_extension()
+        # builder = ExtensionBuilderFactory.create_with_dna_extension(context_builder=context_builder)
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=30, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
 
@@ -49,7 +49,7 @@ class TestEvaporation(TestDilutionBase):
 
     def test__with_one_evaporate_sample__one_source_container_slot_in_evaporate_step2(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=30, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
 
@@ -64,7 +64,7 @@ class TestEvaporation(TestDilutionBase):
 
     def test__with_one_evaporate_sample__source_slot_in_evaporate_step2_ok(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=30, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
 
@@ -84,7 +84,7 @@ class TestEvaporation(TestDilutionBase):
 
     def test__with_one_evaporate_sample__two_driver_files(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=30, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
 
@@ -100,7 +100,7 @@ class TestEvaporation(TestDilutionBase):
 
     def test__with_two_evaporate_samples__one_source_container_slot_in_evaporate_step_2(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=30, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
         builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=30, target_vol=10,
@@ -117,7 +117,7 @@ class TestEvaporation(TestDilutionBase):
 
     def test__with_one_evaporate_one_ordinary__three_driver_files(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         builder.add_artifact_pair(source_conc=22.8, source_vol=38, target_conc=22, target_vol=35,
                                   source_container_name="source1", target_container_name="target1")
         builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=30, target_vol=10,
@@ -138,7 +138,7 @@ class TestEvaporation(TestDilutionBase):
 
     def test__with_one_evaporate_one_ordinary__one_sample_in_evap_slot(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         # Ordinary sample
         builder.add_artifact_pair(source_conc=22.8, source_vol=38, target_conc=22, target_vol=35,
                                   source_container_name="source1", target_container_name="target1")
@@ -157,7 +157,7 @@ class TestEvaporation(TestDilutionBase):
 
     def test__with_one_evaporate_one_ordinary__correct_sample_names_in_evap_dest_plate(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         # Ordinary sample
         builder.add_artifact_pair(source_conc=22.8, source_vol=38, target_conc=22, target_vol=35,
                                   source_container_name="source1", target_container_name="target1")
@@ -176,7 +176,7 @@ class TestEvaporation(TestDilutionBase):
 
     def test__with_one_evaporate_one_ordinary__two_samples_in_final_slot(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         # Ordinary sample
         builder.add_artifact_pair(source_conc=22.8, source_vol=38, target_conc=22, target_vol=35,
                                   source_container_name="source1", target_container_name="target1")
@@ -206,7 +206,7 @@ class TestEvaporation(TestDilutionBase):
     @unittest.skip("Not implemented yet")
     def test__with_one_evaporate_one_ordinary__check_driver_file_names(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         # ordinary sample
         builder.add_artifact_pair(source_conc=22.8, source_vol=38, target_conc=22, target_vol=35,
                                   source_container_name="source1", target_container_name="target1")
@@ -230,7 +230,7 @@ class TestEvaporation(TestDilutionBase):
 
     def test__with_one_evaporate_one_ordinary__three_batches(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         builder.add_artifact_pair(source_conc=22.8, source_vol=38, target_conc=22, target_vol=35,
                                   source_container_name="source1", target_container_name="target1")
         builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=30, target_vol=10,
@@ -252,7 +252,7 @@ class TestEvaporation(TestDilutionBase):
 
     def test__with_one_evaporate_one_ordinary__one_source_container_slot_in_final(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         # ordinary
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=10, target_vol=40,
                                   source_container_name="source1", target_container_name="target1")
@@ -272,7 +272,7 @@ class TestEvaporation(TestDilutionBase):
 
     def test__with_one_evaporate_one_control__source_slot_in_final_ok(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
 
         # control
         builder.with_control_id_prefix("101C-")
@@ -295,7 +295,7 @@ class TestEvaporation(TestDilutionBase):
 
     def test__with_three_source_plates_second_is_evaporation__final_slot_positioning_ok(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         # Name and id on containers are the same in test. Set ids for containers
         # so that they are sorted in a specific way
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=10, target_vol=40,

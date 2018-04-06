@@ -1,5 +1,5 @@
 import unittest
-from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
+from clarity_snpseq.test.utility.factories import ExtensionBuilderFactory
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
 from clarity_snpseq.test.utility.misc_builders import ContextBuilder
 
@@ -7,7 +7,7 @@ from clarity_snpseq.test.utility.misc_builders import ContextBuilder
 class TestDilutionFactor(TestDilutionBase):
     def test___with_no_split_rows_not_looped___pipette_volumes_ok(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_factor_extension()
+        builder = ExtensionBuilderFactory.create_with_factor_extension()
         builder.add_artifact_pair(source_vol=40, dilute_factor=2, target_vol=10)
         builder.add_artifact_pair(source_vol=40, dilute_factor=3, target_vol=10)
         builder.add_artifact_pair(source_conc=60, source_vol=40, dilute_factor=4, target_vol=10)
@@ -56,7 +56,7 @@ class TestDilutionFactor(TestDilutionBase):
 
     def test___with_split_row___pipette_volume_ok(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_factor_extension()
+        builder = ExtensionBuilderFactory.create_with_factor_extension()
         builder.add_artifact_pair(source_conc=80, source_vol=80, dilute_factor=10, target_vol=80)
 
         # Act

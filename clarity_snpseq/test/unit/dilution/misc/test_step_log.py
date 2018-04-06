@@ -2,7 +2,7 @@ import datetime
 from unittest import skip
 from clarity_ext.domain.validation import UsageError
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
-from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
+from clarity_snpseq.test.utility.factories import ExtensionBuilderFactory
 from clarity_snpseq.test.utility.misc_builders import ContextInitializor
 from clarity_snpseq.test.utility.misc_builders import ContextBuilder
 
@@ -14,7 +14,7 @@ class TestStepLog(TestDilutionBase):
         builder = ContextBuilder(initializor)
         builder.with_shared_result_file(file_handle="Step log", with_id=9877, existing_file_name='Warnings.txt')
         builder.with_shared_result_file(file_handle="Step log", with_id=9878, existing_file_name='Errors.txt')
-        self.ext_builder = ExtensionBuilder.create_with_dna_extension(context_builder=builder)
+        self.ext_builder = ExtensionBuilderFactory.create_with_dna_extension(context_builder=builder)
         self.ext_builder.with_evaluate_and_log_only()
 
 

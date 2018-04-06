@@ -6,7 +6,7 @@ from clarity_ext_scripts.dilution.dna_dilution_start import Extension as Extensi
 from clarity_ext_scripts.dilution.settings.file_rendering import HamiltonRobotSettings
 from clarity_ext.service.file_service import OSService
 from test.unit.clarity_ext.helpers import *
-from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
+from clarity_snpseq.test.utility.factories import ExtensionBuilderFactory
 from clarity_snpseq.test.utility.helpers import DilutionHelpers
 
 
@@ -35,7 +35,7 @@ class TestDilution(TestDilutionBase):
     @unittest.skip("Writes to harddisk")
     def test__with_two_controls_and_one_normal_sample__save_file_on_harddisk(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         builder.with_control_id_prefix("101C-")
         builder.add_artifact_pair(source_container_name="source1")
         builder.add_artifact_pair(source_container_name="control container", is_control=True)

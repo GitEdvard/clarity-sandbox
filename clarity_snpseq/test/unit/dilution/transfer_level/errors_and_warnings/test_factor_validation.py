@@ -1,7 +1,7 @@
 import unittest
 from unittest import skip
 from clarity_ext.domain.validation import *
-from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
+from clarity_snpseq.test.utility.factories import ExtensionBuilderFactory
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
 from clarity_snpseq.test.utility.misc_builders import ContextBuilder
 
@@ -30,7 +30,7 @@ class TestDilutionFactor(TestDilutionBase):
         # Arrange
         b = ContextBuilder()
         b.with_all_files()
-        builder = ExtensionBuilder.create_with_factor_extension(b)
+        builder = ExtensionBuilderFactory.create_with_factor_extension(b)
         builder.add_artifact_pair(source_conc=10, source_vol=10, dilute_factor=None, target_vol=40)
 
         try:

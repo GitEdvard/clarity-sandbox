@@ -1,6 +1,6 @@
 from __future__ import print_function
 import unittest
-from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
+from clarity_snpseq.test.utility.factories import ExtensionBuilderFactory
 from clarity_snpseq.test.utility.misc_builders import ContextBuilder
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
 
@@ -8,7 +8,7 @@ from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBas
 class TestIntermediateDilution(TestDilutionBase):
     def test__with_one_multistep_sample__two_batches(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
 
@@ -23,7 +23,7 @@ class TestIntermediateDilution(TestDilutionBase):
 
     def test__with_one_multistep_sample__original_source_plate_source_in_looped(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
 
@@ -40,7 +40,7 @@ class TestIntermediateDilution(TestDilutionBase):
 
     def test__with_one_multistep_sample__temp_plate_as_target_in_looped(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
 
@@ -57,7 +57,7 @@ class TestIntermediateDilution(TestDilutionBase):
 
     def test__with_one_multistep_sample__two_driver_files(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
 
@@ -72,7 +72,7 @@ class TestIntermediateDilution(TestDilutionBase):
 
     def test__with_one_multistep_sample__temp_plate_as_source_in_final(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
 
@@ -89,7 +89,7 @@ class TestIntermediateDilution(TestDilutionBase):
 
     def test__with_one_multistep_sample__original_target_is_target_in_final(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
 
@@ -106,7 +106,7 @@ class TestIntermediateDilution(TestDilutionBase):
 
     def test__with_one_multistep_one_ordinary__two_source_plates_in_final(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         # ordinary
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=10, target_vol=40,
                                   source_container_name="source1", target_container_name="target1")
@@ -132,8 +132,8 @@ class TestIntermediateDilution(TestDilutionBase):
         # Arrange
         # context_builder = ContextBuilder()
         # context_builder.with_all_files()
-        # builder = ExtensionBuilder.create_with_dna_extension(context_builder=context_builder)
-        builder = ExtensionBuilder.create_with_dna_extension()
+        # builder = ExtensionBuilderFactory.create_with_dna_extension(context_builder=context_builder)
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         # ordinary samples
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=10, target_vol=40,
                                   source_container_name="source1", target_container_name="target1")
@@ -160,7 +160,7 @@ class TestIntermediateDilution(TestDilutionBase):
 
     def test__with_two_multistep_in_separate_plates__one_target_plate_in_looped(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=40,
                                   source_container_name="source1", target_container_name="target1")
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=40,
@@ -178,7 +178,7 @@ class TestIntermediateDilution(TestDilutionBase):
 
     def test__with_three_source_plates_number_2_is_looped__slot_positioning_in_final_ok(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=10, target_vol=40,
                                   source_container_name="source1", target_container_name="target1")
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=40,
@@ -204,7 +204,7 @@ class TestIntermediateDilution(TestDilutionBase):
 
     def test__with_three_source_plates_number_1_and_3_is_looped__source_slots_in_looped_ok(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=40,
                                   source_container_name="source1", target_container_name="target1")
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=10, target_vol=40,
@@ -228,7 +228,7 @@ class TestIntermediateDilution(TestDilutionBase):
 
     def test__with_three_source_plates_number_1_and_3_is_looped__source_slots_in_final_ok(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=40,
                                   source_container_name="source1", target_container_name="target1")
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=10, target_vol=40,

@@ -2,7 +2,7 @@ from __future__ import print_function
 import unittest
 import re
 from test.unit.clarity_ext.helpers import *
-from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
+from clarity_snpseq.test.utility.factories import ExtensionBuilderFactory
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
 from clarity_ext.domain.validation import UsageError
 
@@ -10,7 +10,7 @@ from clarity_ext.domain.validation import UsageError
 class TestSingleBatch(TestDilutionBase):
     def test__with_two_source_plates__end_plate_only_appears_once(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         builder.add_artifact_pair(source_conc=22.8, source_vol=38, target_conc=22, target_vol=35,
                                   source_container_name="source1", target_container_name="target1")
         builder.add_artifact_pair(source_conc=22.8, source_vol=38, target_conc=22, target_vol=35,
@@ -29,7 +29,7 @@ class TestSingleBatch(TestDilutionBase):
 
     def test__with_one_single_sample__driver_file_name_ok(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         # ordinary sample
         builder.add_artifact_pair(source_conc=22.8, source_vol=38, target_conc=22, target_vol=35,
                                   source_container_name="source1", target_container_name="target1")
@@ -59,7 +59,7 @@ class TestSingleBatch(TestDilutionBase):
 
     def test__with_three_source_plates__slot_sort_order_correct(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         # ordinary samples
         builder.add_artifact_pair(source_container_name="8source1", target_container_name="target1")
         builder.add_artifact_pair(source_container_name="9source1", target_container_name="target1")

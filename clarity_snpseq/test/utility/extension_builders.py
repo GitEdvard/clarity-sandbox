@@ -8,6 +8,7 @@ from clarity_ext_scripts.dilution.factor_dilution_start import Extension as Exte
 from clarity_ext_scripts.dilution.fixed_dilution_start import Extension as ExtensionFixed
 from clarity_ext_scripts.clustering.driverfile import Extension as ExtensionClustering
 from clarity_ext_scripts.fragment_analyzer.analyze_quality_table import Extension as AnalyzeQualityTable
+from clarity_ext_scripts.qpcr.analyze_qpcr_resultfile import Extension as AnalyzeQpcrResultfile
 from clarity_ext_scripts.dilution.settings.file_rendering import MetadataInfo
 from clarity_ext_scripts.dilution.settings.file_rendering import HamiltonRobotSettings
 from clarity_ext_scripts.dilution.settings.file_rendering import BiomekRobotSettings
@@ -88,26 +89,6 @@ class ExtensionBuilder(object):
         return MetadataInfo(self.extension.dilution_session,
                             filename, self.extension.context.current_user,
                             self.extension.context, shared_robot_settings)
-
-    @classmethod
-    def create_with_dna_extension(cls, context_builder=None):
-        return ExtensionBuilderDna(ExtensionDna, source_type=Analyte, target_type=Analyte,
-                                   context_builder=context_builder)
-
-    @classmethod
-    def create_with_factor_extension(cls, context_builder=None):
-        return ExtensionBuilderFactor(ExtensionFactor, source_type=Analyte, target_type=Analyte,
-                                      context_builder=context_builder)
-
-    @classmethod
-    def create_with_clustering_extension(cls, context_builder=None):
-        return ExtensionBuilderDna(ExtensionClustering, source_type=Analyte, target_type=Analyte,
-                                          context_builder=context_builder)
-
-    @classmethod
-    def create_with_analyze_quality_table(cls, context_builder=None):
-        return ExtensionBuilder(AnalyzeQualityTable, source_type=Analyte, target_type=Analyte,
-                                context_builder=context_builder)
 
     @property
     def sorted_transfers(self):

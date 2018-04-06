@@ -1,5 +1,5 @@
 from unittest import skip
-from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
+from clarity_snpseq.test.utility.factories import ExtensionBuilderFactory
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
 from clarity_snpseq.test.utility.misc_builders import ContextBuilder
 
@@ -10,7 +10,7 @@ class TestDilutionClustering(TestDilutionBase):
         # context_builder = ContextBuilder()
         # context_builder.with_all_files()
         # builder = ExtensionBuilder.create_with_clustering_extension(context_builder=context_builder)
-        builder = ExtensionBuilder.create_with_clustering_extension()
+        builder = ExtensionBuilderFactory.create_with_clustering_extension()
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=10, target_vol=40,
                                   source_container_name="source1", target_container_name="target1")
         # Act
@@ -25,7 +25,7 @@ class TestDilutionClustering(TestDilutionBase):
 
     def test_clustering__with_one_input_pair__view_names_are_augmented_with_flowcell_name(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_clustering_extension()
+        builder = ExtensionBuilderFactory.create_with_clustering_extension()
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=10, target_vol=40,
                                   source_container_name="source1", target_container_name="target1")
         # Act
@@ -39,7 +39,7 @@ class TestDilutionClustering(TestDilutionBase):
     def test_clustering__with_one_input_pair__hamilton_robot_driver_file_ok(self):
         # Arrange
 
-        builder = ExtensionBuilder.create_with_clustering_extension()
+        builder = ExtensionBuilderFactory.create_with_clustering_extension()
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=10, target_vol=40,
                                   source_container_name="source1", target_container_name="target1")
         # Act
@@ -51,7 +51,7 @@ class TestDilutionClustering(TestDilutionBase):
 
     def test_clustering__with_one_input_pair__biomek_robot_driver_file_ok(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_clustering_extension()
+        builder = ExtensionBuilderFactory.create_with_clustering_extension()
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=10, target_vol=40,
                                   source_container_name="source1", target_container_name="target1")
         # Act

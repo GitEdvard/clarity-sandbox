@@ -1,6 +1,6 @@
 import unittest
 from unittest import skip
-from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
+from clarity_snpseq.test.utility.factories import ExtensionBuilderFactory
 from clarity_snpseq.test.utility.misc_builders import ContextInitializor
 from clarity_snpseq.test.utility.misc_builders import ContextBuilder
 from clarity_snpseq.test.utility.misc_builders import FakeStepRepoBuilder
@@ -94,5 +94,5 @@ class TestFragmentAnalyzer(unittest.TestCase):
                                                       contents)
         context_builder.with_output_container(container=container)
         context_builder.with_analyte_pair(pair.input_artifact, pair.output_artifact)
-        builder = ExtensionBuilder.create_with_analyze_quality_table(context_builder)
+        builder = ExtensionBuilderFactory.create_with_analyze_quality_table(context_builder)
         return builder

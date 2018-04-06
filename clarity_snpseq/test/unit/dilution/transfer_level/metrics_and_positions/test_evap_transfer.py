@@ -1,7 +1,7 @@
 import unittest
 from clarity_ext import utils
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
-from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
+from clarity_snpseq.test.utility.factories import ExtensionBuilderFactory
 from clarity_ext_scripts.dilution.settings.file_rendering import TRANSFER_COMMAND_NEW_TIPS
 from clarity_ext_scripts.dilution.settings.file_rendering import TRANSFER_COMMAND_NONE
 
@@ -9,7 +9,7 @@ from clarity_ext_scripts.dilution.settings.file_rendering import TRANSFER_COMMAN
 class TestEvapTransfer(TestDilutionBase):
     def test__with_one_evap_sample__number_entries_in_files_ok(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=30, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
 
@@ -26,7 +26,7 @@ class TestEvapTransfer(TestDilutionBase):
 
     def test__with_one_evap_sample__pipette_volumes_ok(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=30, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
 
@@ -46,7 +46,7 @@ class TestEvapTransfer(TestDilutionBase):
 
     def test__with_one_evap_sample__custom_command_in_evaporate1_ok(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=30, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
 
@@ -61,7 +61,7 @@ class TestEvapTransfer(TestDilutionBase):
 
     def test__with_one_evap_sample__custom_command_in_evaporate2_ok(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=30, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
 
@@ -76,7 +76,7 @@ class TestEvapTransfer(TestDilutionBase):
 
     def test__with_one_evap_one_ordinary__pipette_volumes_ok(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         # evaporation sample
         builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=30, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
@@ -104,7 +104,7 @@ class TestEvapTransfer(TestDilutionBase):
 
     def test__with_one_evap_one_control__hamilton_control_row_ok(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         # evaporation sample
         builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=30, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
@@ -126,7 +126,7 @@ class TestEvapTransfer(TestDilutionBase):
 
     def test__with_two_evap_one_ordinary__number_entries_in_files_ok(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         # evap sample
         builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=30, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
@@ -151,7 +151,7 @@ class TestEvapTransfer(TestDilutionBase):
 
     def test__with_one_evap_one_ordinary__custom_command_in_default_ok(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         # evap sample
         builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=30, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
@@ -170,7 +170,7 @@ class TestEvapTransfer(TestDilutionBase):
 
     def test__with_one_evap_one_ordinary__custom_command_in_evaporation2_ok(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         # evap sample
         builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=30, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")

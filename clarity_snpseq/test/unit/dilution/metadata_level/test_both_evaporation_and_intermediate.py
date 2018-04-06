@@ -1,13 +1,13 @@
 from __future__ import print_function
 from test.unit.clarity_ext.helpers import *
-from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
+from clarity_snpseq.test.utility.factories import ExtensionBuilderFactory
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
 
 
 class TestBothEvaporationAndIntermediate(TestDilutionBase):
     def test__with_one_evaporation_one_multistep_one_ordinary__four_batches(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         # ordinary
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=10, target_vol=40,
                                   source_container_name="source1", target_container_name="target1")
@@ -30,7 +30,7 @@ class TestBothEvaporationAndIntermediate(TestDilutionBase):
 
     def test__with_one_evap_one_multistep_one_ordinary__four_driver_files(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         # ordinary
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=10, target_vol=40,
                                   source_container_name="source1", target_container_name="target1")
@@ -60,7 +60,7 @@ class TestBothEvaporationAndIntermediate(TestDilutionBase):
 
     def test__with_one_evaporation_one_multistep_one_ordinary__two_source_plates_in_final(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         # ordinary
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=10, target_vol=40,
                                   source_container_name="source1", target_container_name="target1")
@@ -92,7 +92,7 @@ class TestBothEvaporationAndIntermediate(TestDilutionBase):
 
     def test__with_one_evap_one_multistep_one_ordinary__evap_step2_batch_source_slot_ok(self):
         # Arrange
-        builder = ExtensionBuilder.create_with_dna_extension()
+        builder = ExtensionBuilderFactory.create_with_dna_extension()
         # ordinary
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=10, target_vol=40,
                                   source_container_name="source1", target_container_name="target1")
