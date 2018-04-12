@@ -173,6 +173,9 @@ class FakeStepRepoBuilder:
 
     def with_process_udf(self, lims_udf_name, udf_value):
         self.process_udf_dict[lims_udf_name] = udf_value
+        if self.fake_step_repo is not None and self.fake_step_repo.process is not None:
+            udf_map = UdfMapping(self.process_udf_dict)
+            self.fake_step_repo.process.udf_map = udf_map
 
     def create(self):
         self.fake_step_repo = FakeStepRepo()

@@ -26,11 +26,10 @@ class ExtensionBuilderFactory:
                                           context_builder=context_builder)
 
     @classmethod
-    def create_with_analyze_quality_table(cls, context_builder=None):
-        return ExtensionBuilder(AnalyzeQualityTable, source_type=Analyte, target_type=Analyte,
-                                context_builder=context_builder)
-
-    @classmethod
-    def create_with_anlyze_qpcr_resultfile(cls, context_builder=None):
-        return ExtensionBuilder(AnalyzeQpcrResultfile, source_type=Analyte, target_type=Analyte,
+    def create_with_read_result_file_type(cls, extension_type, context_builder=None):
+        """
+        User has to provide extension type
+        """
+        return ExtensionBuilder(extension_type,
+                                source_type=Analyte, target_type=Analyte,
                                 context_builder=context_builder)

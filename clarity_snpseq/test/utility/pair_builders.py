@@ -123,21 +123,5 @@ class PairBuilderBase(object):
     def with_target_artifact_name(self, target_name):
         self.target_artifact_name = target_name
 
-
-class AnalyzeQpcrPairBuilder(PairBuilderBase):
-    def __init__(self, fake_artifact_repo=None):
-        udf_dict = {
-            "Percentage difference": None,
-            "Initial qpcr conc pm": None
-        }
-        super(AnalyzeQpcrPairBuilder, self).__init__(fake_artifact_repo, udf_dict)
-
-
-class FragmentPairBuilder(PairBuilderBase):
-    def __init__(self, fake_artifact_repo=None):
-        udf_dict = {
-            "GQN": None,
-            "FA Total Conc. (ng/uL)": None,
-            "Dil. calc source vol": None
-        }
-        super(FragmentPairBuilder, self).__init__(fake_artifact_repo, udf_dict)
+    def with_udf(self, lims_udf_name, value):
+        self.udf_dict[lims_udf_name] = value

@@ -3,12 +3,7 @@ from abc import abstractmethod
 from mock import MagicMock
 from clarity_ext.domain import *
 from clarity_ext.utils import *
-from clarity_ext_scripts.dilution.dna_dilution_start import Extension as ExtensionDna
-from clarity_ext_scripts.dilution.factor_dilution_start import Extension as ExtensionFactor
 from clarity_ext_scripts.dilution.fixed_dilution_start import Extension as ExtensionFixed
-from clarity_ext_scripts.clustering.driverfile import Extension as ExtensionClustering
-from clarity_ext_scripts.fragment_analyzer.analyze_quality_table import Extension as AnalyzeQualityTable
-from clarity_ext_scripts.qpcr.analyze_qpcr_resultfile import Extension as AnalyzeQpcrResultfile
 from clarity_ext_scripts.dilution.settings.file_rendering import MetadataInfo
 from clarity_ext_scripts.dilution.settings.file_rendering import HamiltonRobotSettings
 from clarity_ext_scripts.dilution.settings.file_rendering import BiomekRobotSettings
@@ -18,6 +13,7 @@ from clarity_snpseq.test.utility.pair_builders import DnaPairBuilder
 from clarity_snpseq.test.utility.pair_builders import FactorPairBuilder
 from clarity_snpseq.test.utility.helpers import FileServiceInitializer
 from clarity_snpseq.test.utility.misc_builders import ContextBuilder
+from clarity_snpseq.test.utility.context_monkey_patching import UseQcFlagPatcher
 
 
 class ExtensionBuilder(object):
@@ -72,6 +68,10 @@ class ExtensionBuilder(object):
     def monkey_patch_upload_single(self):
         self.extension.context.file_service._upload_single = \
             self.mocked_file_service.mock_upload_single
+
+    def with_mocked_use_qc_flag_from_current_state(self):
+        patcher = UseQcFlagPatcher()
+        self.extension.use_qc_flag_from_current_state = patcher.use_qc_flag_from_current_state
 
     @property
     def step_log_contents(self):

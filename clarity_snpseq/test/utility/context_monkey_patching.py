@@ -16,3 +16,8 @@ class LocalSharedFilePatcher:
             return Csv(stream)
         else:
             raise NotImplementedError
+
+
+class UseQcFlagPatcher:
+    def use_qc_flag_from_current_state(self, artifact):
+        pass
