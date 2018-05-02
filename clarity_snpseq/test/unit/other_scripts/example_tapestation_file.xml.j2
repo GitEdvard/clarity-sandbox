@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<File>
+  <FileInformation>
+    <FileName>P:\Projekt\SEQ\Pågående\LAB\FragmentAnalyzer_TapeStation_BA\Rådata\SX708_160502_MH_KBS_KT.gDNA</FileName>
+    <Assay>Genomic DNA</Assay>
+    <Comment>
+    </Comment>
+    <Study>
+    </Study>
+    <RunEndDate>02-May-2016 2:27 PM</RunEndDate>
+    <DINVersion>2.1.27.8350</DINVersion>
+  </FileInformation>
+  <ScreenTapes>
+    <Notes>QC av inkommande gDNA, lilla valideringen LIMS.</Notes>
+    <ScreenTape>
+      <ScreenTapeID>01-S025-151204-09-000083</ScreenTapeID>
+      <ExpiryDate>13-May-2016 1:55 PM</ExpiryDate>
+      <ScreenTapeHistory>First run 29-Apr-2016, 2 runs performed</ScreenTapeHistory>
+      <ElectrophoresisTemp>23.5</ElectrophoresisTemp>
+      <ElectrophoresisTime>225</ElectrophoresisTime>
+      <TapeRunDate>02-May-2016 2:16 PM</TapeRunDate>
+      <Environment>
+        <Experimenter>SX708_160502_MH_KBS_KT</Experimenter>
+        <InstrumentType>2503</InstrumentType>
+        <InstrumentSerialNumber>03-PM550</InstrumentSerialNumber>
+        <Computer>MM-TAPESTATION</Computer>
+        <ControllerVersion>A.02.01</ControllerVersion>
+        <OperatingSystem>Microsoft Windows 7 Professional </OperatingSystem>
+        <AnalysisVersion>2.1.27.8350</AnalysisVersion>
+      </Environment>
+    </ScreenTape>
+  </ScreenTapes>
+  <Assay>
+    <Units>
+      <ConcentrationUnit>ng/µl</ConcentrationUnit>
+      <MolarityUnit>nmol/l</MolarityUnit>
+      <MolecularWeightUnit>bp</MolecularWeightUnit>
+    </Units>
+  </Assay>
+  <Samples>
+    {%- for well in ext.context.output_container %}
+    {%- if well.artifact %}
+    <Sample>
+      <WellNumber>{{ well.position.row_letter }}{{ well.position.col }}</WellNumber>
+      <Comment>{{well.artifact.id}}_{{well.artifact.name}}</Comment>
+      <Concentration>41.5</Concentration>
+      <Observations>
+      </Observations>
+      <Alert>
+      </Alert>
+      <RNA />
+      <DIN>9.4</DIN>
+      <ScreenTapeID>01-S025-151204-09-000083</ScreenTapeID>
+      <Peaks>
+        {%- for peak in ext.peaks(well) %}
+        <Peak>
+          <Area>{{ "%.2f" % peak.area }}</Area>
+          <AssignedQuantity>8.50</AssignedQuantity>
+          <CalibratedQuantity>8.50</CalibratedQuantity>
+          <Comment>
+          </Comment>
+          <FromMW>62</FromMW>
+          <FromPercent>82.9</FromPercent>
+          <Height>517.376</Height>
+          <Molarity>131</Molarity>
+          <Size>100</Size>
+          <Number>-</Number>
+          <Observations>Lower Marker</Observations>
+          <PercentIntegratedArea>-</PercentIntegratedArea>
+          <PercentOfTotal>-</PercentOfTotal>
+          <RunDistance>85.0</RunDistance>
+          <ToMW>151</ToMW>
+          <ToPercent>87.5</ToPercent>
+        </Peak>
+        {%- endfor %}
+      </Peaks>
+      <Regions />
+    </Sample>
+    {%- endif %}
+    {%- endfor %}
+  </Samples>
+</File>
