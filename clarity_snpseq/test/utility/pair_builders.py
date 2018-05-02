@@ -80,6 +80,18 @@ class DnaPairBuilder(DilutionPairBuilder):
         self.with_target_volume(target_vol)
 
 
+class FixedPairBuilder(DilutionPairBuilder):
+    def create_dilution_pair(self, source_vol, target_vol, pos_from=None, pos_to=None,
+                             source_type=Analyte, target_type=Analyte,
+                             source_container_name=None, target_container_name=None):
+        self.create_pair(pos_from=pos_from, pos_to=pos_to,
+                         source_container_name=source_container_name,
+                         target_container_name=target_container_name,
+                         source_type=source_type, target_type=target_type)
+        self.with_source_volume(source_vol)
+        self.with_target_volume(target_vol)
+
+
 class PairBuilderBase(object):
     def __init__(self, fake_artifact_repo=None, udf_dict=None):
         self.artifact_repo = fake_artifact_repo or FakeArtifactRepository()

@@ -11,6 +11,7 @@ from clarity_snpseq.test.utility.helpers import DilutionHelpers
 from clarity_snpseq.test.utility.helpers import StepLogService
 from clarity_snpseq.test.utility.pair_builders import DnaPairBuilder
 from clarity_snpseq.test.utility.pair_builders import FactorPairBuilder
+from clarity_snpseq.test.utility.pair_builders import FixedPairBuilder
 from clarity_snpseq.test.utility.helpers import FileServiceInitializer
 from clarity_snpseq.test.utility.misc_builders import ContextBuilder
 from clarity_snpseq.test.utility.context_monkey_patching import UseQcFlagPatcher
@@ -195,6 +196,33 @@ class ExtensionBuilderDna(ExtensionBuilder):
                               pos_from=None, pos_to=None):
         pair_builder.create_dilution_pair(
             source_conc, source_vol, target_conc, target_vol, pos_from=pos_from, pos_to=pos_to,
+            source_container_name=source_container_name, target_container_name=target_container_name)
+
+
+class ExtensionBuilderFixed(ExtensionBuilder):
+    def __init__(self, extension_type, source_type, target_type, context_builder=None):
+        super(ExtensionBuilderFixed, self).__init__(extension_type=extension_type, source_type=source_type,
+                                                    target_type=target_type, context_builder=context_builder)
+        dilution_helper_generator = DilutionHelpers()
+        self.dil_helper = \
+            dilution_helper_generator.create_helper(extension=self.extension)
+
+    def add_artifact_pair(self, source_vol=40, target_vol=40,
+                          source_container_name="source1", target_container_name="target1", is_control=False):
+        self._add_artifact_pair(
+            source_vol=source_vol, target_vol=target_vol,
+            source_container_name=source_container_name,
+            target_container_name=target_container_name, is_control=is_control)
+
+    def _create_pair_builder(self):
+        return FixedPairBuilder(self.dil_helper)
+
+    def _create_dilution_pair(self, pair_builder, source_conc=None, source_vol=None,
+                              target_conc=None, target_vol=None, dilute_factor=None,
+                              source_container_name=None, target_container_name=None,
+                              pos_from=None, pos_to=None):
+        pair_builder.create_dilution_pair(
+            source_vol, target_vol, pos_from=pos_from, pos_to=pos_to,
             source_container_name=source_container_name, target_container_name=target_container_name)
 
 
