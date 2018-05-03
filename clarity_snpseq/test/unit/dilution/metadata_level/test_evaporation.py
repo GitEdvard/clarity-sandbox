@@ -24,7 +24,7 @@ class TestEvaporation(TestDilutionBase):
         # Assert
         metadata_info = builder.metadata_info("Metadata filename", HamiltonRobotSettings())
         print_list(metadata_info.container_mappings, "container mappings")
-        self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2017\Augusti\Clarity\saves')
+        self.save_metadata_to_harddisk(builder, r'C:\Smajobb\2017\Augusti\Clarity\saves')
 
     def test__with_one_evaporate_sample__two_transfer_batches(self):
         # Arrange

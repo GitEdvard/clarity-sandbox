@@ -29,18 +29,21 @@ class TestDilutionBase(unittest.TestCase):
         b.with_all_files()
         return ExtensionBuilderFactory.create_with_dna_extension(b)
 
-    def save_metadata_to_harddisk(self, extension, save_directory):
-        file_service = self._file_service(extension, save_directory)
+    def save_metadata_to_harddisk(self, builder, save_directory):
+        builder.context_builder.with_all_files()
+        builder.extension.execute()
+        file_service = self._file_service(builder.extension, save_directory)
         # Modified code taken from DilutionSession.execute()
         today = datetime.date.today().strftime("%y%m%d")
         metadata_file_handle = "Metadata"
         metadata_files = list()
-        dilution_session = extension.dilution_session
+        dilution_session = builder.extension.dilution_session
         print("Saving files to harddisk in folder {}".format(save_directory))
         try:
             for robot in dilution_session.robot_settings:
                 metadata_file_name = "{}_{}_{}_{}.xml".format(robot.name, today, "EE", "1234")
-                metadata_files.append((metadata_file_name, extension.generate_metadata_file(robot, metadata_file_name)))
+                metadata_files.append((metadata_file_name,
+                                       builder.extension.generate_metadata_file(robot, metadata_file_name)))
                 print("file: {}".format(metadata_file_name))
         except:
             raise Exception('Could not export to hard disk. Preparation to export to harddisk:\n'
@@ -54,9 +57,10 @@ class TestDilutionBase(unittest.TestCase):
         file_service.upload_files(metadata_file_handle, metadata_files)
         self.assertEqual("", "Saving to harddisk makes it fail!")
 
-    def save_robot_files_to_harddisk(self, extension, save_directory):
-        upload_file_service = self._file_service(extension, save_directory)
-        dilution_session = extension.dilution_session
+    def save_robot_files_to_harddisk(self, builder, save_directory):
+        builder.context_builder.with_all_files()
+        upload_file_service = self._file_service(builder.extension, save_directory)
+        dilution_session = builder.extension.dilution_session
         print("Saving files to harddisk in folder {}".format(save_directory))
 
         robot_files_by_type = dict()
