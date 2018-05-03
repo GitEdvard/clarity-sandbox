@@ -3,6 +3,7 @@ from clarity_ext_scripts.dilution.dna_dilution_start import Extension as Extensi
 from clarity_ext_scripts.dilution.factor_dilution_start import Extension as ExtensionFactor
 from clarity_ext_scripts.clustering.driverfile import Extension as ExtensionClustering
 from clarity_ext_scripts.dilution.fixed_dilution_start import Extension as ExtensionFixed
+from clarity_ext_scripts.clustering.driverfile import Extension as ExtensionClusterDriverfile
 from clarity_ext_scripts.fragment_analyzer.analyze_quality_table import Extension as AnalyzeQualityTable
 from clarity_ext_scripts.qpcr.analyze_qpcr_resultfile import Extension as AnalyzeQpcrResultfile
 from clarity_snpseq.test.utility.extension_builders import ExtensionBuilderDna
@@ -25,6 +26,11 @@ class ExtensionBuilderFactory:
     @classmethod
     def create_with_fixed_extension(cls, context_builder=None):
         return ExtensionBuilderFixed(ExtensionFixed, source_type=Analyte, target_type=Analyte,
+                                     context_builder=context_builder)
+
+    @classmethod
+    def create_with_cluster_driverfile_extension(cls, context_builder=None):
+        return ExtensionBuilderFixed(ExtensionClusterDriverfile, source_type=Analyte, target_type=Analyte,
                                      context_builder=context_builder)
 
     @classmethod
