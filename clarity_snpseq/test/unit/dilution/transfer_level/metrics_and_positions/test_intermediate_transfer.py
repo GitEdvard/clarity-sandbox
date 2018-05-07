@@ -93,7 +93,7 @@ class TestIntermediateTransfers(TestDilutionBase):
         loop_batch = utils.single([b for b in batches if b.name == "looped"])
         default_batch = utils.single([b for b in batches if b.name == "default"])
         transfer_loop = utils.single(loop_batch.transfers)
-        sorted_transfers = sorted(default_batch.transfers, key=self.hamilton_robot_setting.transfer_sort_key)
+        sorted_transfers = sorted(default_batch.transfers, key=self.sort_strategy.input_position_sort_key)
         self.assertEqual(4, transfer_loop.pipette_sample_volume)
         self.assertEqual(36, transfer_loop.pipette_buffer_volume)
         self.assertEqual(2, sorted_transfers[0].pipette_sample_volume)

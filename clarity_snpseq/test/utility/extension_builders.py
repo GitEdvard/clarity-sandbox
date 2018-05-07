@@ -3,6 +3,7 @@ from abc import abstractmethod
 from mock import MagicMock
 from clarity_ext.domain import *
 from clarity_ext.utils import *
+from clarity_ext.service.dilution.service import SortStrategy
 from clarity_ext_scripts.dilution.fixed_dilution_start import Extension as ExtensionFixed
 from clarity_ext_scripts.dilution.settings.file_rendering import MetadataInfo
 from clarity_ext_scripts.dilution.settings.file_rendering import HamiltonRobotSettings
@@ -27,8 +28,6 @@ class ExtensionBuilder(object):
             context_builder = ContextBuilder()
         self.context_builder = context_builder
 
-        if extension_type == ExtensionFixed:
-            context_builder.with_udf_on_step("Volume in destination ul", 10)
         self.extension = extension_type(self.context_builder.context)
 
         self._handle_loggers(logging.CRITICAL)
@@ -95,8 +94,8 @@ class ExtensionBuilder(object):
     def sorted_transfers(self):
         transfer_batches = single(
             self.extension.dilution_session.single_robot_transfer_batches_for_update())
-        h = HamiltonRobotSettings()
-        sorted_transfers = sorted(transfer_batches.transfers, key=h.transfer_sort_key)
+        s = SortStrategy()
+        sorted_transfers = sorted(transfer_batches.transfers, key=s.input_position_sort_key)
         return sorted_transfers
 
     @property
@@ -201,6 +200,9 @@ class ExtensionBuilderDna(ExtensionBuilder):
 
 class ExtensionBuilderFixed(ExtensionBuilder):
     def __init__(self, extension_type, source_type, target_type, context_builder=None):
+        if context_builder is None:
+            context_builder = ContextBuilder()
+        context_builder.with_udf_on_step("Volume in destination ul", 10)
         super(ExtensionBuilderFixed, self).__init__(extension_type=extension_type, source_type=source_type,
                                                     target_type=target_type, context_builder=context_builder)
         dilution_helper_generator = DilutionHelpers()

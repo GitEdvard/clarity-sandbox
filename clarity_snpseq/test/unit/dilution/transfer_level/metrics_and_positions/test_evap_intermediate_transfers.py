@@ -58,7 +58,7 @@ class TestEvapIntermediateTransfer(TestDilutionBase):
         transfer_evap_step1 = utils.single(evap1_batch.transfers)
         transfer_evap_step2 = utils.single(evap2_batch.transfers)
         transfer_loop = utils.single(loop_batch.transfers)
-        default_transfers = sorted(default_batch.transfers, key=self.hamilton_robot_setting.transfer_sort_key)
+        default_transfers = sorted(default_batch.transfers, key=self.sort_strategy.input_position_sort_key)
         self.assertEqual(15, transfer_evap_step1.pipette_sample_volume)
         self.assertEqual(0, transfer_evap_step1.pipette_buffer_volume)
         self.assertEqual(0, transfer_evap_step2.pipette_sample_volume)

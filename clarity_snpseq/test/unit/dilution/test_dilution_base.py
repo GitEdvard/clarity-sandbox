@@ -6,6 +6,7 @@ from clarity_ext.service.file_service import FileService
 from clarity_ext.service.file_service import OSService
 from clarity_ext_scripts.dilution.settings.file_rendering import HamiltonRobotSettings
 from clarity_ext_scripts.dilution.settings.file_rendering import BiomekRobotSettings
+from clarity_ext.service.dilution.service import SortStrategy
 from clarity_snpseq.test.utility.misc_builders import ContextBuilder
 from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
 from clarity_snpseq.test.utility.factories import ExtensionBuilderFactory
@@ -15,6 +16,7 @@ class TestDilutionBase(unittest.TestCase):
     def setUp(self):
         self.hamilton_robot_setting = HamiltonRobotSettings()
         self.biomek_robot_setting = BiomekRobotSettings()
+        self.sort_strategy = SortStrategy()
 
     def execute_short(self, builder):
         dummy = builder.extension.dilution_session
