@@ -33,11 +33,6 @@ class ExtensionBuilder(object):
         self.step_log_service = None
         self.mocked_file_service = None
 
-    @lazyprop
-    def dil_helper(self):
-        dilution_helper_generator = DilutionHelpers()
-        return dilution_helper_generator.create_helper(extension=self.extension)
-
     def _handle_loggers(self, logging_level):
         self.extension.logger.setLevel(logging_level)
         self.context_builder.context.dilution_service.logger.setLevel(logging_level)
@@ -141,6 +136,20 @@ class ExtensionBuilder(object):
     def loop_batch(self):
         return next(self._get_from_hamilton_batches("looped"))
 
+    def add_pair_from_builder(self, pair_builder):
+        pair = pair_builder.pair
+        self.pairs.append(pair)
+        self.call_index += 1
+        self.context_builder.with_analyte_pair(pair.input_artifact, pair.output_artifact)
+
+
+class DilutionExtensionBuilder(ExtensionBuilder):
+    def __init__(self, extension_type, source_type, target_type, context_builder=None):
+        super(DilutionExtensionBuilder, self).__init__(
+            extension_type, source_type, target_type, context_builder)
+        dilution_helper_generator = DilutionHelpers()
+        self.dil_helper = dilution_helper_generator.create_helper(extension=self.extension)
+
     @abstractmethod
     def _create_dilution_pair(self, pair_builder, source_conc=None, source_vol=None,
                               target_conc=None, target_vol=None, dilute_factor=None,
@@ -168,7 +177,7 @@ class ExtensionBuilder(object):
         self.context_builder.with_analyte_pair(pair.input_artifact, pair.output_artifact)
 
 
-class ExtensionBuilderDna(ExtensionBuilder):
+class ExtensionBuilderDna(DilutionExtensionBuilder):
     def __init__(self, extension_type, source_type, target_type, context_builder=None):
         super(ExtensionBuilderDna, self).__init__(extension_type=extension_type, source_type=source_type,
                                                   target_type=target_type, context_builder=context_builder)
@@ -194,7 +203,7 @@ class ExtensionBuilderDna(ExtensionBuilder):
         pair_builder.with_target_volume(target_vol)
 
 
-class ExtensionBuilderFixed(ExtensionBuilder):
+class ExtensionBuilderFixed(DilutionExtensionBuilder):
     def __init__(self, extension_type, source_type, target_type, context_builder=None):
         if context_builder is None:
             context_builder = ContextBuilder()
@@ -221,7 +230,7 @@ class ExtensionBuilderFixed(ExtensionBuilder):
         pair_builder.with_target_volume(target_vol)
 
 
-class ExtensionBuilderFactor(ExtensionBuilder):
+class ExtensionBuilderFactor(DilutionExtensionBuilder):
     def __init__(self, extension_type, source_type, target_type, context_builder=None):
         super(ExtensionBuilderFactor, self).__init__(extension_type=extension_type, source_type=source_type,
                                                   target_type=target_type, context_builder=context_builder)

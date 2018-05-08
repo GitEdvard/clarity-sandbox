@@ -4,9 +4,66 @@ from clarity_ext.service.dilution.service import DilutionSettings
 from clarity_snpseq.test.utility.fake_artifacts import FakeArtifactRepository
 
 
-class DilutionPairBuilder:
+class PairBuilderBase(object):
+    def __init__(self, fake_artifact_repo=None, udf_dict=None):
+        self.artifact_repo = fake_artifact_repo or FakeArtifactRepository()
+        self.udf_dict = udf_dict or dict()
+        self.pos_from = None
+        self.pos_to = None
+        self.source_container_name = None
+        self.target_container_name = None
+        self.source_type = Analyte
+        self.target_type = Analyte
+        self.source_artifact_name = None
+        self.target_artifact_name = None
+        self.source_id = None
+        self.target_id = None
+
+    def create(self):
+        pair = self.artifact_repo.create_pair(pos_from=self.pos_from,
+                                  pos_to=self.pos_to,
+                                  source_container_name=self.source_container_name,
+                                  target_container_name=self.target_container_name,
+                                  source_type=self.source_type,
+                                  target_type=self.target_type,
+                                  source_id=self.source_id,
+                                  target_id=self.target_id)
+        pair.output_artifact.udf_map = UdfMapping(self.udf_dict)
+        if self.source_artifact_name is not None:
+            pair.input_artifact.name = self.source_artifact_name
+        if self.target_artifact_name is not None:
+            pair.output_artifact.name = self.target_artifact_name
+        return pair
+
+    def with_pos_from(self, pos_from):
+        self.pos_from = pos_from
+
+    def with_pos_to(self, pos_to):
+        self.pos_to = pos_to
+
+    def with_source_container_name(self, source_container_name):
+        self.source_container_name = source_container_name
+
+    def with_target_id(self, target_id):
+        self.target_id = target_id
+
+    def with_target_container_name(self, target_container_name):
+        self.target_container_name = target_container_name
+
+    def with_source_artifact_name(self, source_name):
+        self.source_artifact_name = source_name
+
+    def with_target_artifact_name(self, target_name):
+        self.target_artifact_name = target_name
+
+    def with_udf(self, lims_udf_name, value):
+        self.udf_dict[lims_udf_name] = value
+
+
+class DilutionPairBuilder(PairBuilderBase):
 
     def __init__(self, dilute_helper):
+        super(DilutionPairBuilder, self).__init__()
         self.pair = None
         self.dilute_helper = dilute_helper
 
@@ -49,50 +106,3 @@ class DilutionPairBuilder:
         self.pair.output_artifact.name = "Negative control"
         self.pair.output_artifact.view_name = "Negative control"
         self.pair.output_artifact.is_control = True
-
-
-class PairBuilderBase(object):
-    def __init__(self, fake_artifact_repo=None, udf_dict=None):
-        self.artifact_repo = fake_artifact_repo or FakeArtifactRepository()
-        self.udf_dict = udf_dict or dict()
-        self.pos_from = None
-        self.pos_to = None
-        self.source_container_name = None
-        self.target_container_name = None
-        self.source_type = Analyte
-        self.target_type = Analyte
-        self.source_artifact_name = None
-        self.target_artifact_name = None
-        self.source_id = None
-        self.target_id = None
-
-    def create(self):
-        pair = self.artifact_repo.create_pair(pos_from=self.pos_from,
-                                  pos_to=self.pos_to,
-                                  source_container_name=self.source_container_name,
-                                  target_container_name=self.target_container_name,
-                                  source_type=self.source_type,
-                                  target_type=self.target_type,
-                                  source_id=self.source_id,
-                                  target_id=self.target_id)
-        pair.output_artifact.udf_map = UdfMapping(self.udf_dict)
-        if self.source_artifact_name is not None:
-            pair.input_artifact.name = self.source_artifact_name
-        if self.target_artifact_name is not None:
-            pair.output_artifact.name = self.target_artifact_name
-        return pair
-
-    def with_target_id(self, target_id):
-        self.target_id = target_id
-
-    def with_target_container_name(self, target_container_name):
-        self.target_container_name = target_container_name
-
-    def with_source_artifact_name(self, source_name):
-        self.source_artifact_name = source_name
-
-    def with_target_artifact_name(self, target_name):
-        self.target_artifact_name = target_name
-
-    def with_udf(self, lims_udf_name, value):
-        self.udf_dict[lims_udf_name] = value
