@@ -4,6 +4,7 @@ from clarity_ext_scripts.dilution.factor_dilution_start import Extension as Exte
 from clarity_ext_scripts.clustering.driverfile import Extension as ExtensionClustering
 from clarity_ext_scripts.dilution.fixed_dilution_start import Extension as ExtensionFixed
 from clarity_ext_scripts.clustering.driverfile import Extension as ExtensionClusterDriverfile
+from clarity_snpseq.test.utility.scripts_for_testing.fixed_with_end_sort_order import Extension as FixedWithEndSortOrder
 from clarity_ext_scripts.fragment_analyzer.analyze_quality_table import Extension as AnalyzeQualityTable
 from clarity_ext_scripts.qpcr.analyze_qpcr_resultfile import Extension as AnalyzeQpcrResultfile
 from clarity_snpseq.test.utility.extension_builders import ExtensionBuilderDna
@@ -26,6 +27,11 @@ class ExtensionBuilderFactory:
     @classmethod
     def create_with_fixed_extension(cls, context_builder=None):
         return ExtensionBuilderFixed(ExtensionFixed, source_type=Analyte, target_type=Analyte,
+                                     context_builder=context_builder)
+
+    @classmethod
+    def create_with_fixed_end_sort_order(cls, context_builder=None):
+        return ExtensionBuilderFixed(FixedWithEndSortOrder, source_type=Analyte, target_type=Analyte,
                                      context_builder=context_builder)
 
     @classmethod
