@@ -20,6 +20,7 @@ class PairBuilderBase(object):
         self.source_id = None
         self.target_id = None
         self.is_control = False
+        self.pair = None
 
     def create(self):
         pair = self.artifact_repo.create_pair(pos_from=self.pos_from,
@@ -40,7 +41,7 @@ class PairBuilderBase(object):
             pair.output_artifact.view_name = self.target_artifact_name
         pair.input_artifact.is_control = self.is_control
         pair.output_artifact.is_control = self.is_control
-        return pair
+        self.pair = pair
 
     def with_pos_from(self, pos_from):
         self.pos_from = pos_from
@@ -71,7 +72,6 @@ class DilutionPairBuilder(PairBuilderBase):
 
     def __init__(self, artifact_repository):
         super(DilutionPairBuilder, self).__init__(fake_artifact_repo=artifact_repository)
-        self.pair = None
 
     def create_pair(self, pos_from=None, pos_to=None, source_container_name=None, target_container_name=None):
         self.with_pos_from(pos_from)

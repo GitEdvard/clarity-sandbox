@@ -138,10 +138,11 @@ class ExtensionBuilder(object):
         return next(self._get_from_hamilton_batches("looped"))
 
     def add_pair_from_builder(self, pair_builder):
-        pair = pair_builder.pair
-        self.pairs.append(pair)
+        pair_builder.create()
+        self.pairs.append(pair_builder.pair)
         self.call_index += 1
-        self.context_builder.with_analyte_pair(pair.input_artifact, pair.output_artifact)
+        self.context_builder.with_analyte_pair(
+            pair_builder.pair.input_artifact, pair_builder.pair.output_artifact)
 
 
 class DilutionExtensionBuilder(ExtensionBuilder):
@@ -173,10 +174,11 @@ class DilutionExtensionBuilder(ExtensionBuilder):
             pos_from=pos_from, pos_to=pos_to)
         if is_control:
             pair_builder.make_it_control_pair(self.control_id_prefix, self.call_index)
-        pair = pair_builder.create()
-        self.pairs.append(pair)
+        pair_builder.create()
+        self.pairs.append(pair_builder.pair)
         self.call_index += 1
-        self.context_builder.with_analyte_pair(pair.input_artifact, pair.output_artifact)
+        self.context_builder.with_analyte_pair(
+            pair_builder.pair.input_artifact, pair_builder.pair.output_artifact)
 
 
 class ExtensionBuilderDna(DilutionExtensionBuilder):

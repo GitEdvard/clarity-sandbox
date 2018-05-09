@@ -27,8 +27,8 @@ class ReadResultFileBuilder:
             artifact_pair_builder.with_source_artifact_name(artifact_name)
             artifact_pair_builder.with_target_artifact_name(artifact_name)
         container = artifact_pair_builder.artifact_repo.container_by_name('target')
-        pair = artifact_pair_builder.create()
-        return container, pair
+        artifact_pair_builder.create()
+        return container, artifact_pair_builder.pair
 
     @property
     def extension(self):
