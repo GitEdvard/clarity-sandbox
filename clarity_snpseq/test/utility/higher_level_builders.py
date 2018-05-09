@@ -3,6 +3,7 @@ from clarity_snpseq.test.utility.misc_builders import FakeStepRepoBuilder
 from clarity_snpseq.test.utility.misc_builders import ContextInitializor
 from clarity_snpseq.test.utility.misc_builders import ContextBuilder
 from clarity_snpseq.test.utility.pair_builders import PairBuilderBase
+from clarity_snpseq.test.utility.fake_artifacts import FakeArtifactRepository
 
 
 class ReadResultFileBuilder:
@@ -14,7 +15,8 @@ class ReadResultFileBuilder:
         self.shared_file_handle = None
         self.context_builder = None
         self.step_repo_builder = FakeStepRepoBuilder()
-        self.pair_builder = PairBuilderBase()
+        artifact_repo = FakeArtifactRepository()
+        self.pair_builder = PairBuilderBase(artifact_repo)
         self.extension_builder = None
 
     def create_pair(self, target_artifact_id, artifact_name=None):
@@ -49,7 +51,7 @@ class ReadResultFileBuilder:
         self.context_builder.with_analyte_pair(pair.input_artifact, pair.output_artifact)
 
     def with_analyte_udf(self, lims_udf_name, udf_value):
-        self.pair_builder.with_udf(lims_udf_name, udf_value)
+        self.pair_builder.with_output_udf(lims_udf_name, udf_value)
 
     def with_process_udf(self, lims_udf_name, udf_value):
         self.step_repo_builder.with_process_udf(lims_udf_name, udf_value)

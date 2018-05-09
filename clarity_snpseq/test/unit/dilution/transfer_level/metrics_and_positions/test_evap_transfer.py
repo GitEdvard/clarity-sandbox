@@ -121,7 +121,7 @@ class TestEvapTransfer(TestDilutionBase):
         row = self.hamilton_robot_setting.map_transfer_to_row(default_batch.transfers[0])
         self.assertEqual(1, len(default_batch.transfers))
         self.assertEqual("Negative control", default_batch.transfers[0].source_location.artifact.name)
-        self.assertEqual("Negative control, 1, DNA1, 0.0, 40.0, 2, END1, control container, target1, 0",
+        self.assertEqual("control container, 1, DNA1, 0.0, 40.0, 2, END1, control container, target1, 0",
                          ", ".join(map(str, row)))
 
     def test__with_two_evap_one_ordinary__number_entries_in_files_ok(self):

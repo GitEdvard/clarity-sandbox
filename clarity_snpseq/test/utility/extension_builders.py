@@ -2,16 +2,17 @@ from abc import abstractmethod
 from mock import MagicMock
 from clarity_ext.domain import *
 from clarity_ext.utils import *
+from clarity_ext.service.dilution.service import DilutionSettings
 from clarity_ext.service.dilution.service import SortStrategy
 from clarity_ext_scripts.dilution.settings.file_rendering import MetadataInfo
 from clarity_ext_scripts.dilution.settings.file_rendering import HamiltonRobotSettings
 from clarity_ext_scripts.dilution.settings.file_rendering import BiomekRobotSettings
-from clarity_snpseq.test.utility.helpers import DilutionHelpers
 from clarity_snpseq.test.utility.helpers import StepLogService
 from clarity_snpseq.test.utility.pair_builders import DilutionPairBuilder
 from clarity_snpseq.test.utility.helpers import FileServiceInitializer
 from clarity_snpseq.test.utility.misc_builders import ContextBuilder
 from clarity_snpseq.test.utility.context_monkey_patching import UseQcFlagPatcher
+from clarity_snpseq.test.utility.fake_artifacts import FakeArtifactRepository
 
 
 class ExtensionBuilder(object):
@@ -147,8 +148,7 @@ class DilutionExtensionBuilder(ExtensionBuilder):
     def __init__(self, extension_type, source_type, target_type, context_builder=None):
         super(DilutionExtensionBuilder, self).__init__(
             extension_type, source_type, target_type, context_builder)
-        dilution_helper_generator = DilutionHelpers()
-        self.dil_helper = dilution_helper_generator.create_helper(extension=self.extension)
+        self.artifact_repository = FakeArtifactRepository()
 
     @abstractmethod
     def _create_dilution_pair(self, pair_builder, source_conc=None, source_vol=None,
@@ -160,10 +160,12 @@ class DilutionExtensionBuilder(ExtensionBuilder):
     def _add_artifact_pair(self, source_conc=None, source_vol=None, target_conc=None, target_vol=None,
                            dilute_factor=None,
                           source_container_name=None, target_container_name=None, is_control=False):
-        pos_from = "A:1" if is_control else None
+
         well = self.well_list[self.call_index - 1]
-        pos_to = "{}:{}".format(well.position.row_letter, well.position.col)
-        pair_builder = DilutionPairBuilder(self.dil_helper)
+        next_pos = "{}:{}".format(well.position.row_letter, well.position.col)
+        pos_from = "A:1" if is_control else next_pos
+        pos_to = next_pos
+        pair_builder = DilutionPairBuilder(self.artifact_repository)
         self._create_dilution_pair(
             pair_builder, source_conc=source_conc, source_vol=source_vol, target_conc=target_conc,
             target_vol=target_vol, dilute_factor=dilute_factor,
@@ -171,7 +173,7 @@ class DilutionExtensionBuilder(ExtensionBuilder):
             pos_from=pos_from, pos_to=pos_to)
         if is_control:
             pair_builder.make_it_control_pair(self.control_id_prefix, self.call_index)
-        pair = pair_builder.pair
+        pair = pair_builder.create()
         self.pairs.append(pair)
         self.call_index += 1
         self.context_builder.with_analyte_pair(pair.input_artifact, pair.output_artifact)
@@ -195,11 +197,13 @@ class ExtensionBuilderDna(DilutionExtensionBuilder):
                               pos_from=None, pos_to=None):
         pair_builder.create_pair(pos_from=pos_from, pos_to=pos_to,
                          source_container_name=source_container_name,
-                         target_container_name=target_container_name, source_type=Analyte,
-                         target_type=Analyte)
-        pair_builder.with_source_concentration(source_conc)
+                         target_container_name=target_container_name)
+
+        conc_ref = self.extension.get_dilution_settings().concentration_ref
+        conc_ref_str = DilutionSettings.concentration_unit_to_string(conc_ref)
+        pair_builder.with_source_concentration(source_conc, conc_ref_str)
         pair_builder.with_source_volume(source_vol)
-        pair_builder.with_target_concentration(target_conc)
+        pair_builder.with_target_concentration(target_conc, conc_ref_str)
         pair_builder.with_target_volume(target_vol)
 
 
@@ -224,8 +228,7 @@ class ExtensionBuilderFixed(DilutionExtensionBuilder):
                               pos_from=None, pos_to=None):
         pair_builder.create_pair(pos_from=pos_from, pos_to=pos_to,
                          source_container_name=source_container_name,
-                         target_container_name=target_container_name,
-                         source_type=Analyte, target_type=Analyte)
+                         target_container_name=target_container_name)
         pair_builder.with_source_volume(source_vol)
         pair_builder.with_target_volume(target_vol)
 
@@ -249,10 +252,12 @@ class ExtensionBuilderFactor(DilutionExtensionBuilder):
                               target_conc=None, target_vol=None, dilute_factor=None,
                               source_container_name=None, target_container_name=None,
                               pos_from=None, pos_to=None):
-        pair_builder.create_pair(pos_from, pos_to,source_type=Analyte, target_type=Analyte,
-                         source_container_name=source_container_name,
-                         target_container_name=target_container_name)
-        pair_builder.with_source_concentration(source_conc)
+        pair_builder.create_pair(pos_from, pos_to,
+                                 source_container_name=source_container_name,
+                                 target_container_name=target_container_name)
+        conc_ref = self.extension.get_dilution_settings().concentration_ref
+        conc_ref_str = DilutionSettings.concentration_unit_to_string(conc_ref)
+        pair_builder.with_source_concentration(source_conc, conc_ref_str)
         pair_builder.with_source_volume(source_vol)
         pair_builder.with_dilute_factor(dilute_factor)
         pair_builder.with_target_volume(target_vol)
