@@ -1,5 +1,4 @@
 from __future__ import print_function
-from test.unit.clarity_ext.helpers import *
 from clarity_snpseq.test.utility.factories import ExtensionBuilderFactory
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
 
@@ -86,8 +85,8 @@ class TestBothEvaporationAndIntermediate(TestDilutionBase):
         batches = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name)
         gen = (b for b in batches if b.name == "default")
         default_batch = next(gen)
-        print_list(default_batch.source_container_slots, "source slots")
-        print_list(default_batch.container_mappings, "container mapping")
+        self.print_list(default_batch.source_container_slots, "source slots")
+        self.print_list(default_batch.container_mappings, "container mapping")
         self.assertEqual(2, len(default_batch.source_container_slots))
 
     def test__with_one_evap_one_multistep_one_ordinary__evap_step2_batch_source_slot_ok(self):
@@ -112,8 +111,8 @@ class TestBothEvaporationAndIntermediate(TestDilutionBase):
         batches = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name)
         gen = (b for b in batches if b.name == "evaporate2")
         evap2_batch = next(gen)
-        print_list(evap2_batch.source_container_slots, "source slots")
-        print_list(evap2_batch.container_mappings, "container mapping")
+        self.print_list(evap2_batch.source_container_slots, "source slots")
+        self.print_list(evap2_batch.container_mappings, "container mapping")
         self.assertEqual(1, len(evap2_batch.source_container_slots))
         self.assertEqual("DNA1", evap2_batch.source_container_slots[0].name)
         self.assertEqual("source1", evap2_batch.source_container_slots[0].container.name)

@@ -2,7 +2,6 @@ from __future__ import print_function
 import unittest
 from clarity_ext.domain import *
 from clarity_ext_scripts.dilution.settings.file_rendering import HamiltonRobotSettings
-from test.unit.clarity_ext.helpers import *
 from clarity_snpseq.test.utility.factories import ExtensionBuilderFactory
 from clarity_snpseq.test.utility.misc_builders import ContextBuilder
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
@@ -23,7 +22,7 @@ class TestEvaporation(TestDilutionBase):
 
         # Assert
         metadata_info = builder.metadata_info("Metadata filename", HamiltonRobotSettings())
-        print_list(metadata_info.container_mappings, "container mappings")
+        self.print_list(metadata_info.container_mappings, "container mappings")
         self.save_metadata_to_harddisk(builder, r'C:\Smajobb\2017\Augusti\Clarity\saves')
 
     def test__with_one_evaporate_sample__two_transfer_batches(self):
@@ -76,7 +75,7 @@ class TestEvaporation(TestDilutionBase):
         gen = (b for b in batches if b.name == "evaporate2")
         evap2_batch = next(gen)
 
-        print_list([t.source_location.container.name for t in evap2_batch.transfers], "source locations")
+        self.print_list([t.source_location.container.name for t in evap2_batch.transfers], "source locations")
 
         self.assertEqual(1,len(evap2_batch.source_container_slots))
         self.assertEqual("DNA1", evap2_batch.source_container_slots[0].name)
@@ -93,7 +92,7 @@ class TestEvaporation(TestDilutionBase):
 
         # Assert
         files = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name).driver_files
-        print_list(files, "files")
+        self.print_list(files, "files")
         self.assertEqual(2, len(files))
         self.assertEqual(1, len([key for key in files if str(key) == "evaporate1"]))
         self.assertEqual(1, len([key for key in files if str(key) == "evaporate2"]))
@@ -130,7 +129,7 @@ class TestEvaporation(TestDilutionBase):
         robot_setting = HamiltonRobotSettings()
         files = builder.extension.dilution_session.transfer_batches(robot_setting.name).driver_files
         #self.save_metadata_to_harddisk(builder.extension, r"C:\Smajobb\2017\Oktober\clarity\saves")
-        print_list(files, "files")
+        self.print_list(files, "files")
         self.assertEqual(3, len(files))
         self.assertEqual(1, len([key for key in files if str(key) == "evaporate1"]))
         self.assertEqual(1, len([key for key in files if str(key) == "evaporate2"]))
@@ -222,7 +221,7 @@ class TestEvaporation(TestDilutionBase):
         files = builder.extension.dilution_session.transfer_batches(robot_setting.name).driver_files
         #self.save_metadata_to_harddisk(builder.extension, r"C:\Smajobb\2017\Oktober\clarity\saves")
         file_names = [files[key].file_name for key in files]
-        print_list(sorted(file_names), "files")
+        self.print_list(sorted(file_names), "files")
         self.assertEqual(3, len(files))
         self.assertEqual(1, len([name for name in file_names if "step1-hamilton-evaporate1" in name]))
         self.assertEqual(1, len([name for name in file_names if "step2-hamilton-evaporate2" in name]))
@@ -244,7 +243,7 @@ class TestEvaporation(TestDilutionBase):
         batches = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name)
         for batch in batches:
             print("batch name: {}".format(batch.name))
-            print_list(batch.container_mappings, "container mapping")
+            self.print_list(batch.container_mappings, "container mapping")
         self.assertEqual(3, len(batches))
         self.assertEqual(1, len([b for b in batches if b.name == "default"]))
         self.assertEqual(1, len([b for b in batches if b.name == "evaporate1"]))
@@ -313,7 +312,7 @@ class TestEvaporation(TestDilutionBase):
         batches = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name)
         gen = (b for b in batches if b.name == "default")
         default_batch = next(gen)
-        print_list(default_batch.source_container_slots, "final slot positioning")
+        self.print_list(default_batch.source_container_slots, "final slot positioning")
         self.assertEqual(2, len(default_batch.source_container_slots))
         self.assertEqual("1source1", default_batch.source_container_slots[0].container.name)
         self.assertEqual("DNA1", default_batch.source_container_slots[0].name)

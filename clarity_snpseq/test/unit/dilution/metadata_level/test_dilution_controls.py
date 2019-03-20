@@ -2,7 +2,6 @@ import unittest
 from unittest import skip
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
 from clarity_ext_scripts.dilution.settings.file_rendering import HamiltonRobotSettings
-from test.unit.clarity_ext.helpers import *
 
 
 class TestDilution(TestDilutionBase):
@@ -36,7 +35,7 @@ class TestDilution(TestDilutionBase):
 
         # Assert
         metadata_info = builder.metadata_info("Metadata filename", HamiltonRobotSettings())
-        print_list(metadata_info.container_mappings, "container_mappings")
+        self.print_list(metadata_info.container_mappings, "container_mappings")
         self.assertEqual(1,1)
 
     def test__with_two_added_controls_and_one_normal_sample__control_excluded_in_container_mappings(self):
@@ -62,8 +61,8 @@ class TestDilution(TestDilutionBase):
 
         # Assert
         metadata_info = builder.metadata_info("Metadata filename", HamiltonRobotSettings())
-        print_list(metadata_info.container_mappings, "container_mappings")
-        print_list([m[0].container.name for m in metadata_info.container_mappings], "source containers in container_mappings")
+        self.print_list(metadata_info.container_mappings, "container_mappings")
+        self.print_list([m[0].container.name for m in metadata_info.container_mappings], "source containers in container_mappings")
         self.assertTrue("source1" in [m[0].container.name for m in metadata_info.container_mappings])
         self.assertFalse("control container" in [m[0].container.name for m in metadata_info.container_mappings])
 

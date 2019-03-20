@@ -103,3 +103,19 @@ class TestDilutionBase(unittest.TestCase):
                                    uploaded_to_stdout=False, disable_commits=True)
         file_service.temp_path = save_directory
         return file_service
+
+    def print_out_dict(self, object_list, caption):
+        print("{}:".format(caption))
+        print("-----------------------------------------")
+        for o in object_list:
+            print("{}:".format(o))
+            for key in o.__dict__:
+                print("{} {}".format(key, o.__dict__[key]))
+            print("-----------------------------------------\n")
+
+    def print_list(self, object_list, caption):
+        print("{}:".format(caption))
+        print("-------------------------------------------")
+        for o in object_list:
+            print("{}".format(o))
+        print("-------------------------------------------\n")

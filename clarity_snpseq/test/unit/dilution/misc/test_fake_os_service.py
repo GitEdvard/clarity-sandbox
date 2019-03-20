@@ -27,7 +27,7 @@ class TestFakeOsService(unittest.TestCase):
         # Arrange
         src = os.path.join(self.src, 'file.txt')
         dst = os.path.join(self.dst, 'file.txt')
-        self.fake_os_service.filesystem.CreateFile(src)
+        self.fake_os_service.filesystem.create_file(src)
         self.assertTrue(self.fake_os_service.exists(src))
 
         # Act
@@ -41,7 +41,7 @@ class TestFakeOsService(unittest.TestCase):
         dir = os.path.join(self.src, 'dir1')
         file = os.path.join(self.src, 'file.txt')
         self.fake_os_service.makedirs(dir)
-        self.fake_os_service.filesystem.CreateFile(file)
+        self.fake_os_service.filesystem.create_file(file)
 
         # Act
         res = [d for d in self.fake_os_service.listdir(self.src)]
@@ -54,7 +54,7 @@ class TestFakeOsService(unittest.TestCase):
     def test_open_file__with_existing_file_with_contents__contents_fetched(self):
         # Arrange
         file = os.path.join(self.src, 'file.txt')
-        self.fake_os_service.filesystem.CreateFile(file, contents='contents in file')
+        self.fake_os_service.filesystem.create_file(file, contents='contents in file')
 
         # Act
         with self.fake_os_service.open_file(file, 'r') as f:
@@ -66,7 +66,7 @@ class TestFakeOsService(unittest.TestCase):
     def test_open_file__with_write_text_to_file__file_contents_ok(self):
         # Arrange
         file = os.path.join(self.src, 'file.txt')
-        self.fake_os_service.filesystem.CreateFile(file, contents='')
+        self.fake_os_service.filesystem.create_file(file, contents='')
 
         # Act
         with self.fake_os_service.open_file(file, 'w') as f:

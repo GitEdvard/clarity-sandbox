@@ -184,7 +184,7 @@ class FakeOsService:
                     cts = ''.join([line for line in file_object])
                 text = '{}{}'.format(cts, text)
                 self.remove_file(path)
-            self.filesystem.CreateFile(path, contents=text)
+            self.filesystem.create_file(path, contents=text)
 
         file_module.read = read
         file_module.write = write
@@ -195,7 +195,7 @@ class FakeOsService:
             c = f.read()
         if self.exists(dst):
             self.remove_file(dst)
-        self.filesystem.CreateFile(dst, contents=c)
+        self.filesystem.create_file(dst, contents=c)
         #self.fake_shutils_module.copyfile(src, dst)
 
     def copy(self, src, dst):
@@ -213,7 +213,7 @@ class FakeOsService:
         self.os_module.unlink(path)
 
     def create_file(self, file_path, contents=''):
-        self.filesystem.CreateFile(file_path, contents=contents)
+        self.filesystem.create_file(file_path, contents=contents)
 
     def abspath(self, path):
         return path

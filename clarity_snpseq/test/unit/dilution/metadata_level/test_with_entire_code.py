@@ -2,7 +2,6 @@ from __future__ import print_function
 import unittest
 import re
 from unittest import skip
-from test.unit.clarity_ext.helpers import *
 from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
 from clarity_ext.domain.validation import UsageError
@@ -24,7 +23,7 @@ class TestWithEntireCode(TestDilutionBase):
         # Assert
         #self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2017\Oktober\clarity\saves')
         batches = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name)
-        print_list(batches[0].container_mappings, "container mapping")
+        self.print_list(batches[0].container_mappings, "container mapping")
         self.assertEqual(1, len(batches))
         self.assertEqual(2, len(batches[0].source_container_slots))
         self.assertEqual(1, len(batches[0].target_container_slots))

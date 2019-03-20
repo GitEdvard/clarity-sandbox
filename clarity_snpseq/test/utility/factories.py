@@ -20,6 +20,10 @@ class ExtensionBuilderFactory:
                                    context_builder=context_builder)
 
     @classmethod
+    def create_with_library_dil_extension(cls, context_builder=None):
+        pass
+
+    @classmethod
     def create_with_factor_extension(cls, context_builder=None):
         return ExtensionBuilderFactor(ExtensionFactor, source_type=Analyte, target_type=Analyte,
                                       context_builder=context_builder)

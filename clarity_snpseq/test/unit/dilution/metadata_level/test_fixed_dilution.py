@@ -1,7 +1,6 @@
 from __future__ import print_function
 import unittest
 import re
-from test.unit.clarity_ext.helpers import *
 from clarity_snpseq.test.utility.factories import ExtensionBuilderFactory
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
 from clarity_ext.domain.validation import UsageError
