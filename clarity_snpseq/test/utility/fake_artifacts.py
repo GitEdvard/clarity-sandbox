@@ -7,10 +7,12 @@ class FakeArtifactRepository:
     Repository of analytes and containers
     Methods that links analyes and container together
     """
-    def __init__(self, create_well_order=Container.DOWN_FIRST):
+    def __init__(self, create_well_order=Container.DOWN_FIRST,
+                 target_container_type=Container.CONTAINER_TYPE_96_WELLS_PLATE):
         self.default_source = "source"
         self.default_target = "target"
         self.containers = dict()
+        self.target_container_type = target_container_type
 
         self.create_container(self.default_source, True)
         self.create_container(self.default_target, False)
@@ -25,7 +27,11 @@ class FakeArtifactRepository:
         self.default_target = "target{}".format(target_postfix)
 
     def create_container(self, container_id, is_source):
-        container = Container(container_type=Container.CONTAINER_TYPE_96_WELLS_PLATE,
+        if is_source:
+            container_type = Container.CONTAINER_TYPE_96_WELLS_PLATE
+        else:
+            container_type = self.target_container_type
+        container = Container(container_type=container_type,
                               container_id=container_id, name=container_id, is_source=is_source)
         self.containers[container_id] = container
         return container

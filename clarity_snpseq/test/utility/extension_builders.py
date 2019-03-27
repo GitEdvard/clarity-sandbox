@@ -16,7 +16,8 @@ from clarity_snpseq.test.utility.fake_artifacts import FakeArtifactRepository
 
 
 class ExtensionBuilder(object):
-    def __init__(self, extension_type, source_type, target_type, context_builder=None):
+    def __init__(self, extension_type, source_type, target_type, context_builder=None,
+                 source_sorted_from_first=True):
         self.source_type = source_type
         self.target_type = target_type
         self.control_id_prefix = None
@@ -28,8 +29,7 @@ class ExtensionBuilder(object):
         self.extension = extension_type(self.context_builder.context)
 
         self._handle_loggers(logging.CRITICAL)
-        c = Container(container_type=Container.CONTAINER_TYPE_96_WELLS_PLATE)
-        self.well_list = c.list_wells()
+        self.well_provider = WellProvider(source_sorted_from_first)
         self.pairs = list()
         self.step_log_service = None
         self.mocked_file_service = None
@@ -137,6 +137,14 @@ class ExtensionBuilder(object):
     def loop_batch(self):
         return next(self._get_from_hamilton_batches("looped"))
 
+    @property
+    def context(self):
+        return self.context_builder.context
+
+    @property
+    def validation_service(self):
+        return self.context.validation_service
+
     def add_pair_from_builder(self, pair_builder):
         pair_builder.create()
         self.pairs.append(pair_builder.pair)
@@ -147,11 +155,13 @@ class ExtensionBuilder(object):
 
 class DilutionExtensionBuilder(ExtensionBuilder):
     def __init__(self, extension_type, source_type, target_type, context_builder=None,
-                 target_is_plate=True):
+                 target_container_type=Container.CONTAINER_TYPE_96_WELLS_PLATE,
+                 source_sorted_from_first=True):
         super(DilutionExtensionBuilder, self).__init__(
-            extension_type, source_type, target_type, context_builder)
-        self.artifact_repository = FakeArtifactRepository()
-        self.target_is_plate = target_is_plate
+            extension_type, source_type, target_type, context_builder,
+            source_sorted_from_first=source_sorted_from_first)
+        self.artifact_repository = FakeArtifactRepository(target_container_type=target_container_type)
+        self.target_container_type = target_container_type
 
     @abstractmethod
     def _create_dilution_pair(self, pair_builder, source_conc=None, source_vol=None,
@@ -160,14 +170,22 @@ class DilutionExtensionBuilder(ExtensionBuilder):
                               pos_from=None, pos_to=None):
         pass
 
+    def _get_positions(self, is_control):
+        well = self.well_provider.get_next_well()
+        next_free_source_pos = "{}:{}".format(well.position.row_letter, well.position.col)
+        if self.target_container_type == Container.CONTAINER_TYPE_96_WELLS_PLATE:
+            pos_to = next_free_source_pos
+        else:
+            # tube
+            pos_to = "A:1"
+        pos_from = "A:1" if is_control else next_free_source_pos
+        return pos_from, pos_to
+
     def _add_artifact_pair(self, source_conc=None, source_vol=None, target_conc=None, target_vol=None,
                            dilute_factor=None,
                           source_container_name=None, target_container_name=None, is_control=False):
 
-        well = self.well_list[self.call_index - 1]
-        next_pos = "{}:{}".format(well.position.row_letter, well.position.col)
-        pos_from = "A:1" if is_control else next_pos
-        pos_to = next_pos
+        pos_from, pos_to = self._get_positions(is_control)
         pair_builder = DilutionPairBuilder(self.artifact_repository)
         self._create_dilution_pair(
             pair_builder, source_conc=source_conc, source_vol=source_vol, target_conc=target_conc,
@@ -183,40 +201,14 @@ class DilutionExtensionBuilder(ExtensionBuilder):
             pair_builder.pair.input_artifact, pair_builder.pair.output_artifact)
 
 
-class ExtensionBuilderLib(DilutionExtensionBuilder):
+class ExtensionBuilderConc(DilutionExtensionBuilder):
     def __init__(self, extension_type, source_type, target_type, context_builder=None,
-                 target_is_plate=True):
-        super(ExtensionBuilderLib, self).__init__(extension_type=extension_type, source_type=source_type,
+                 target_container_type=Container.CONTAINER_TYPE_96_WELLS_PLATE,
+                 source_sorted_from_first=True):
+        super(ExtensionBuilderConc, self).__init__(extension_type=extension_type, source_type=source_type,
                                                   target_type=target_type, context_builder=context_builder,
-                                                  target_is_plate=target_is_plate)
-
-    def add_artifact_pair(self, source_conc=100, source_vol=40, target_conc=10, target_vol=40,
-                          source_container_name="source1", target_container_name="target1", is_control=False):
-        self._add_artifact_pair(
-            source_conc=source_conc, source_vol=source_vol, target_conc=target_conc,
-            target_vol=target_vol, source_container_name=source_container_name,
-            target_container_name=target_container_name, is_control=is_control)
-
-    def _create_dilution_pair(self, pair_builder, source_conc=None, source_vol=None,
-                              target_conc=None, target_vol=None, dilute_factor=None,
-                              source_container_name=None, target_container_name=None,
-                              pos_from=None, pos_to=None):
-        pair_builder.create_pair(pos_from=pos_from, pos_to=pos_to,
-                         source_container_name=source_container_name,
-                         target_container_name=target_container_name)
-
-        conc_ref = self.extension.get_dilution_settings().concentration_ref
-        conc_ref_str = DilutionSettings.concentration_unit_to_string(conc_ref)
-        pair_builder.with_source_concentration(source_conc, conc_ref_str)
-        pair_builder.with_source_volume(source_vol)
-        pair_builder.with_target_concentration(target_conc, conc_ref_str)
-        pair_builder.with_target_volume(target_vol)
-
-
-class ExtensionBuilderDna(DilutionExtensionBuilder):
-    def __init__(self, extension_type, source_type, target_type, context_builder=None):
-        super(ExtensionBuilderDna, self).__init__(extension_type=extension_type, source_type=source_type,
-                                                  target_type=target_type, context_builder=context_builder)
+                                                  target_container_type=target_container_type,
+                                                   source_sorted_from_first=source_sorted_from_first)
 
     def add_artifact_pair(self, source_conc=100, source_vol=40, target_conc=10, target_vol=40,
                           source_container_name="source1", target_container_name="target1", is_control=False):
@@ -295,3 +287,32 @@ class ExtensionBuilderFactor(DilutionExtensionBuilder):
         pair_builder.with_source_volume(source_vol)
         pair_builder.with_dilute_factor(dilute_factor)
         pair_builder.with_target_volume(target_vol)
+
+
+class WellProvider:
+    def __init__(self, take_from_first=True):
+        self.plates = list()
+        self.call_index = 0
+        self.take_from_first = take_from_first
+
+    def get_next_well(self):
+        if self.call_index == 0:
+            index = 0
+        else:
+            index = self.call_index % self._number_wells
+        if index == 0:
+            self._add_plate()
+        self.call_index += 1
+        if self.take_from_first:
+            well = self.plates[-1].list_wells()[index]
+        else:
+            well = self.plates[-1].list_wells()[-1 -index]
+        return well
+
+    def _add_plate(self):
+        plate = Container(container_type=Container.CONTAINER_TYPE_96_WELLS_PLATE)
+        self.plates.append(plate)
+
+    @property
+    def _number_wells(self):
+        return len(self.plates[-1].list_wells())

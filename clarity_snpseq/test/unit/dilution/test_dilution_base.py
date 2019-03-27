@@ -7,6 +7,7 @@ from clarity_ext.service.file_service import OSService
 from clarity_ext_scripts.dilution.settings.file_rendering import HamiltonRobotSettings
 from clarity_ext_scripts.dilution.settings.file_rendering import BiomekRobotSettings
 from clarity_ext.service.dilution.service import SortStrategy
+from clarity_ext.domain.container import Container
 from clarity_snpseq.test.utility.misc_builders import ContextBuilder
 from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
 from clarity_snpseq.test.utility.factories import ExtensionBuilderFactory
@@ -30,6 +31,11 @@ class TestDilutionBase(unittest.TestCase):
         b = ContextBuilder()
         b.with_all_files()
         return ExtensionBuilderFactory.create_with_dna_extension(b)
+
+    def builder_with_lib_ext_all_files(self, target_container_type=Container.CONTAINER_TYPE_96_WELLS_PLATE):
+        b = ContextBuilder()
+        b.with_all_files()
+        return ExtensionBuilderFactory.create_with_library_dil_extension(b, target_container_type)
 
     def save_metadata_to_harddisk(self, builder, save_directory):
         builder.context_builder.with_all_files()

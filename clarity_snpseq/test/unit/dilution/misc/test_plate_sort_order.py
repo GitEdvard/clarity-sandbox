@@ -1,6 +1,6 @@
 from __future__ import print_function
 import unittest
-from clarity_ext_scripts.dilution.settings.transfer_batch_handlers import HandleSlotPositioning
+from clarity_ext.service.dilution.service import SortStrategy
 
 
 class TestPlateSortOrder(unittest.TestCase):
@@ -13,8 +13,7 @@ class TestPlateSortOrder(unittest.TestCase):
 
     @property
     def sort_key(self):
-        instance = HandleSlotPositioning(None, None, None, None)
-        return instance._container_sort_key
+        return SortStrategy.container_sort_key
 
     def test__with_plate_name_text_first_number_last__sort_tuple_ok(self):
         platename = "code-123_Plate432_org_171010"
