@@ -13,47 +13,58 @@ from clarity_snpseq.test.utility.extension_builders import ExtensionBuilderConc
 from clarity_snpseq.test.utility.extension_builders import ExtensionBuilderFactor
 from clarity_snpseq.test.utility.extension_builders import ExtensionBuilderFixed
 from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
+from clarity_snpseq.test.utility.extension_builders import ExtensionInitializer
 
 
 class ExtensionBuilderFactory:
     @classmethod
-    def create_with_dna_extension(cls, context_builder=None):
-        return ExtensionBuilderConc(ExtensionDna, source_type=Analyte, target_type=Analyte,
-                                   context_builder=context_builder)
+    def create_with_dna_extension(cls, extension_initializer=None, context_builder=None):
+        if extension_initializer is None:
+            extension_initializer = ExtensionInitializer()
+        return ExtensionBuilderConc(ExtensionDna, extension_initializer,
+                                    context_builder=context_builder)
 
     @classmethod
-    def create_with_library_dil_extension(cls, context_builder=None,
-                                          target_container_type=Container.CONTAINER_TYPE_96_WELLS_PLATE,
-                                          source_sorted_from_first=True):
-        return ExtensionBuilderConc(ExtensionLib, source_type=Analyte, target_type=Analyte,
-                                   context_builder=context_builder,
-                                   target_container_type=target_container_type,
-                                    source_sorted_from_first=source_sorted_from_first)
+    def create_with_library_dil_extension(cls, extension_initializer=None, context_builder=None):
+        if extension_initializer is None:
+            extension_initializer = ExtensionInitializer()
+        return ExtensionBuilderConc(ExtensionLib, extension_initializer,
+                                    context_builder=context_builder)
 
     @classmethod
-    def create_with_factor_extension(cls, context_builder=None):
-        return ExtensionBuilderFactor(ExtensionFactor, source_type=Analyte, target_type=Analyte,
+    def create_with_factor_extension(cls, extension_initializer=None, context_builder=None):
+        if extension_initializer is None:
+            extension_initializer = ExtensionInitializer()
+        return ExtensionBuilderFactor(ExtensionFactor, extension_initializer,
                                       context_builder=context_builder)
 
     @classmethod
-    def create_with_fixed_extension(cls, context_builder=None):
-        return ExtensionBuilderFixed(ExtensionFixed, source_type=Analyte, target_type=Analyte,
+    def create_with_fixed_extension(cls, extension_initializer=None, context_builder=None):
+        if extension_initializer is None:
+            extension_initializer = ExtensionInitializer()
+        return ExtensionBuilderFixed(ExtensionFixed, extension_initializer,
                                      context_builder=context_builder)
 
     @classmethod
-    def create_with_fixed_end_sort_order(cls, context_builder=None):
-        return ExtensionBuilderFixed(FixedWithEndSortOrder, source_type=Analyte, target_type=Analyte,
+    def create_with_fixed_end_sort_order(cls, extension_initializer=None, context_builder=None):
+        if extension_initializer is None:
+            extension_initializer = ExtensionInitializer()
+        return ExtensionBuilderFixed(FixedWithEndSortOrder, extension_initializer,
                                      context_builder=context_builder)
 
     @classmethod
-    def create_with_cluster_driverfile_extension(cls, context_builder=None):
-        return ExtensionBuilderFixed(ExtensionClusterDriverfile, source_type=Analyte, target_type=Analyte,
+    def create_with_cluster_driverfile_extension(cls, extension_initializer=None, context_builder=None):
+        if extension_initializer is None:
+            extension_initializer = ExtensionInitializer()
+        return ExtensionBuilderFixed(ExtensionClusterDriverfile, extension_initializer,
                                      context_builder=context_builder)
 
     @classmethod
-    def create_with_clustering_extension(cls, context_builder=None):
-        return ExtensionBuilderConc(ExtensionClustering, source_type=Analyte, target_type=Analyte,
-                                          context_builder=context_builder)
+    def create_with_clustering_extension(cls, extension_initializer=None, context_builder=None):
+        if extension_initializer is None:
+            extension_initializer = ExtensionInitializer()
+        return ExtensionBuilderConc(ExtensionClustering, extension_initializer,
+                                    context_builder=context_builder)
 
     @classmethod
     def create_with_read_result_file_type(cls, extension_type, context_builder=None):

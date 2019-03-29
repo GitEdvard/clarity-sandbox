@@ -1,7 +1,6 @@
 from unittest import skip
 from clarity_ext.domain.container import Container
 from clarity_ext.domain.validation import UsageError
-from clarity_snpseq.test.utility.factories import ExtensionBuilderFactory
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
 
 
@@ -50,21 +49,3 @@ class TestDilutionLibrary(TestDilutionBase):
         messages = list(builder.validation_service.messages)
         self.assertEqual(1, error_count)
         self.assertEqual(1, len(messages))
-
-    def test_target_are_tubes__with_one_artifact_destination_volume_300__number_transfers_are_6(self):
-        # Arrange
-        builder = ExtensionBuilderFactory.create_with_library_dil_extension(
-            target_container_type=Container.CONTAINER_TYPE_TUBE)
-        builder.add_artifact_pair(source_container_name="source1", target_container_name="target1",
-                                  target_vol=300)
-
-        # Act
-        self.execute_short(builder)
-
-        # Assert
-        transfers = builder.sorted_transfers
-        self.assertEqual(6, len(transfers))
-        self.assertEqual(30.0, transfers[0].pipette_sample_volume)
-        self.assertEqual(45.0, transfers[0].pipette_buffer_volume)
-        self.assertEqual(0, transfers[1].pipette_sample_volume)
-        self.assertEqual(45.0, transfers[5].pipette_buffer_volume)

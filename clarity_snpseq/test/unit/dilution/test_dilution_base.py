@@ -9,7 +9,7 @@ from clarity_ext_scripts.dilution.settings.file_rendering import BiomekRobotSett
 from clarity_ext.service.dilution.service import SortStrategy
 from clarity_ext.domain.container import Container
 from clarity_snpseq.test.utility.misc_builders import ContextBuilder
-from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
+from clarity_snpseq.test.utility.extension_builders import ExtensionInitializer
 from clarity_snpseq.test.utility.factories import ExtensionBuilderFactory
 
 
@@ -25,17 +25,21 @@ class TestDilutionBase(unittest.TestCase):
     def builder_with_factor_ext_and_all_files(self):
         b = ContextBuilder()
         b.with_all_files()
-        return ExtensionBuilderFactory.create_with_factor_extension(b)
+        return ExtensionBuilderFactory.create_with_factor_extension(context_builder=b)
 
     def builder_with_dna_ext_all_files(self):
         b = ContextBuilder()
         b.with_all_files()
-        return ExtensionBuilderFactory.create_with_dna_extension(b)
+        return ExtensionBuilderFactory.create_with_dna_extension(context_builder=b)
 
     def builder_with_lib_ext_all_files(self, target_container_type=Container.CONTAINER_TYPE_96_WELLS_PLATE):
         b = ContextBuilder()
         b.with_all_files()
-        return ExtensionBuilderFactory.create_with_library_dil_extension(b, target_container_type)
+        initz = ExtensionInitializer()
+        initz.target_container_type = target_container_type
+        return ExtensionBuilderFactory.create_with_library_dil_extension(
+            context_builder=b,
+            extension_initializer=initz)
 
     def save_metadata_to_harddisk(self, builder, save_directory):
         builder.context_builder.with_all_files()

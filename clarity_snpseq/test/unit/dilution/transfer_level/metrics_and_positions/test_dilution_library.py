@@ -2,14 +2,14 @@ from unittest import skip
 from clarity_ext import utils
 from clarity_ext.domain.container import Container
 from clarity_snpseq.test.utility.factories import ExtensionBuilderFactory
+from clarity_snpseq.test.utility.extension_builders import ExtensionInitializer
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
 
 
 class TestDilutionLibrary(TestDilutionBase):
     def test_target_are_tubes__with_1_input_artifact__pipetting_volumes_ok(self):
         # Arrange
-        builder = ExtensionBuilderFactory.create_with_library_dil_extension(
-            target_container_type=Container.CONTAINER_TYPE_TUBE)
+        builder = self._create_builder_with_tubes()
         builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=10, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
 
@@ -24,8 +24,7 @@ class TestDilutionLibrary(TestDilutionBase):
 
     def test_target_are_tubes__with_2_input_artifacts__2nd_artifact_placed_in_tuberack1(self):
         # Arrange
-        builder = ExtensionBuilderFactory.create_with_library_dil_extension(
-            target_container_type=Container.CONTAINER_TYPE_TUBE)
+        builder = self._create_builder_with_tubes()
         builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=10, target_vol=10,
                                   source_container_name="source1", target_container_name="targettube1")
         builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=10, target_vol=10,
@@ -47,8 +46,7 @@ class TestDilutionLibrary(TestDilutionBase):
 
     def test_target_are_plates__with_2_input_artifacts__2nd_artifact_placed_in_plate1(self):
         # Arrange
-        builder = ExtensionBuilderFactory.create_with_library_dil_extension(
-            target_container_type=Container.CONTAINER_TYPE_96_WELLS_PLATE)
+        builder = ExtensionBuilderFactory.create_with_library_dil_extension()
         builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=10, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
         builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=10, target_vol=10,
@@ -70,8 +68,7 @@ class TestDilutionLibrary(TestDilutionBase):
 
     def test_target_tubes__with_one_intermediate_required__number_entries_in_files_ok(self):
         # Arrange
-        builder = ExtensionBuilderFactory.create_with_library_dil_extension(
-            target_container_type=Container.CONTAINER_TYPE_TUBE)
+        builder = self._create_builder_with_tubes()
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=10,
                                   source_container_name="source1", target_container_name="tube1")
 
@@ -88,8 +85,7 @@ class TestDilutionLibrary(TestDilutionBase):
 
     def test_target_tubes__with_one_intermediate_required__pipette_volumes_ok(self):
         # Arrange
-        builder = ExtensionBuilderFactory.create_with_library_dil_extension(
-            target_container_type=Container.CONTAINER_TYPE_TUBE)
+        builder = self._create_builder_with_tubes()
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=10,
                                   source_container_name="source1", target_container_name="tube1")
 
@@ -109,8 +105,7 @@ class TestDilutionLibrary(TestDilutionBase):
 
     def test_target_tubes__with_one_intermediate_required__intermediate_is_plate(self):
         # Arrange
-        builder = ExtensionBuilderFactory.create_with_library_dil_extension(
-            target_container_type=Container.CONTAINER_TYPE_TUBE)
+        builder = self._create_builder_with_tubes()
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=10,
                                   source_container_name="source1", target_container_name="tube1")
 
@@ -126,8 +121,7 @@ class TestDilutionLibrary(TestDilutionBase):
 
     def test_target_tubes__with_one_intermediate_required__final_placed_in_tuberack(self):
         # Arrange
-        builder = ExtensionBuilderFactory.create_with_library_dil_extension(
-            target_container_type=Container.CONTAINER_TYPE_TUBE)
+        builder = self._create_builder_with_tubes()
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=10,
                                   source_container_name="source1", target_container_name="tube1")
 
@@ -142,8 +136,7 @@ class TestDilutionLibrary(TestDilutionBase):
 
     def test_target_tubes__with_one_evap_required__number_entries_in_files_ok(self):
         # Arrange
-        builder = ExtensionBuilderFactory.create_with_library_dil_extension(
-            target_container_type=Container.CONTAINER_TYPE_TUBE)
+        builder = self._create_builder_with_tubes()
         builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=30, target_vol=10,
                                   source_container_name="source1", target_container_name="tube1")
 
@@ -160,8 +153,7 @@ class TestDilutionLibrary(TestDilutionBase):
 
     def test_target_tubes__with_one_evap_required__intermediate_is_tuberack(self):
         # Arrange
-        builder = ExtensionBuilderFactory.create_with_library_dil_extension(
-            target_container_type=Container.CONTAINER_TYPE_TUBE)
+        builder = self._create_builder_with_tubes()
         builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=30, target_vol=10,
                                   source_container_name="source1", target_container_name="tube1")
 
@@ -176,8 +168,7 @@ class TestDilutionLibrary(TestDilutionBase):
 
     def test_target_tubes__with_one_evap_required__final_is_tuberack(self):
         # Arrange
-        builder = ExtensionBuilderFactory.create_with_library_dil_extension(
-            target_container_type=Container.CONTAINER_TYPE_TUBE)
+        builder = self._create_builder_with_tubes()
         builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=30, target_vol=10,
                                   source_container_name="source1", target_container_name="tube1")
 
@@ -192,8 +183,7 @@ class TestDilutionLibrary(TestDilutionBase):
 
     def test_target_tubes__with_one_destination_tube__slot_container_name_ok(self):
         # Arrange
-        builder = ExtensionBuilderFactory.create_with_library_dil_extension(
-            target_container_type=Container.CONTAINER_TYPE_TUBE)
+        builder = self._create_builder_with_tubes()
         # ordinary samples
         builder.add_artifact_pair(source_container_name="source1", target_container_name="tube1")
 
@@ -209,8 +199,7 @@ class TestDilutionLibrary(TestDilutionBase):
 
     def test_target_tubes__with_one_destination_tube__artifact_view_name_is_tube_name(self):
         # Arrange
-        builder = ExtensionBuilderFactory.create_with_library_dil_extension(
-            target_container_type=Container.CONTAINER_TYPE_TUBE)
+        builder = self._create_builder_with_tubes()
         # ordinary samples
         builder.add_artifact_pair(source_container_name="source1", target_container_name="tube1")
 
@@ -240,9 +229,10 @@ class TestDilutionLibrary(TestDilutionBase):
 
     def test_target_are_tubes__with_four_artifacts__destination_order_ok(self):
         # Arrange
-        builder = ExtensionBuilderFactory.create_with_library_dil_extension(
-            target_container_type=Container.CONTAINER_TYPE_TUBE,
-            source_sorted_from_first=False)
+        initz = ExtensionInitializer()
+        initz.with_target_container_type(Container.CONTAINER_TYPE_TUBE)
+        initz.with_source_well_positions_from_first(False)
+        builder = ExtensionBuilderFactory.create_with_library_dil_extension(initz)
         builder.add_artifact_pair(source_container_name="source9", target_container_name="tube1")
         builder.add_artifact_pair(source_container_name="source9", target_container_name="tube2")
         builder.add_artifact_pair(source_container_name="source10", target_container_name="tube3")
@@ -321,3 +311,25 @@ class TestDilutionLibrary(TestDilutionBase):
             target_tube = 'tube{}'.format(i + 23)
             builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=10, target_vol=10,
                                       source_container_name='sourceplate1', target_container_name=target_tube)
+
+    def test_target_are_tubes__with_one_artifact_destination_volume_300__number_transfers_are_6(self):
+        # Arrange
+        builder = self._create_builder_with_tubes()
+        builder.add_artifact_pair(source_container_name="source1", target_container_name="target1",
+                                  target_vol=300)
+
+        # Act
+        self.execute_short(builder)
+
+        # Assert
+        transfers = builder.sorted_transfers
+        self.assertEqual(6, len(transfers))
+        self.assertEqual(30.0, transfers[0].pipette_sample_volume)
+        self.assertEqual(45.0, transfers[0].pipette_buffer_volume)
+        self.assertEqual(0, transfers[1].pipette_sample_volume)
+        self.assertEqual(45.0, transfers[5].pipette_buffer_volume)
+
+    def _create_builder_with_tubes(self):
+        initz = ExtensionInitializer()
+        initz.target_container_type = Container.CONTAINER_TYPE_TUBE
+        return ExtensionBuilderFactory.create_with_library_dil_extension(initz)

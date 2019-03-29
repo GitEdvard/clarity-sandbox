@@ -17,7 +17,7 @@ from clarity_snpseq.test.utility.fake_artifacts import FakeArtifactRepository
 
 class ExtensionBuilder(object):
     def __init__(self, extension_type, source_type, target_type, context_builder=None,
-                 source_sorted_from_first=True):
+                 source_well_positions_from_first=True):
         self.source_type = source_type
         self.target_type = target_type
         self.control_id_prefix = None
@@ -29,7 +29,7 @@ class ExtensionBuilder(object):
         self.extension = extension_type(self.context_builder.context)
 
         self._handle_loggers(logging.CRITICAL)
-        self.well_provider = WellProvider(source_sorted_from_first)
+        self.well_provider = WellProvider(source_well_positions_from_first)
         self.pairs = list()
         self.step_log_service = None
         self.mocked_file_service = None
@@ -154,14 +154,13 @@ class ExtensionBuilder(object):
 
 
 class DilutionExtensionBuilder(ExtensionBuilder):
-    def __init__(self, extension_type, source_type, target_type, context_builder=None,
-                 target_container_type=Container.CONTAINER_TYPE_96_WELLS_PLATE,
-                 source_sorted_from_first=True):
+    def __init__(self, extension_type, extension_initializer, context_builder=None):
+        initz = extension_initializer
         super(DilutionExtensionBuilder, self).__init__(
-            extension_type, source_type, target_type, context_builder,
-            source_sorted_from_first=source_sorted_from_first)
-        self.artifact_repository = FakeArtifactRepository(target_container_type=target_container_type)
-        self.target_container_type = target_container_type
+            extension_type, initz.source_type, initz.target_type, context_builder,
+            source_well_positions_from_first=initz.source_well_positions_from_first)
+        self.artifact_repository = FakeArtifactRepository(target_container_type=initz.target_container_type)
+        self.target_container_type = initz.target_container_type
 
     @abstractmethod
     def _create_dilution_pair(self, pair_builder, source_conc=None, source_vol=None,
@@ -202,13 +201,10 @@ class DilutionExtensionBuilder(ExtensionBuilder):
 
 
 class ExtensionBuilderConc(DilutionExtensionBuilder):
-    def __init__(self, extension_type, source_type, target_type, context_builder=None,
-                 target_container_type=Container.CONTAINER_TYPE_96_WELLS_PLATE,
-                 source_sorted_from_first=True):
-        super(ExtensionBuilderConc, self).__init__(extension_type=extension_type, source_type=source_type,
-                                                  target_type=target_type, context_builder=context_builder,
-                                                  target_container_type=target_container_type,
-                                                   source_sorted_from_first=source_sorted_from_first)
+    def __init__(self, extension_type, extension_initializer, context_builder=None):
+        super(ExtensionBuilderConc, self).__init__(extension_type,
+                                                   extension_initializer,
+                                                   context_builder=context_builder)
 
     def add_artifact_pair(self, source_conc=100, source_vol=40, target_conc=10, target_vol=40,
                           source_container_name="source1", target_container_name="target1", is_control=False):
@@ -234,12 +230,13 @@ class ExtensionBuilderConc(DilutionExtensionBuilder):
 
 
 class ExtensionBuilderFixed(DilutionExtensionBuilder):
-    def __init__(self, extension_type, source_type, target_type, context_builder=None):
+    def __init__(self, extension_type, extension_initializer, context_builder=None):
         if context_builder is None:
             context_builder = ContextBuilder()
         context_builder.with_udf_on_step("Volume in destination ul", 10)
-        super(ExtensionBuilderFixed, self).__init__(extension_type=extension_type, source_type=source_type,
-                                                    target_type=target_type, context_builder=context_builder)
+        super(ExtensionBuilderFixed, self).__init__(extension_type,
+                                                    extension_initializer,
+                                                    context_builder=context_builder)
 
     def add_artifact_pair(self, source_vol=40, target_vol=40,
                           source_container_name="source1", target_container_name="target1", is_control=False):
@@ -260,9 +257,10 @@ class ExtensionBuilderFixed(DilutionExtensionBuilder):
 
 
 class ExtensionBuilderFactor(DilutionExtensionBuilder):
-    def __init__(self, extension_type, source_type, target_type, context_builder=None):
-        super(ExtensionBuilderFactor, self).__init__(extension_type=extension_type, source_type=source_type,
-                                                  target_type=target_type, context_builder=context_builder)
+    def __init__(self, extension_type, extension_initializer, context_builder=None):
+        super(ExtensionBuilderFactor, self).__init__(extension_type,
+                                                     extension_initializer,
+                                                     context_builder=context_builder)
 
     # Make intellisense detect the specific parameters for factor dilution,
     # ie target_conc is replaced with dilute_factor
@@ -316,3 +314,32 @@ class WellProvider:
     @property
     def _number_wells(self):
         return len(self.plates[-1].list_wells())
+
+
+class ExtensionInitializer:
+    def __init__(self):
+        self.source_type = Analyte
+        self.target_type = Analyte
+        self.target_container_type = Container.CONTAINER_TYPE_96_WELLS_PLATE
+        self.target_container_size = None
+        self.source_well_positions_from_first = True
+
+    def with_target_container_type(self, container_type):
+        self.target_container_type = container_type
+
+    def with_target_container_size(self, plate_size):
+        """
+        Overrides container type default size
+        :param plate_size: Should be of type PlateSize(height, width)
+        :return:
+        """
+        self.target_container_size = plate_size
+
+    def with_source_well_positions_from_first(self, from_first):
+        """
+        Boolean, decides if source well positions starts from A:1 (first), or from
+        H:12 (last) and are thereafter added in reversed order
+        :param from_first: Bool
+        :return:
+        """
+        self.source_well_positions_from_first = from_first
