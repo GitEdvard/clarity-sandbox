@@ -1,6 +1,7 @@
 from unittest import skip
 from clarity_ext import utils
 from clarity_ext.domain.container import Container
+from clarity_ext.domain.container import PlateSize
 from clarity_snpseq.test.utility.factories import ExtensionBuilderFactory
 from clarity_snpseq.test.utility.extension_builders import ExtensionInitializer
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
@@ -118,6 +119,8 @@ class TestDilutionLibrary(TestDilutionBase):
         transfer_loop = utils.single(loop_batch.transfers)
         target_container_type = transfer_loop.target_location.container.container_type
         self.assertEqual(Container.CONTAINER_TYPE_96_WELLS_PLATE, target_container_type)
+        self.assertEqual(8, transfer_loop.target_location.container.size.height)
+        self.assertEqual(12, transfer_loop.target_location.container.size.width)
 
     def test_target_tubes__with_one_intermediate_required__final_placed_in_tuberack(self):
         # Arrange
@@ -191,7 +194,7 @@ class TestDilutionLibrary(TestDilutionBase):
         self.execute_short(builder)
 
         # Assert
-        #self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2017\Augusti\Clarity\saves')
+        # self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2017\Augusti\Clarity\saves')
         default_batch = builder.default_batch
         self.assertEqual(1, len(default_batch.source_container_slots))
         self.assertEqual("DNA1", default_batch.source_container_slots[0].name)
