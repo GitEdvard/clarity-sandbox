@@ -17,7 +17,7 @@ from clarity_snpseq.test.utility.fake_artifacts import FakeArtifactRepository
 
 class ExtensionBuilder(object):
     def __init__(self, extension_type, source_type, target_type, context_builder=None,
-                 source_well_positions_from_first=True):
+                 source_well_positions_from_first=True, source_plate_size=None):
         self.source_type = source_type
         self.target_type = target_type
         self.control_id_prefix = None
@@ -29,7 +29,7 @@ class ExtensionBuilder(object):
         self.extension = extension_type(self.context_builder.context)
 
         self._handle_loggers(logging.CRITICAL)
-        self.well_provider = WellProvider(source_well_positions_from_first)
+        self.well_provider = WellProvider(source_well_positions_from_first, source_plate_size)
         self.pairs = list()
         self.step_log_service = None
         self.mocked_file_service = None
@@ -158,7 +158,8 @@ class DilutionExtensionBuilder(ExtensionBuilder):
         initz = extension_initializer
         super(DilutionExtensionBuilder, self).__init__(
             extension_type, initz.source_type, initz.target_type, context_builder,
-            source_well_positions_from_first=initz.source_well_positions_from_first)
+            source_well_positions_from_first=initz.source_well_positions_from_first,
+            source_plate_size=initz.source_container_size)
         self.artifact_repository = FakeArtifactRepository(target_container_type=initz.target_container_type)
         self.target_container_type = initz.target_container_type
 
@@ -288,10 +289,11 @@ class ExtensionBuilderFactor(DilutionExtensionBuilder):
 
 
 class WellProvider:
-    def __init__(self, take_from_first=True):
+    def __init__(self, take_from_first=True, plate_size=None):
         self.plates = list()
         self.call_index = 0
         self.take_from_first = take_from_first
+        self.plate_size = plate_size
 
     def get_next_well(self):
         if self.call_index == 0:
@@ -308,7 +310,8 @@ class WellProvider:
         return well
 
     def _add_plate(self):
-        plate = Container(container_type=Container.CONTAINER_TYPE_96_WELLS_PLATE)
+        plate = Container(container_type=Container.CONTAINER_TYPE_96_WELLS_PLATE,
+                          size=self.plate_size)
         self.plates.append(plate)
 
     @property
@@ -322,6 +325,7 @@ class ExtensionInitializer:
         self.target_type = Analyte
         self.target_container_type = Container.CONTAINER_TYPE_96_WELLS_PLATE
         self.target_container_size = None
+        self.source_container_size = None
         self.source_well_positions_from_first = True
 
     def with_target_container_type(self, container_type):
@@ -334,6 +338,9 @@ class ExtensionInitializer:
         :return:
         """
         self.target_container_size = plate_size
+
+    def with_source_container_size(self, plate_size):
+        self.source_container_size = plate_size
 
     def with_source_well_positions_from_first(self, from_first):
         """
