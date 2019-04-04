@@ -1,7 +1,6 @@
 from unittest import skip
 from clarity_ext import utils
 from clarity_ext.domain.container import Container
-from clarity_ext.domain.container import PlateSize
 from clarity_snpseq.test.utility.factories import ExtensionBuilderFactory
 from clarity_snpseq.test.utility.extension_builders import ExtensionInitializer
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
@@ -23,6 +22,19 @@ class TestDilutionLibrary(TestDilutionBase):
         self.assertEqual(5.0, transfers[0].pipette_sample_volume)
         self.assertEqual(5.0, transfers[0].pipette_buffer_volume)
 
+    def test_target_are_tubes__with_1_input_artifact__destination_barcode_is_numeric(self):
+        # Arrange
+        builder = self._create_builder_with_tubes()
+        builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=10, target_vol=10,
+                                  source_container_name="source1", target_container_name="target1")
+
+        # Act
+        self.execute_short(builder)
+
+        # Assert
+        transfers = builder.sorted_transfers
+        self.assertEqual('1211111111', transfers[0].target_slot.container.id)
+
     def test_target_are_tubes__with_2_input_artifacts__2nd_artifact_placed_in_tuberack1(self):
         # Arrange
         builder = self._create_builder_with_tubes()
@@ -43,7 +55,7 @@ class TestDilutionLibrary(TestDilutionBase):
         self.assertEqual("out-FROM:B:1", transfers[1].target_location.artifact.name)
         self.assertEqual(2, transfers[1].target_location.index_down_first)
         self.assertEqual("END1", transfers[1].target_slot.name)
-        self.assertEqual('tuberack1', transfers[1].target_location.container.name)
+        self.assertEqual('Tuberack1', transfers[1].target_location.container.name)
 
     def test_target_are_plates__with_2_input_artifacts__2nd_artifact_placed_in_plate1(self):
         # Arrange
@@ -135,7 +147,7 @@ class TestDilutionLibrary(TestDilutionBase):
         batches = builder.extension.dilution_session.transfer_batches(self.biomek_robot_setting.name)
         default_batch = utils.single([b for b in batches if b.name == "default"])
         transfer_default = utils.single(default_batch.transfers)
-        self.assertEqual('tuberack1', transfer_default.target_location.container.name)
+        self.assertEqual('Tuberack1', transfer_default.target_location.container.name)
 
     def test_target_tubes__with_one_evap_required__number_entries_in_files_ok(self):
         # Arrange
@@ -167,7 +179,7 @@ class TestDilutionLibrary(TestDilutionBase):
         batches = builder.extension.dilution_session.transfer_batches(self.biomek_robot_setting.name)
         evap1_batch = utils.single([b for b in batches if b.name == "evaporate1"])
         transfer_intermediate = utils.single(evap1_batch.transfers)
-        self.assertEqual('tuberack1', transfer_intermediate.target_location.container.name)
+        self.assertEqual('Tuberack1', transfer_intermediate.target_location.container.name)
 
     def test_target_tubes__with_one_evap_required__final_is_tuberack(self):
         # Arrange
@@ -182,7 +194,7 @@ class TestDilutionLibrary(TestDilutionBase):
         batches = builder.extension.dilution_session.transfer_batches(self.biomek_robot_setting.name)
         evap2_batch = utils.single([b for b in batches if b.name == "evaporate2"])
         transfer_final = utils.single(evap2_batch.transfers)
-        self.assertEqual('tuberack1', transfer_final.target_location.container.name)
+        self.assertEqual('Tuberack1', transfer_final.target_location.container.name)
 
     def test_target_tubes__with_one_destination_tube__slot_container_name_ok(self):
         # Arrange
@@ -198,7 +210,7 @@ class TestDilutionLibrary(TestDilutionBase):
         default_batch = builder.default_batch
         self.assertEqual(1, len(default_batch.source_container_slots))
         self.assertEqual("DNA1", default_batch.source_container_slots[0].name)
-        self.assertEqual("tuberack1", default_batch.target_container_slots[0].container.name)
+        self.assertEqual('Tuberack1', default_batch.target_container_slots[0].container.name)
 
     def test_target_tubes__with_one_destination_tube__artifact_view_name_is_tube_name(self):
         # Arrange
@@ -254,66 +266,6 @@ class TestDilutionLibrary(TestDilutionBase):
         self.assertEqual(2, transfer2.target_location.index_down_first)
         self.assertEqual(3, transfer3.target_location.index_down_first)
         self.assertEqual(4, transfer4.target_location.index_down_first)
-
-
-    @skip('writes to harddisk')
-    def test__with_three_plain_artifacts_save_to_harddisk(self):
-        # Arrange
-        builder = self.builder_with_lib_ext_all_files(Container.CONTAINER_TYPE_TUBE)
-        # ordinary samples
-        builder.add_artifact_pair(source_container_name="source1", target_container_name="tube1")
-        builder.add_artifact_pair(source_container_name="source1", target_container_name="tube2")
-        builder.add_artifact_pair(source_container_name="source1", target_container_name="tube3")
-
-        # Act
-        # Assert
-        self.save_metadata_to_harddisk(builder, r'/home/edeng655-local/smajobb/2019/mars/clarity-dilutions/dilution_files')
-
-    @skip('writes to harddisk')
-    def test__with_50_plain_artifacts__save_to_harddisk(self):
-        # Arrange
-        builder = self.builder_with_lib_ext_all_files(Container.CONTAINER_TYPE_TUBE)
-        # ordinary samples
-        self._add_50_artifacts(builder)
-
-        # Act
-        # Assert
-        self.save_metadata_to_harddisk(builder, r'/home/edeng655-local/smajobb/2019/mars/clarity-dilutions/dilution_files')
-
-    def _add_50_artifacts(self, builder):
-        for i in range(50):
-            target_tube = 'tube{}'.format(i + 1)
-            builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=10, target_vol=10,
-                                      source_container_name='sourceplate1', target_container_name=target_tube)
-
-    @skip('Writes to harddisk')
-    def test__with_50_artifacts_intermediate_and_evaporation__save_to_harddisk(self):
-        # Arrange
-        builder = self.builder_with_lib_ext_all_files(Container.CONTAINER_TYPE_TUBE)
-        # ordinary samples
-        self._add_50_with_evap_and_intermediate(builder)
-
-        # Act
-        # Assert
-        self.save_metadata_to_harddisk(builder, r'/home/edeng655-local/smajobb/2019/mars/clarity-dilutions/dilution_files')
-
-    def _add_50_with_evap_and_intermediate(self, builder):
-        for i in range(20):
-            target_tube = 'tube{}'.format(i + 1)
-            builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=10, target_vol=10,
-                                      source_container_name='sourceplate1', target_container_name=target_tube)
-
-        # looped sample
-        builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=10,
-                                  source_container_name="sourceplate1", target_container_name="tube21")
-        # evap sample
-        builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=30, target_vol=10,
-                                  source_container_name="sourceplate1", target_container_name="tube22")
-
-        for i in range(28):
-            target_tube = 'tube{}'.format(i + 23)
-            builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=10, target_vol=10,
-                                      source_container_name='sourceplate1', target_container_name=target_tube)
 
     def test_target_are_tubes__with_one_artifact_destination_volume_300__number_transfers_are_6(self):
         # Arrange

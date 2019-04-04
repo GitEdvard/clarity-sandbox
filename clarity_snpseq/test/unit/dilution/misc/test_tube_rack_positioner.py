@@ -98,7 +98,7 @@ class TestTubeRackPositioner(TestDilutionBase):
         self._populate_positioner(pairs, positioner)
 
         # Assert
-        self.assertEqual('tuberack3', positioner.last_populated_well.container.name)
+        self.assertEqual('Tuberack3', positioner.well_for_last_artifact.container.name)
 
     def test__with_50_pairs__get_last_populated_well_has_right_position(self):
         pairs = self.pairs
@@ -107,7 +107,7 @@ class TestTubeRackPositioner(TestDilutionBase):
         self._populate_positioner(pairs, positioner)
 
         # Assert
-        self.assertEqual('B1', '{}'.format(positioner.last_populated_well.alpha_num_key))
+        self.assertEqual('B1', '{}'.format(positioner.well_for_last_artifact.alpha_num_key))
 
     def _populate_positioner(self, pairs, positioner):
         for pair in pairs:

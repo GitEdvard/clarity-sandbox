@@ -24,7 +24,7 @@ class TestTransferSorting(TestDilutionBase):
         self.execute_short(builder)
 
         # Assert
-        sort_strategy = builder.extension.get_dilution_settings().sort_strategy
+        sort_strategy = builder.extension.get_dilution_settings().robotfile_sort_strategy
         sorted_transfers = sorted(builder.default_batch.transfers, key=sort_strategy)
         self.assertEqual(3, len(sorted_transfers))
         self.assertEqual('sample3 (source)', sorted_transfers[0].source_location.artifact.name)
@@ -43,7 +43,7 @@ class TestTransferSorting(TestDilutionBase):
         self.execute_short(builder)
 
         # Assert
-        sort_strategy = builder.extension.get_dilution_settings().sort_strategy
+        sort_strategy = builder.extension.get_dilution_settings().robotfile_sort_strategy
         sorted_transfers = sorted(builder.default_batch.transfers, key=sort_strategy)
         self.assertEqual(3, len(sorted_transfers))
         self.assertEqual('sample1 (source)', sorted_transfers[0].source_location.artifact.name)
