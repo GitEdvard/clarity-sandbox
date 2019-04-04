@@ -20,7 +20,7 @@ class Extension(DilutionExtension):
         settings = DilutionSettings(volume_calc_method=DilutionSettings.VOLUME_CALC_FIXED,
                                     fixed_sample_volume=self.context.current_step.udf_volume_in_destination_ul,
                                     concentration_ref="ng/ul",
-                                    sort_strategy=sort_strategy.output_position_sort_key)
+                                    robotfile_sort_strategy=sort_strategy.output_position_sort_key)
         try:
             settings.fixed_buffer_volume = self.context.current_step.udf_volume_buffer_ul
         except AttributeError:
