@@ -1,5 +1,6 @@
 from abc import abstractmethod
 from mock import MagicMock
+from collections import namedtuple
 from clarity_ext.domain import *
 from clarity_ext.utils import *
 from clarity_ext.service.dilution.service import DilutionSettings
@@ -194,6 +195,72 @@ class DilutionExtensionBuilder(ExtensionBuilder):
             pos_from=pos_from, pos_to=pos_to)
         if is_control:
             pair_builder.make_it_control_pair(self.control_id_prefix, self.call_index)
+        pair_builder.with_target_id('target{}'.format(self.call_index))
+        pair_builder.create()
+        self.pairs.append(pair_builder.pair)
+        self.call_index += 1
+        self.context_builder.with_analyte_pair(
+            pair_builder.pair.input_artifact, pair_builder.pair.output_artifact)
+
+
+class ExtensionBuilderPool(DilutionExtensionBuilder):
+    def __init__(self, extension_type, extension_initializer, context_builder=None):
+        super(ExtensionBuilderPool, self).__init__(extension_type,
+                                                   extension_initializer,
+                                                   context_builder=context_builder)
+        self.input_cache = list()
+        self.output_cache = list()
+        self.internal_index = 0
+
+    def _create_dilution_pair(self, pair_builder, source_conc=None, source_vol=None,
+                              target_conc=None, target_vol=None, dilute_factor=None,
+                              source_container_name=None, target_container_name=None,
+                              pos_from=None, pos_to=None):
+        pair_builder.create_pair(pos_from=pos_from, pos_to=pos_to,
+                         source_container_name=source_container_name,
+                         target_container_name=target_container_name)
+
+        conc_ref = self.extension.get_dilution_settings().concentration_ref
+        conc_ref_str = DilutionSettings.concentration_unit_to_string(conc_ref)
+        pair_builder.with_source_concentration(source_conc, conc_ref_str)
+        pair_builder.with_source_volume(source_vol)
+        pair_builder.with_target_concentration(target_conc, conc_ref_str)
+        pair_builder.with_target_volume(target_vol)
+
+    def add_input_artifact(self, pool_nr, conc, vol, container_name):
+        args = namedtuple('input', ['pool_nr', 'conc', 'vol', 'container_name'])
+        args.pool_nr = pool_nr
+        args.conc = conc
+        args.vol = vol
+        args.container_name = container_name
+        self.input_cache.append(args)
+        self.internal_index += 1
+
+    def add_pool(self, pool_nr, target_vol):
+        args = namedtuple('input', ['pool_nr', 'target_vol'])
+        args.pool_nr = pool_nr
+        args.target_vol = target_vol
+        self.output_cache.append(args)
+
+    def assemble_pairs(self):
+        for input in self.input_cache:
+            output = utils.single([p for p in self.output_cache if p.pool_nr == input.pool_nr])
+            self._add_artifact_pair_for_pool(input_args=input, pool_args=output)
+
+    def _add_artifact_pair_for_pool(self, input_args, pool_args):
+
+        pos_from, pos_to = self._get_positions(is_control=False)
+        pair_builder = DilutionPairBuilder(self.artifact_repository)
+        pool_name = 'Pool{}'.format(pool_args.pool_nr)
+        self._create_dilution_pair(
+            pair_builder, source_conc=input_args.conc, source_vol=input_args.vol,
+            target_conc=input_args.conc,
+            target_vol=pool_args.target_vol,
+            source_container_name=input_args.container_name,
+            target_container_name=pool_name,
+            pos_from=pos_from, pos_to=pos_to)
+        pair_builder.with_target_id(pool_name)
+        pair_builder.with_target_artifact_name(pool_name)
         pair_builder.create()
         self.pairs.append(pair_builder.pair)
         self.call_index += 1

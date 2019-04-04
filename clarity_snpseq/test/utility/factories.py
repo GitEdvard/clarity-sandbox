@@ -2,6 +2,7 @@ from clarity_ext.domain.analyte import Analyte
 from clarity_ext.domain.container import Container
 from clarity_ext_scripts.dilution.dna_dilution_start import Extension as ExtensionDna
 from clarity_ext_scripts.dilution.library_dilution_start import Extension as ExtensionLib
+from clarity_ext_scripts.dilution.library_pooling_start import Extension as ExtensionLibPool
 from clarity_ext_scripts.dilution.factor_dilution_start import Extension as ExtensionFactor
 from clarity_ext_scripts.clustering.driverfile import Extension as ExtensionClustering
 from clarity_ext_scripts.dilution.fixed_dilution_start import Extension as ExtensionFixed
@@ -13,6 +14,7 @@ from clarity_snpseq.test.utility.extension_builders import ExtensionBuilderConc
 from clarity_snpseq.test.utility.extension_builders import ExtensionBuilderFactor
 from clarity_snpseq.test.utility.extension_builders import ExtensionBuilderFixed
 from clarity_snpseq.test.utility.extension_builders import ExtensionBuilder
+from clarity_snpseq.test.utility.extension_builders import ExtensionBuilderPool
 from clarity_snpseq.test.utility.extension_builders import ExtensionInitializer
 
 
@@ -29,6 +31,13 @@ class ExtensionBuilderFactory:
         if extension_initializer is None:
             extension_initializer = ExtensionInitializer()
         return ExtensionBuilderConc(ExtensionLib, extension_initializer,
+                                    context_builder=context_builder)
+
+    @classmethod
+    def create_with_library_pooling(cls, extension_initializer=None, context_builder=None):
+        if extension_initializer is None:
+            extension_initializer = ExtensionInitializer()
+        return ExtensionBuilderPool(ExtensionLibPool, extension_initializer,
                                     context_builder=context_builder)
 
     @classmethod
