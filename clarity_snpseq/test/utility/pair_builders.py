@@ -20,6 +20,7 @@ class PairBuilderBase(object):
         self.source_id = None
         self.target_id = None
         self.is_control = False
+        self.reagent_labels = list()
         self.pair = None
 
     def create(self):
@@ -39,14 +40,15 @@ class PairBuilderBase(object):
         if self.target_artifact_name is not None:
             pair.output_artifact.name = self.target_artifact_name
             pair.output_artifact.view_name = self.target_artifact_name
+        pair.input_artifact.reagent_labels = self.reagent_labels
         pair.input_artifact.is_control = self.is_control
         pair.output_artifact.is_control = self.is_control
         self.pair = pair
 
-    def with_pos_from(self, pos_from):
+    def with_source_pos(self, pos_from):
         self.pos_from = pos_from
 
-    def with_pos_to(self, pos_to):
+    def with_target_pos(self, pos_to):
         self.pos_to = pos_to
 
     def with_source_container_name(self, source_container_name):
@@ -64,6 +66,7 @@ class PairBuilderBase(object):
     def with_target_artifact_name(self, target_name):
         self.target_artifact_name = target_name
 
+
     def with_output_udf(self, lims_udf_name, value):
         self.output_udf_dict[lims_udf_name] = value
 
@@ -74,8 +77,8 @@ class DilutionPairBuilder(PairBuilderBase):
         super(DilutionPairBuilder, self).__init__(fake_artifact_repo=artifact_repository)
 
     def create_pair(self, pos_from=None, pos_to=None, source_container_name=None, target_container_name=None):
-        self.with_pos_from(pos_from)
-        self.with_pos_to(pos_to)
+        self.with_source_pos(pos_from)
+        self.with_target_pos(pos_to)
         self.with_source_container_name(source_container_name)
         self.with_target_container_name(target_container_name)
         self.with_output_udf('Dil. calc target vol', None)

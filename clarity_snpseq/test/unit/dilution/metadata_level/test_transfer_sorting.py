@@ -58,8 +58,8 @@ class TestTransferSorting(TestDilutionBase):
                  target_container_name='target1'):
         pair_builder = DilutionPairBuilder(artifact_repo)
 
-        pair_builder.with_pos_from(source_position)
-        pair_builder.with_pos_to(target_position)
+        pair_builder.with_source_pos(source_position)
+        pair_builder.with_target_pos(target_position)
         pair_builder.with_target_container_name(target_container_name)
         pair_builder.with_source_container_name(source_conatiner_name)
         pair_builder.with_source_artifact_name('{}{}'.format(sample_name, ' (source)'))
