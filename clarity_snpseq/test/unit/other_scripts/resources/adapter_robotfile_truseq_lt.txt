@@ -1,0 +1,8 @@
+Version	2
+ID	None
+Assay	TruSeq DNA LT Adapters (AD series)
+IndexReads	1
+IndexCycles	6
+A05	analyte2	AD055
+B03	analyte1	AD033
+H12	analyte3	AD012
