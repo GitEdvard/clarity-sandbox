@@ -44,6 +44,24 @@ class FileServiceInitializer:
         self.extension.context.file_service.logger = FakeLogger()
 
 
+class FileServiceForSensing:
+    def __init__(self):
+        # key: file handle (str)
+        # value: list of files
+        # file: tuple (file name, contents)
+        self.file_dict = dict()
+        self.file_repo = None
+
+    def upload_files(self, file_handle, files, stdout_max_lines=50, zip_files=False):
+        self.file_dict[file_handle] = files
+
+    def get_file_name(self, file_handle, idx):
+        return self.file_dict[file_handle][idx][0]
+
+    def get_file_contents(self, file_handle, idx):
+        return self.file_dict[file_handle][idx][1]
+
+
 class StepLogService:
     def __init__(self, context, os_service):
         self.os_service = os_service

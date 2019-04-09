@@ -4,6 +4,8 @@ from clarity_snpseq.test.utility.misc_builders import ContextInitializor
 from clarity_snpseq.test.utility.misc_builders import ContextBuilder
 from clarity_snpseq.test.utility.pair_builders import PairBuilderBase
 from clarity_snpseq.test.utility.fake_artifacts import FakeArtifactRepository
+from clarity_snpseq.test.utility.helpers import FileServiceForSensing
+from clarity_snpseq.test.utility.fake_collaborators import FakeSession
 
 
 class ReadResultFileBuilder:
@@ -63,3 +65,42 @@ class ReadResultFileBuilder:
                                 existing_contents=None):
         self.context_builder.with_shared_result_file(file_handle, with_id, existing_file_name,
                                                            existing_contents)
+
+
+class AdapterExtensionBuilder:
+    """
+    Used to simulate an extension for generating adapter robot file
+    """
+    def __init__(self):
+        self.context_builder = None
+        self.artifact_repo = FakeArtifactRepository()
+        self.extension_builder = None
+
+    @property
+    def extension(self):
+        return self.extension_builder.extension
+
+    def create(self, extension_type):
+        context_initializer = ContextInitializor()
+        context_initializer.with_file_service(FileServiceForSensing())
+        fake_session = FakeSession()
+        context_initializer.with_session(fake_session)
+        self.context_builder = ContextBuilder(context_initiator=context_initializer)
+        builder = ExtensionBuilderFactory.create_with_base_type(
+            extension_type, self.context_builder)
+        self.extension_builder = builder
+
+    def create_pair(self, input_artifact_name=None, pos_from=None, reagent_label=None):
+        """
+        :param input_artifact_name:
+        :param pos_from: ContainerPosition, if left None artifact is placed in next free pos
+        :return: Container and the created pair
+        """
+        pair_builder = PairBuilderBase(self.artifact_repo)
+        pair_builder.with_source_artifact_name(input_artifact_name)
+        pair_builder.with_source_container_name('inputplate1')
+        pair_builder.with_source_pos(pos_from)
+        pair_builder.with_reagent_label(reagent_label)
+        pair_builder.create()
+        container = pair_builder.artifact_repo.container_by_name('inputplate1')
+        return container, pair_builder.pair

@@ -36,6 +36,7 @@ class ContextBuilder:
         self.file_repository = context_initiator.context.file_service.file_repo
         self.file_service = context_initiator.context.file_service
         self.step_repo = self.context_initiator.step_repo
+        self.session = self.context_initiator.session
         self.id_counter = 0
 
     def with_all_files(self):
@@ -88,6 +89,9 @@ class ContextBuilder:
     def with_analyte_pair(self, input, output):
         self.step_repo.add_analyte_pair(input, output)
 
+    def with_reagent_type(self, reagent_type):
+        self.session.api.reagent_types.append(reagent_type)
+
     def with_udf_on_step(self, key, value):
         if self.context.current_step.udf_map is None:
             self.context.current_step.udf_map = UdfMapping()
@@ -118,7 +122,7 @@ class ContextInitializor:
     Create context with the configured repositories at the time chosen by the client.
     """
     def __init__(self, fake_step_repo_builder=None):
-        self.session = MagicMock()
+        self.session = None
         self.clarity_service = MagicMock()
         self.fake_step_repo_builder = fake_step_repo_builder or FakeStepRepoBuilder()
         self.step_repo = None
@@ -139,6 +143,15 @@ class ContextInitializor:
         self.step_logger_service = logger
         return logger
 
+    def with_file_service(self, file_service):
+        """
+        Typical when there is a need for a slim file service, for sensing only
+        """
+        self.file_service = file_service
+
+    def with_session(self, session):
+        self.session = session
+
     def _init_with_default(self):
         """
         with_os_service() and with_get_all_artifacts() must have been called prior of this call!
@@ -149,11 +162,15 @@ class ContextInitializor:
         self.file_repository = FakeFileRepository(self.os_service)
         self.artifact_service = ArtifactService(self.step_repo)
         self.current_user = self.step_repo.current_user()
-        self.file_service = FileService(self.artifact_service, self.file_repository, False, self.os_service,
-                                   uploaded_to_stdout=False,
-                                   disable_commits=True)
+        if self.file_service is None:
+            self.file_service = FileService(self.artifact_service, self.file_repository,
+                                            False, self.os_service,
+                                            uploaded_to_stdout=False,
+                                            disable_commits=True)
         if self.step_logger_service is None:
             self.step_logger_service = StepLoggerService("Step log", self.file_service)
+        if self.session is None:
+            self.session = MagicMock()
         self.validation_service = ValidationService(self.step_logger_service)
         self.dilution_service = DilutionService(self.validation_service)
         self.process_service = ProcessService()

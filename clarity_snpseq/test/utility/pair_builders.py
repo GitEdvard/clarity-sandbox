@@ -66,6 +66,8 @@ class PairBuilderBase(object):
     def with_target_artifact_name(self, target_name):
         self.target_artifact_name = target_name
 
+    def with_reagent_label(self, label):
+        self.reagent_labels.append(label)
 
     def with_output_udf(self, lims_udf_name, value):
         self.output_udf_dict[lims_udf_name] = value
