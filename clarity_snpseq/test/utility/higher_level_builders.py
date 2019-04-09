@@ -38,7 +38,7 @@ class ReadResultFileBuilder:
         context_initiator = ContextInitializor(self.step_repo_builder)
         self.context_builder = ContextBuilder(context_initiator)
         self._configure_context_builder(contents_as_list, container, pair)
-        builder = ExtensionBuilderFactory.create_with_read_result_file_type(
+        builder = ExtensionBuilderFactory.create_with_base_type(
             extension_type, self.context_builder)
         builder.with_mocked_use_qc_flag_from_current_state()
         self.extension_builder = builder

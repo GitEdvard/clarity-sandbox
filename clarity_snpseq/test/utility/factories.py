@@ -76,7 +76,7 @@ class ExtensionBuilderFactory:
                                     context_builder=context_builder)
 
     @classmethod
-    def create_with_read_result_file_type(cls, extension_type, context_builder=None):
+    def create_with_base_type(cls, extension_type, context_builder=None):
         """
         User has to provide extension type
         """
