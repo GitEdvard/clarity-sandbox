@@ -1,7 +1,5 @@
 from __future__ import print_function
-import unittest
 import datetime
-import pyperclip
 from clarity_ext.service.file_service import FileService
 from clarity_ext.service.file_service import OSService
 from clarity_ext_scripts.dilution.settings.file_rendering import HamiltonRobotSettings
@@ -11,9 +9,10 @@ from clarity_ext.domain.container import Container
 from clarity_snpseq.test.utility.misc_builders import ContextBuilder
 from clarity_snpseq.test.utility.extension_builders import ExtensionInitializer
 from clarity_snpseq.test.utility.factories import ExtensionBuilderFactory
+from clarity_snpseq.test.unit.test_base import TestBase
 
 
-class TestDilutionBase(unittest.TestCase):
+class TestDilutionBase(TestBase):
     def setUp(self):
         self.hamilton_robot_setting = HamiltonRobotSettings()
         self.biomek_robot_setting = BiomekRobotSettings()
@@ -97,15 +96,6 @@ class TestDilutionBase(unittest.TestCase):
             upload_file_service.upload_files(file_handle, files_with_name)
         self.assertEqual("", "Saving to harddisk makes it fail!")
 
-    def copy_to_clipboard(self, var):
-
-        if isinstance(var, set):
-            var = list(var)
-        if isinstance(var, list):
-            var = '\n\n'.join(var)
-        print('copied to clipboard:\n{}'.format(var))
-        pyperclip.copy('{}'.format(var))
-
     def _file_service(self, extension, save_directory):
         artifact_service = extension.context.artifact_service
         file_service = FileService(artifact_service=artifact_service,
@@ -113,19 +103,3 @@ class TestDilutionBase(unittest.TestCase):
                                    uploaded_to_stdout=False, disable_commits=True)
         file_service.temp_path = save_directory
         return file_service
-
-    def print_out_dict(self, object_list, caption):
-        print("{}:".format(caption))
-        print("-----------------------------------------")
-        for o in object_list:
-            print("{}:".format(o))
-            for key in o.__dict__:
-                print("{} {}".format(key, o.__dict__[key]))
-            print("-----------------------------------------\n")
-
-    def print_list(self, object_list, caption):
-        print("{}:".format(caption))
-        print("-------------------------------------------")
-        for o in object_list:
-            print("{}".format(o))
-        print("-------------------------------------------\n")
