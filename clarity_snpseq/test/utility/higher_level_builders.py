@@ -73,6 +73,7 @@ class AdapterExtensionBuilder:
     """
     def __init__(self):
         self.context_builder = None
+        self.context_initiatizer = ContextInitializor()
         self.artifact_repo = FakeArtifactRepository()
         self.extension_builder = None
 
@@ -80,12 +81,19 @@ class AdapterExtensionBuilder:
     def extension(self):
         return self.extension_builder.extension
 
+    def with_file_service_for_sensing(self):
+        self.context_initiatizer.with_file_service(FileServiceForSensing())
+
+    def with_error_warning_files(self):
+        self.context_builder.with_shared_result_file(file_handle='Step log')
+        self.context_builder.with_shared_result_file(file_handle='Step log')
+        self.context_builder.with_shared_result_file(file_handle='Step log')
+        self.context_builder.context.disable_commits = True
+
     def create(self, extension_type):
-        context_initializer = ContextInitializor()
-        context_initializer.with_file_service(FileServiceForSensing())
         fake_session = FakeSession()
-        context_initializer.with_session(fake_session)
-        self.context_builder = ContextBuilder(context_initiator=context_initializer)
+        self.context_initiatizer.with_session(fake_session)
+        self.context_builder = ContextBuilder(context_initiator=self.context_initiatizer)
         builder = ExtensionBuilderFactory.create_with_base_type(
             extension_type, self.context_builder)
         self.extension_builder = builder

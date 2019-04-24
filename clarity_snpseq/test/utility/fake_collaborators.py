@@ -268,6 +268,24 @@ class FakeStepRepo:
         return ProcessType(None, None, name="Some process")
 
 
+class FakeSample:
+    def __init__(self):
+        self.name = None
+        self.project = None
+        self.id = None
+        self.indexconfig_index_position_map_hamilton = None
+        self.indexconfig_source_dimensions_columns_hamilton = None
+        self.indexconfig_source_dimensions_rows_hamilton = None
+        self.indexconfig_index_position_map_biomek = None
+        self.indexconfig_source_dimensions_columns_biomek = None
+        self.indexconfig_source_dimensions_rows_biomek = None
+        self.indexconfig_short_name = None
+
+    @property
+    def udf(self):
+        return self.__dict__
+
+
 class FakeSession:
     def __init__(self):
         self.api = FakeApi()
@@ -276,6 +294,10 @@ class FakeSession:
 class FakeApi:
     def __init__(self):
         self.reagent_types = list()
+        self.samples = list()
 
     def get_reagent_types(self, name):
         return [rt for rt in self.reagent_types if rt.label == name]
+
+    def get_samples(self, name):
+        return [s for s in self.samples if s.name == name]

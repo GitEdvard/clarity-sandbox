@@ -89,6 +89,9 @@ class ContextBuilder:
     def with_analyte_pair(self, input, output):
         self.step_repo.add_analyte_pair(input, output)
 
+    def with_sample(self, sample):
+        self.session.api.samples.append(sample)
+
     def with_reagent_type(self, reagent_type):
         self.session.api.reagent_types.append(reagent_type)
 
