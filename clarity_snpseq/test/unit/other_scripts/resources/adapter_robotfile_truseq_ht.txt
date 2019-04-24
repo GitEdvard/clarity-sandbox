@@ -1,8 +1,3 @@
-Version	2
-ID	None
-Assay	TruSeq HT Adapters (D7-D5)
-IndexReads	2
-IndexCycles	8
-A05	analyte2	D705	D501
-B03	analyte1	D703	D502
-H12	analyte3	D712	D508
+D705-D501	analyte1	33	DNA1	18	END1
+D703-D502	analyte2	18	DNA1	33	END1
+D712-D508	analyte3	96	DNA1	96	END1
