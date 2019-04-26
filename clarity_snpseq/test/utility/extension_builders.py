@@ -181,7 +181,11 @@ class DilutionExtensionBuilder(ExtensionBuilder):
         else:
             # tube
             pos_to = "A:1"
-        pos_from = "A:1" if is_control else next_free_source_pos
+
+        if is_control or self.source_container_type == Container.CONTAINER_TYPE_TUBE:
+            pos_from = "A:1"
+        else:
+            pos_from = next_free_source_pos
         return pos_from, pos_to
 
     def _add_artifact_pair(self, source_conc=None, source_vol=None, target_conc=None, target_vol=None,

@@ -30,7 +30,7 @@ class FakeArtifactRepository:
 
     def create_container(self, container_id, is_source):
         if is_source:
-            container_type = Container.CONTAINER_TYPE_96_WELLS_PLATE
+            container_type = self.source_container_type
         else:
             container_type = self.target_container_type
         container = Container(container_type=container_type,
