@@ -19,7 +19,8 @@ class PairBuilderBase(object):
         self.target_artifact_name = None
         self.source_id = None
         self.target_id = None
-        self.is_control = False
+        self.is_control_pair = False
+        self.is_source_control = False
         self.reagent_labels = list()
         self.pair = None
 
@@ -41,8 +42,10 @@ class PairBuilderBase(object):
             pair.output_artifact.name = self.target_artifact_name
             pair.output_artifact.view_name = self.target_artifact_name
         pair.input_artifact.reagent_labels = self.reagent_labels
-        pair.input_artifact.is_control = self.is_control
-        pair.output_artifact.is_control = self.is_control
+        pair.input_artifact.is_control = self.is_control_pair
+        pair.output_artifact.is_control = self.is_control_pair
+        if self.is_source_control:
+            pair.input_artifact.is_control = True
         self.pair = pair
 
     def with_source_pos(self, pos_from):
@@ -109,6 +112,6 @@ class DilutionPairBuilder(PairBuilderBase):
 
     def make_it_control_pair(self, control_id_prefix, control_id_index):
         self.with_source_artifact_name('Negative control')
-        self.is_control = True
+        self.is_control_pair = True
         self.source_id = "{}{}".format(control_id_prefix, control_id_index)
         self.with_target_artifact_name('Negative control')

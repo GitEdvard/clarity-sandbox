@@ -242,6 +242,12 @@ class ExtensionBuilderPool(DilutionExtensionBuilder):
         self.input_cache.append(args)
         self.internal_index += 1
 
+    def add_input_phix(self, pool_nr):
+        args = namedtuple('input', ['pool_nr', 'conc', 'vol', 'container_name'])
+        args.pool_nr = pool_nr
+        args.container_name = 'phix'
+        self.input_cache.append(args)
+
     def add_pool(self, pool_nr, target_vol):
         args = namedtuple('input', ['pool_nr', 'target_vol'])
         args.pool_nr = pool_nr
@@ -255,6 +261,12 @@ class ExtensionBuilderPool(DilutionExtensionBuilder):
 
     def _add_artifact_pair_for_pool(self, input_args, pool_args):
 
+        if input_args.container_name == 'phix':
+            self._add_phix_pair(input_args, pool_args)
+        else:
+            self._add_normal_pair(input_args, pool_args)
+
+    def _add_normal_pair(self, input_args, pool_args):
         pos_from, pos_to = self._get_positions(is_control=False)
         pair_builder = DilutionPairBuilder(self.artifact_repository)
         pool_name = 'Pool{}'.format(pool_args.pool_nr)
@@ -267,6 +279,29 @@ class ExtensionBuilderPool(DilutionExtensionBuilder):
             pos_from=pos_from, pos_to=pos_to)
         pair_builder.with_target_id(pool_name)
         pair_builder.with_target_artifact_name(pool_name)
+        pair_builder.create()
+        self.pairs.append(pair_builder.pair)
+        self.call_index += 1
+        self.context_builder.with_analyte_pair(
+            pair_builder.pair.input_artifact, pair_builder.pair.output_artifact)
+
+    def _add_phix_pair(self, input_args, pool_args):
+        pos_from, pos_to = self._get_positions(is_control=False)
+        pair_builder = DilutionPairBuilder(self.artifact_repository)
+        pool_name = 'Pool{}'.format(pool_args.pool_nr)
+        self._create_dilution_pair(
+            pair_builder,
+            source_vol=10, source_conc=1,
+            target_vol=pool_args.target_vol,
+            target_conc=0,
+            source_container_name=input_args.container_name,
+            target_container_name=pool_name,
+            pos_from=pos_from, pos_to=pos_to)
+        pair_builder.with_target_id(pool_name)
+        pair_builder.with_target_artifact_name(pool_name)
+        pair_builder.with_source_artifact_name('PhiX')
+        pair_builder.source_id = 'phix'
+        pair_builder.is_source_control = True
         pair_builder.create()
         self.pairs.append(pair_builder.pair)
         self.call_index += 1
