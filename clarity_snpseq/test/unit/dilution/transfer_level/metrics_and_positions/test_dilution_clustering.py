@@ -20,8 +20,8 @@ class TestDilutionClustering(TestDilutionBase):
 
         # Assert
         self.assertEqual(1, len(builder.sorted_transfers))
-        self.assertEqual('out-FROM:A:1', builder.sorted_transfers[0].target_location.artifact.name)
-        self.assertEqual('in-FROM:A:1', builder.sorted_transfers[0].source_location.artifact.name)
+        self.assertEqual('out-FROM:source1-A:1', builder.sorted_transfers[0].target_location.artifact.name)
+        self.assertEqual('in-FROM:source1-A:1', builder.sorted_transfers[0].source_location.artifact.name)
 
     def test_clustering__with_one_input_pair__view_names_are_augmented_with_flowcell_name(self):
         # Arrange
@@ -33,8 +33,8 @@ class TestDilutionClustering(TestDilutionBase):
 
         # Assert
         self.assertEqual(1, len(builder.sorted_transfers))
-        self.assertEqual('target1: out-FROM:A:1', builder.sorted_transfers[0].target_location.artifact.view_name)
-        self.assertEqual('target1: in-FROM:A:1', builder.sorted_transfers[0].source_location.artifact.view_name)
+        self.assertEqual('target1: out-FROM:source1-A:1', builder.sorted_transfers[0].target_location.artifact.view_name)
+        self.assertEqual('target1: in-FROM:source1-A:1', builder.sorted_transfers[0].source_location.artifact.view_name)
 
     def test_clustering__with_one_input_pair__hamilton_robot_driver_file_ok(self):
         # Arrange
@@ -47,7 +47,7 @@ class TestDilutionClustering(TestDilutionBase):
 
         # Assert
         contents = builder.default_batch.driver_file.to_string(include_header=False)
-        self.assertEqual('target1: in-FROM:A:1\t1\tDNA1\t5.0\t0.0\t1\tEND1\tsource1\t1111111111\t0', contents)
+        self.assertEqual('target1: in-FROM:source1-A:1\t1\tDNA1\t5.0\t0.0\t1\tEND1\tsource1\t1111111111\t0', contents)
 
     def test_clustering__with_one_input_pair__biomek_robot_driver_file_ok(self):
         # Arrange
@@ -61,4 +61,4 @@ class TestDilutionClustering(TestDilutionBase):
         default_batch_biomek = next(builder.get_from_biomek_batches('default'))
         contents = default_batch_biomek.driver_file.to_string(include_header=False)
         self.copy_to_clipboard(contents)
-        self.assertEqual('target1: in-FROM:A:1,1,DNA1,5.0,0.0,1,END1,1,0', contents)
+        self.assertEqual('target1: in-FROM:source1-A:1,1,DNA1,5.0,0.0,1,END1,1,0', contents)

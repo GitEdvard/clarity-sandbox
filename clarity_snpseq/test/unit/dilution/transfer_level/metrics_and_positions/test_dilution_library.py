@@ -49,13 +49,13 @@ class TestDilutionLibrary(TestDilutionBase):
         # Assert
         transfers = builder.sorted_transfers
         self.assertEqual(2, len(transfers))
-        self.assertEqual("in-FROM:B:1", transfers[1].source_location.artifact.name)
+        self.assertEqual("in-FROM:source1-B:1", transfers[1].source_location.artifact.name)
         self.assertEqual(2, transfers[1].source_location.index_down_first)
         self.assertEqual("DNA1", transfers[1].source_slot.name)
-        self.assertEqual("out-FROM:B:1", transfers[1].target_location.artifact.name)
+        self.assertEqual("out-FROM:source1-B:1", transfers[1].target_location.artifact.name)
         self.assertEqual(2, transfers[1].target_location.index_down_first)
         self.assertEqual("END1", transfers[1].target_slot.name)
-        self.assertEqual('Tuberack1', transfers[1].target_location.container.name)
+        self.assertEqual('Destination-Tuberack1', transfers[1].target_location.container.name)
 
     def test_target_are_plates__with_2_input_artifacts__2nd_artifact_placed_in_plate1(self):
         # Arrange
@@ -71,10 +71,10 @@ class TestDilutionLibrary(TestDilutionBase):
         # Assert
         transfers = builder.sorted_transfers
         self.assertEqual(2, len(transfers))
-        self.assertEqual("in-FROM:B:1", transfers[1].source_location.artifact.name)
+        self.assertEqual("in-FROM:source1-B:1", transfers[1].source_location.artifact.name)
         self.assertEqual(2, transfers[1].source_location.index_down_first)
         self.assertEqual("DNA1", transfers[1].source_slot.name)
-        self.assertEqual("out-FROM:B:1", transfers[1].target_location.artifact.name)
+        self.assertEqual("out-FROM:source1-B:1", transfers[1].target_location.artifact.name)
         self.assertEqual(2, transfers[1].target_location.index_down_first)
         self.assertEqual("END1", transfers[1].target_slot.name)
         self.assertEqual('target1', transfers[1].target_location.container.name)
@@ -147,7 +147,7 @@ class TestDilutionLibrary(TestDilutionBase):
         batches = builder.extension.dilution_session.transfer_batches(self.biomek_robot_setting.name)
         default_batch = utils.single([b for b in batches if b.name == "default"])
         transfer_default = utils.single(default_batch.transfers)
-        self.assertEqual('Tuberack1', transfer_default.target_location.container.name)
+        self.assertEqual('Destination-Tuberack1', transfer_default.target_location.container.name)
 
     def test_target_tubes__with_one_evap_required__number_entries_in_files_ok(self):
         # Arrange
@@ -179,7 +179,7 @@ class TestDilutionLibrary(TestDilutionBase):
         batches = builder.extension.dilution_session.transfer_batches(self.biomek_robot_setting.name)
         evap1_batch = utils.single([b for b in batches if b.name == "evaporate1"])
         transfer_intermediate = utils.single(evap1_batch.transfers)
-        self.assertEqual('Tuberack1', transfer_intermediate.target_location.container.name)
+        self.assertEqual('Destination-Tuberack1', transfer_intermediate.target_location.container.name)
 
     def test_target_tubes__with_one_evap_required__final_is_tuberack(self):
         # Arrange
@@ -194,7 +194,7 @@ class TestDilutionLibrary(TestDilutionBase):
         batches = builder.extension.dilution_session.transfer_batches(self.biomek_robot_setting.name)
         evap2_batch = utils.single([b for b in batches if b.name == "evaporate2"])
         transfer_final = utils.single(evap2_batch.transfers)
-        self.assertEqual('Tuberack1', transfer_final.target_location.container.name)
+        self.assertEqual('Destination-Tuberack1', transfer_final.target_location.container.name)
 
     def test_target_tubes__with_one_destination_tube__slot_container_name_ok(self):
         # Arrange
@@ -210,9 +210,9 @@ class TestDilutionLibrary(TestDilutionBase):
         default_batch = builder.default_batch
         self.assertEqual(1, len(default_batch.source_container_slots))
         self.assertEqual("DNA1", default_batch.source_container_slots[0].name)
-        self.assertEqual('Tuberack1', default_batch.target_container_slots[0].container.name)
+        self.assertEqual('Destination-Tuberack1', default_batch.target_container_slots[0].container.name)
 
-    def test_target_tubes__with_one_destination_tube__artifact_view_name_is_tube_name(self):
+    def test_target_tubes__with_one_destination_tube__artifact_view_name_ok(self):
         # Arrange
         builder = self._create_builder_with_tubes()
         # ordinary samples
@@ -225,7 +225,7 @@ class TestDilutionLibrary(TestDilutionBase):
         #self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2017\Augusti\Clarity\saves')
         default_batch = builder.default_batch
         transfer_final = utils.single(default_batch.transfers)
-        self.assertEqual("tube1", transfer_final.target_location.artifact.view_name)
+        self.assertEqual("out-FROM:source1-A:1", transfer_final.target_location.artifact.view_name)
 
     def test_target_plates__with_one_destination_artifact__artifact_view_name_is_ok(self):
         # Arrange
@@ -240,7 +240,7 @@ class TestDilutionLibrary(TestDilutionBase):
         #self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2017\Augusti\Clarity\saves')
         default_batch = builder.default_batch
         transfer_final = utils.single(default_batch.transfers)
-        self.assertEqual("out-FROM:A:1", transfer_final.target_location.artifact.view_name)
+        self.assertEqual("out-FROM:source1-A:1", transfer_final.target_location.artifact.view_name)
 
     def test_target_are_tubes__with_four_artifacts__destination_order_ok(self):
         # Arrange

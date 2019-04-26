@@ -20,8 +20,8 @@ class TestControls(TestDilutionBase):
         # Assert
         transfers = builder.sorted_transfers
         self.assertEqual("Negative control",transfers[0].source_location.artifact.name)
-        self.assertEqual("in-FROM:B:1", transfers[1].source_location.artifact.name)
-        self.assertEqual("in-FROM:C:1", transfers[2].source_location.artifact.name)
+        self.assertEqual("in-FROM:source1-B:1", transfers[1].source_location.artifact.name)
+        self.assertEqual("in-FROM:source2-C:1", transfers[2].source_location.artifact.name)
 
     def test__with_one_control_one_ordinary__source_positions_ok_in_driver_file(self):
         # Arrange
@@ -36,7 +36,7 @@ class TestControls(TestDilutionBase):
         # Assert
         transfers = builder.sorted_transfers
         self.assertEqual(2, len(transfers))
-        self.assertEqual("in-FROM:A:1", transfers[0].source_location.artifact.name)
+        self.assertEqual("in-FROM:source1-A:1", transfers[0].source_location.artifact.name)
         self.assertEqual(1, transfers[0].source_location.index_down_first)
         self.assertEqual("DNA1", transfers[0].source_slot.name)
         self.assertEqual("Negative control", transfers[1].source_location.artifact.name)
@@ -56,7 +56,7 @@ class TestControls(TestDilutionBase):
         # Assert
         transfers = builder.sorted_transfers
         self.assertEqual(2, len(transfers))
-        self.assertEqual("out-FROM:A:1", transfers[0].target_location.artifact.name)
+        self.assertEqual("out-FROM:source1-A:1", transfers[0].target_location.artifact.name)
         self.assertEqual(1, transfers[0].target_location.index_down_first)
         self.assertEqual("END1", transfers[0].target_slot.name)
         self.assertEqual("Negative control", transfers[1].target_location.artifact.name)

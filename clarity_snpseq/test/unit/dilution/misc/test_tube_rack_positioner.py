@@ -10,7 +10,8 @@ from clarity_ext.service.dilution.service import TubeRackPositioner
 class TestTubeRackPositioner(TestDilutionBase):
     def setUp(self):
         self.pairs = self._create_pairs()
-        self.positioner = TubeRackPositioner(PlateSize(height=4, width=6))
+        self.positioner = TubeRackPositioner('Tuberack',
+                                             PlateSize(height=4, width=6))
 
     def test__with_50_pairs__number_tuberacks_ok(self):
         # Arrange

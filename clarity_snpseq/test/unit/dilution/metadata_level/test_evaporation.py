@@ -171,7 +171,7 @@ class TestEvaporation(TestDilutionBase):
         evap_batch = builder.evap2_batch
         target_slot = utils.single(evap_batch.target_container_slots)
         target_container = target_slot.container
-        self.assertEqual("out-FROM:B:1", target_container.occupied[0].artifact.name)
+        self.assertEqual("out-FROM:source1-B:1", target_container.occupied[0].artifact.name)
 
     def test__with_one_evaporate_one_ordinary__two_samples_in_final_slot(self):
         # Arrange

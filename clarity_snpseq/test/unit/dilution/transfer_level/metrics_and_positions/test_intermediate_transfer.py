@@ -62,7 +62,7 @@ class TestIntermediateTransfers(TestDilutionBase):
         # Assert
         # self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2018\Januari\clarity\saves')
         content = builder.loop_batch.driver_file.to_string(include_header=False)
-        self.assertEqual('in-FROM:A:1\t1\tDNA1\t4.0\t36.0\t1\tEND1\tsource1\t1111111111\t0', content)
+        self.assertEqual('in-FROM:source1-A:1\t1\tDNA1\t4.0\t36.0\t1\tEND1\tsource1\t1111111111\t0', content)
 
     def test__with_one_looped__final_hamilton_driver_file_ok(self):
         # Arrange
@@ -76,7 +76,7 @@ class TestIntermediateTransfers(TestDilutionBase):
         # Assert
         content = builder.default_batch.driver_file.to_string(include_header=False)
         self.copy_to_clipboard(content)
-        self.assertEqual('in-FROM:A:1-looped\t1\tDNA1\t2.0\t8.0\t1\tEND1\t1111111111\ttarget1\t0', content)
+        self.assertEqual('in-FROM:source1-A:1-looped\t1\tDNA1\t2.0\t8.0\t1\tEND1\t1111111111\ttarget1\t0', content)
 
     def test__with_one_looped_one_ordinary__pipette_volumes_ok(self):
         # Arrange
@@ -269,7 +269,7 @@ class TestIntermediateTransfers(TestDilutionBase):
         self.assertEqual(0, transfer1.source_slot.index)
         self.assertEqual('DNA1', transfer1.source_slot.name)
         self.assertEqual('Temp1', transfer1.source_slot.container.name)
-        self.assertEqual('out-FROM:B:1', transfer1.target_location.artifact.name)
+        self.assertEqual('out-FROM:source1-B:1', transfer1.target_location.artifact.name)
         self.assertEqual(2, transfer1.source_location.index_down_first)
 
     def test__with_four_samples_of_which_two_are_multistep__2nd_transfer_from_temp2_2nd_pos(self):
@@ -297,7 +297,7 @@ class TestIntermediateTransfers(TestDilutionBase):
         self.assertEqual(1, transfer2.source_slot.index)
         self.assertEqual('DNA2', transfer2.source_slot.name)
         self.assertEqual('Temp2', transfer2.source_slot.container.name)
-        self.assertEqual('out-FROM:B:1', transfer2.target_location.artifact.name)
+        self.assertEqual('out-FROM:source2-B:1', transfer2.target_location.artifact.name)
         self.assertEqual(2, transfer2.source_location.index_down_first)
 
     def test__with_four_samples_of_which_two_are_multistep__3rd_transfer_from_source1_1st_pos(self):
@@ -325,7 +325,7 @@ class TestIntermediateTransfers(TestDilutionBase):
         self.assertEqual(2, transfer3.source_slot.index)
         self.assertEqual('DNA3', transfer3.source_slot.name)
         self.assertEqual('source1', transfer3.source_slot.container.name)
-        self.assertEqual('out-FROM:A:1', transfer3.target_location.artifact.name)
+        self.assertEqual('out-FROM:source1-A:1', transfer3.target_location.artifact.name)
         self.assertEqual(1, transfer3.source_location.index_down_first)
 
     def test__with_four_samples_of_which_two_are_multistep__4th_transfer_from_source2_1st_pos(self):
@@ -354,7 +354,7 @@ class TestIntermediateTransfers(TestDilutionBase):
         self.assertEqual(3, transfer4.source_slot.index)
         self.assertEqual('DNA4', transfer4.source_slot.name)
         self.assertEqual('source2', transfer4.source_slot.container.name)
-        self.assertEqual('out-FROM:A:1', transfer4.target_location.artifact.name)
+        self.assertEqual('out-FROM:source2-A:1', transfer4.target_location.artifact.name)
         self.assertEqual(1, transfer4.source_location.index_down_first)
 
     def test__with_25_samples_to_tubes_of_which_2_are_looped__positions_ok(self):

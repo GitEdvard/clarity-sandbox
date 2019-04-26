@@ -19,7 +19,7 @@ class TestDriverFileAppearance(TestDilutionBase):
         default_batch = utils.single([b for b in batches if b.name == "default"])
         contents = default_batch.driver_file.to_string(include_header=False)
 
-        self.assertEqual("in-FROM:A:1\t1\tDNA1\t3.0\t7.0\t1\tEND1\tsource1\ttarget1\t0", contents)
+        self.assertEqual("in-FROM:source1-A:1\t1\tDNA1\t3.0\t7.0\t1\tEND1\tsource1\ttarget1\t0", contents)
 
     def test__with_one_evap_sample__hamilton_evaporate1_file_ok(self):
         # Arrange
@@ -36,7 +36,7 @@ class TestDriverFileAppearance(TestDilutionBase):
         evap1_batch = utils.single([b for b in batches if b.name == "evaporate1"])
         contents = evap1_batch.driver_file.to_string(include_header=False)
 
-        self.assertEqual("in-FROM:A:1\t1\tDNA1\t15.0\t0.0\t1\tEND1\tsource1\ttarget1\t0", contents)
+        self.assertEqual("in-FROM:source1-A:1\t1\tDNA1\t15.0\t0.0\t1\tEND1\tsource1\ttarget1\t0", contents)
 
     def test__with_one_evap_sample__hamilton_evaporate2_file_ok(self):
         # Arrange
@@ -53,7 +53,7 @@ class TestDriverFileAppearance(TestDilutionBase):
         evap2_batch = utils.single([b for b in batches if b.name == "evaporate2"])
         contents = evap2_batch.driver_file.to_string(include_header=False)
 
-        self.assertEqual("in-FROM:A:1\t1\tDNA1\t0.0\t10.0\t1\tEND1\tsource1\ttarget1\t1", contents)
+        self.assertEqual("in-FROM:source1-A:1\t1\tDNA1\t0.0\t10.0\t1\tEND1\tsource1\ttarget1\t1", contents)
 
     def test__with_one_evap_sample__biomek_evaporate1_file_ok(self):
         # Arrange
@@ -70,7 +70,7 @@ class TestDriverFileAppearance(TestDilutionBase):
         evap1_batch = utils.single([b for b in batches if b.name == "evaporate1"])
         contents = evap1_batch.driver_file.to_string(include_header=False)
 
-        self.assertEqual("in-FROM:A:1,1,DNA1,15.0,0.0,1,END1,1,0", contents)
+        self.assertEqual("in-FROM:source1-A:1,1,DNA1,15.0,0.0,1,END1,1,0", contents)
 
     def test__with_one_evap_sample_biomek_evaporate2_file_ok(self):
         # Arrange
@@ -87,4 +87,4 @@ class TestDriverFileAppearance(TestDilutionBase):
         evap2_batch = utils.single([b for b in batches if b.name == "evaporate2"])
         contents = evap2_batch.driver_file.to_string(include_header=False)
 
-        self.assertEqual("in-FROM:A:1,1,DNA1,0.0,10.0,1,END1,1,1", contents)
+        self.assertEqual("in-FROM:source1-A:1,1,DNA1,0.0,10.0,1,END1,1,1", contents)
