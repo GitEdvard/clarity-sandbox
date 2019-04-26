@@ -68,10 +68,9 @@ class FakeArtifactRepository:
         if pos_to is None:
             pos_to = pos_from
 
-
         if target_id is not None and target_id in [p.output_artifact.id for p in self.pairs]:
-            output_artifact = utils.single([p.output_artifact for p in self.pairs
-                                            if p.output_artifact.id == target_id])
+            existing = [p.output_artifact for p in self.pairs if p.output_artifact.id == target_id]
+            output_artifact = existing[0]
         else:
             target_name = "out-FROM:{}-{}".format(source_container_name, pos_from)
             output_artifact = self.create_analyte(False, target_name, target_type, id=target_id)
