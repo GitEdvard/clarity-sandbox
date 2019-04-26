@@ -161,7 +161,9 @@ class DilutionExtensionBuilder(ExtensionBuilder):
             extension_type, initz.source_type, initz.target_type, context_builder,
             source_well_positions_from_first=initz.source_well_positions_from_first,
             source_plate_size=initz.source_container_size)
-        self.artifact_repository = FakeArtifactRepository(target_container_type=initz.target_container_type)
+        self.artifact_repository = FakeArtifactRepository(source_container_type=initz.source_container_type,
+                                                          target_container_type=initz.target_container_type)
+        self.source_container_type = initz.source_container_type
         self.target_container_type = initz.target_container_type
 
     @abstractmethod
@@ -392,6 +394,7 @@ class ExtensionInitializer:
         self.target_type = Analyte
         self.target_container_type = Container.CONTAINER_TYPE_96_WELLS_PLATE
         self.target_container_size = None
+        self.source_container_type = Container.CONTAINER_TYPE_96_WELLS_PLATE
         self.source_container_size = None
         self.source_well_positions_from_first = True
 
@@ -408,6 +411,9 @@ class ExtensionInitializer:
 
     def with_source_container_size(self, plate_size):
         self.source_container_size = plate_size
+
+    def with_source_container_type(self, container_type):
+        self.source_container_type = container_type
 
     def with_source_well_positions_from_first(self, from_first):
         """

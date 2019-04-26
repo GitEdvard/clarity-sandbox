@@ -8,10 +8,12 @@ class FakeArtifactRepository:
     Methods that links analyes and container together
     """
     def __init__(self, create_well_order=Container.DOWN_FIRST,
+                 source_container_type=Container.CONTAINER_TYPE_96_WELLS_PLATE,
                  target_container_type=Container.CONTAINER_TYPE_96_WELLS_PLATE):
         self.default_source = "source"
         self.default_target = "target"
         self.containers = dict()
+        self.source_container_type = source_container_type
         self.target_container_type = target_container_type
 
         self.create_container(self.default_source, True)
@@ -42,8 +44,7 @@ class FakeArtifactRepository:
             self.containers[container_name] = self.create_container(container_name, is_source)
         return self.containers[container_name]
 
-    def create_analyte(self, is_input, partial_name, analyte_type=Analyte, samples=None, id=None):
-        name = "{}-{}".format("in" if is_input else "out", partial_name)
+    def create_analyte(self, is_input, name, analyte_type=Analyte, samples=None, id=None):
         id = id or name
         project = Project("IntegrationTest")
         if not samples:
@@ -67,7 +68,6 @@ class FakeArtifactRepository:
         if pos_to is None:
             pos_to = pos_from
 
-        name = "FROM:{}".format(pos_from)
 
         if target_id is not None and target_id in [p.output_artifact.id for p in self.pairs]:
             output_artifact = utils.single([p.output_artifact for p in self.pairs
