@@ -37,7 +37,7 @@ class TestParseResultfileGenomic(unittest.TestCase):
 
     def _render_xml(self):
         self.builder.extension.peaks = self.peaks
-        env = Environment(loader=PackageLoader('clarity_snpseq', 'test/unit/other_scripts'))
+        env = Environment(loader=PackageLoader('clarity_snpseq', 'test/unit/other_scripts/read_result_files'))
         template = env.get_template('example_tapestation_file.xml.j2')
         return template.render(ext=self.builder.extension)
 
