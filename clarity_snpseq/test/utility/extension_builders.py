@@ -299,7 +299,7 @@ class ExtensionBuilderPool(DilutionExtensionBuilder):
             pos_from=pos_from, pos_to=pos_to)
         pair_builder.with_target_id(pool_name)
         pair_builder.with_target_artifact_name(pool_name)
-        pair_builder.with_source_artifact_name('PhiX')
+        pair_builder.with_source_artifact_name('PhiX v3')
         pair_builder.source_id = 'phix'
         pair_builder.is_source_control = True
         pair_builder.create()

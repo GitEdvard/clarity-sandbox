@@ -1,14 +1,12 @@
 import re
-from unittest import skip
 from clarity_ext_scripts.library_prep.generate_robotfile_for_indextags import Extension as AdapterExt
 from clarity_ext.domain.reagent import ReagentType
 from clarity_snpseq.test.utility.higher_level_builders import AdapterExtensionBuilder
 from clarity_snpseq.test.utility.fake_collaborators import FakeSample
 from clarity_snpseq.test.unit.test_base import TestBase
-from clarity_snpseq.test.unit.other_scripts.resources.resource_bag import ADAPTER_ROBOTFILE_TRUSEQ_LT_HAMILTON
-from clarity_snpseq.test.unit.other_scripts.resources.resource_bag import ADAPTER_ROBOTFILE_TRUSEQ_HT_HAMILTON
-from clarity_snpseq.test.unit.other_scripts.resources.resource_bag import ADAPTER_ROBOTFILE_TRUSEQ_LT_BIOMEK
-from clarity_snpseq.test.unit.other_scripts.resources.resource_bag import ADAPTER_ROBOTFILE_TRUSEQ_HT_BIOMEK
+from clarity_snpseq.test.unit.other_scripts.index_robotfiles.resources.resource_bag import ADAPTER_ROBOTFILE_TRUSEQ_LT_HAMILTON
+from clarity_snpseq.test.unit.other_scripts.index_robotfiles.resources.resource_bag import ADAPTER_ROBOTFILE_TRUSEQ_HT_HAMILTON
+from clarity_snpseq.test.unit.other_scripts.index_robotfiles.resources.resource_bag import ADAPTER_ROBOTFILE_TRUSEQ_LT_BIOMEK
 
 
 class TestGenerateAdapterRobotfile(TestBase):

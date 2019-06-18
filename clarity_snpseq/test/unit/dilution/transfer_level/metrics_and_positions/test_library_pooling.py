@@ -210,3 +210,23 @@ class TestLibraryPooling(TestDilutionBase):
         source_tube_rack = transfer1.source_location.container
         self.assertEqual(2, len(source_tube_rack.occupied))
         self.assertFalse([well for well in source_tube_rack.occupied if well.artifact.name == 'PhiX'])
+
+    def test__with_2_input_tubes_and_phix__1_destination_container(self):
+        # Destination container = tuberack
+        # Arrange
+        initz = ExtensionInitializer()
+        initz.source_container_type = Container.CONTAINER_TYPE_TUBE
+        initz.target_container_type = Container.CONTAINER_TYPE_TUBE
+        builder = ExtensionBuilderFactory.create_with_library_pooling(initz)
+        builder.add_input_artifact(pool_nr=1, conc=10, vol=50, container_name='tube1')
+        builder.add_input_artifact(pool_nr=1, conc=10, vol=50, container_name='tube2')
+        builder.add_input_phix(pool_nr=1)
+        builder.add_pool(pool_nr=1, target_vol=20)
+        builder.assemble_pairs()
+
+        # Act
+        self.execute_short(builder)
+
+        # Assert
+        final_batch = builder.default_batch
+        self.assertEqual(1, len(final_batch.target_containers))

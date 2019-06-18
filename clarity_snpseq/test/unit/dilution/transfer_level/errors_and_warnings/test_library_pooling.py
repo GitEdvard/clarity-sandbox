@@ -56,8 +56,38 @@ class TestLibraryPooling(TestDilutionBase):
         # it's 2 errors here because of there is 2 input artifacts
         self.assertEqual(1, error_count)
 
+    def test_input_tubes_target_pools__with_100_input_tubes__exception(self):
+        # Arrange
+        context_builder = ContextBuilder()
+        context_builder.with_all_files()
+        initz = ExtensionInitializer()
+        initz.target_container_type = Container.CONTAINER_TYPE_TUBE
+        initz.source_container_type = Container.CONTAINER_TYPE_TUBE
+        builder = ExtensionBuilderFactory.create_with_library_pooling(
+            extension_initializer=initz, context_builder=context_builder)
+        self._add_pool_with_100_tubes(builder)
+
+        # Act
+        try:
+            self.execute_short(builder)
+        except UsageError:
+            pass
+
+        # Assert
+        error_count = builder.validation_service.error_count
+        # it's 2 errors here because of there is 2 input artifacts
+        self.assertEqual(1, error_count)
+
+
     def _add_100_pools(self, builder):
         for i in range(100):
             builder.add_input_artifact(pool_nr=i + 1, conc=10, vol=50, container_name='source1')
             builder.add_pool(pool_nr=i + 1, target_vol=20)
+        builder.assemble_pairs()
+
+    def _add_pool_with_100_tubes(self, builder):
+        for i in range(100):
+            name = 'source{}'.format(i)
+            builder.add_input_artifact(pool_nr=1, conc=10, vol=50, container_name=name)
+        builder.add_pool(pool_nr=1, target_vol=50)
         builder.assemble_pairs()
