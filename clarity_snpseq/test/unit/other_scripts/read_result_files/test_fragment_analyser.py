@@ -1,6 +1,6 @@
 import unittest
 from unittest import skip
-from clarity_snpseq.test.utility.higher_level_builders import ReadResultFileBuilder
+from clarity_snpseq.test.utility.higher_level_builders.read_result_file_builder import ReadResultFileBuilder
 from clarity_ext_scripts.fragment_analyzer.analyze_quality_table import Extension as AnalyzeQualityTable
 
 

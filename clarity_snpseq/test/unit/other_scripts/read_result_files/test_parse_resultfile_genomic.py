@@ -1,7 +1,6 @@
 import unittest
-from unittest import skip
 from jinja2 import Environment, PackageLoader
-from clarity_snpseq.test.utility.higher_level_builders import ReadResultFileBuilder
+from clarity_snpseq.test.utility.higher_level_builders.read_result_file_builder import ReadResultFileBuilder
 from clarity_ext_scripts.tapestation.parse_result_file_genomic import Extension as ParseResultfileGenomic
 from clarity_snpseq.test.utility.context_monkey_patching import ResultFilePatcher
 

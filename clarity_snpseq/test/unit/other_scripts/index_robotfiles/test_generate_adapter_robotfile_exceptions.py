@@ -1,9 +1,7 @@
-from unittest import skip
 from clarity_ext_scripts.library_prep.generate_robotfile_for_indextags import Extension as AdapterExt
 from clarity_ext.domain.reagent import ReagentType
-from clarity_ext.domain.container import PlateSize
 from clarity_ext.domain.validation import UsageError
-from clarity_snpseq.test.utility.higher_level_builders import AdapterExtensionBuilder
+from clarity_snpseq.test.utility.higher_level_builders.adapter_extension_builder import AdapterExtensionBuilder
 from clarity_snpseq.test.utility.fake_collaborators import FakeSample
 from clarity_snpseq.test.unit.test_base import TestBase
 

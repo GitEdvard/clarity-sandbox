@@ -1,11 +1,9 @@
 import unittest
-from unittest import skip
 import xml.etree.ElementTree as ET
-import xml.etree as etree
 from collections import namedtuple
 from clarity_ext.utils import single
 from clarity_ext_scripts.general.route_artifacts import Extension as RerouteArtifacts
-from clarity_snpseq.test.utility.higher_level_builders import RerouteExtensionBuilder
+from clarity_snpseq.test.utility.higher_level_builders.reroute_extension_builder import RerouteExtensionBuilder
 from clarity_snpseq.test.utility.pair_builders import PairBuilderBase
 from clarity_snpseq.test.utility.fake_artifacts import FakeArtifactRepository
 
