@@ -287,17 +287,5 @@ class FakeSample:
 
 
 class FakeSession:
-    def __init__(self):
-        self.api = FakeApi()
-
-
-class FakeApi:
-    def __init__(self):
-        self.reagent_types = list()
-        self.samples = list()
-
-    def get_reagent_types(self, name):
-        return [rt for rt in self.reagent_types if rt.label == name]
-
-    def get_samples(self, name):
-        return [s for s in self.samples if s.name == name]
+    def __init__(self, fake_api):
+        self.api = fake_api

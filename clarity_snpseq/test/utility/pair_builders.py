@@ -9,6 +9,7 @@ class PairBuilderBase(object):
         self.artifact_repo = fake_artifact_repo
         self.input_udf_dict = dict()
         self.output_udf_dict = output_udf_dict or dict()
+        self.input_attribute_dict = dict()
         self.pos_from = None
         self.pos_to = None
         self.source_container_name = None
@@ -46,6 +47,8 @@ class PairBuilderBase(object):
         pair.output_artifact.is_control = self.is_control_pair
         if self.is_source_control:
             pair.input_artifact.is_control = True
+        for key in self.input_attribute_dict:
+            setattr(pair.input_artifact, key, self.input_attribute_dict[key])
         self.pair = pair
 
     def with_source_pos(self, pos_from):
@@ -59,6 +62,9 @@ class PairBuilderBase(object):
 
     def with_target_id(self, target_id):
         self.target_id = target_id
+
+    def with_source_id(self, source_id):
+        self.source_id = source_id
 
     def with_target_container_name(self, target_container_name):
         self.target_container_name = target_container_name
@@ -74,6 +80,12 @@ class PairBuilderBase(object):
 
     def with_output_udf(self, lims_udf_name, value):
         self.output_udf_dict[lims_udf_name] = value
+
+    def with_input_udf(self, lims_udf_name, value):
+        self.input_udf_dict[lims_udf_name] = value
+
+    def with_attribute_input(self, attribute_name, value):
+        self.input_attribute_dict[attribute_name] = value
 
 
 class DilutionPairBuilder(PairBuilderBase):
