@@ -42,28 +42,27 @@
     {%- if well.artifact %}
     <Sample>
       <WellNumber>{{ well.position.row_letter }}{{ well.position.col }}</WellNumber>
-      <Comment>{{well.artifact.id}}_{{well.artifact.name}}</Comment>
-      <Concentration>41.5</Concentration>
-      <Observations>
-      </Observations>
+      <Comment>{{xml_value_bag.comment}}</Comment>
+      <Concentration>{{xml_value_bag.concentration}}</Concentration>
+      <Observations>{{xml_value_bag.observations}}</Observations>
       <Alert>
       </Alert>
       <RNA />
-      <DIN>9.4</DIN>
+      <DIN>{{xml_value_bag.din}}</DIN>
       <ScreenTapeID>01-S025-151204-09-000083</ScreenTapeID>
       <Peaks>
-        {%- for peak in ext.peaks(well) %}
+        {%- for peak in xml_value_bag.peaks %}
         <Peak>
-          <Area>{{ "%.2f" % peak.area }}</Area>
-          <AssignedQuantity>8.50</AssignedQuantity>
-          <CalibratedQuantity>8.50</CalibratedQuantity>
+          <Area>1.0</Area>
+          <AssignedQuantity>1.0</AssignedQuantity>
+          <CalibratedQuantity>{{peak.calibrated_quantity}}</CalibratedQuantity>
           <Comment>
           </Comment>
           <FromMW>62</FromMW>
           <FromPercent>82.9</FromPercent>
           <Height>517.376</Height>
           <Molarity>131</Molarity>
-          <Size>100</Size>
+          <Size>{{peak.size}}</Size>
           <Number>-</Number>
           <Observations>Lower Marker</Observations>
           <PercentIntegratedArea>-</PercentIntegratedArea>

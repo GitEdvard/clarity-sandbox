@@ -2,7 +2,7 @@ import unittest
 from jinja2 import Environment, PackageLoader
 from clarity_snpseq.test.utility.higher_level_builders.read_result_file_builder import ReadResultFileBuilder
 from clarity_ext_scripts.tapestation.parse_result_file_genomic import Extension as ParseResultfileGenomic
-from clarity_snpseq.test.utility.context_monkey_patching import ResultFilePatcher
+from clarity_ext.domain.validation import UsageError
 
 
 class TestParseResultfileGenomic(unittest.TestCase):
@@ -19,46 +19,112 @@ class TestParseResultfileGenomic(unittest.TestCase):
         builder.with_analyte_udf('TS Observation', None)
         builder.with_analyte_udf('Dil. Calc. Source Vol.', None)
         builder.with_mocked_local_shared_file('Result XML File (required)')
+        builder.with_monkey_result_file_cache()
         self.builder = builder
 
     def _create_pair(self, target_artifact_id, artifact_name=None):
-        return self.builder.create_pair(target_artifact_id, artifact_name)
+        container, pair = self.builder.create_pair(target_artifact_id, artifact_name)
+        self.builder.with_result_file('92-998', pair.output_artifact)
+        return container, pair
 
-    def _init_builder(self, contents_as_list, container, pair):
+    def _init_builder(self, container, pair):
         self.builder.create(
-            ParseResultfileGenomic, contents_as_list, container, pair)
+            ParseResultfileGenomic, [], container, pair)
 
-    def peaks(self, well):
-        if well.artifact.name == "Ladder":
-            return [{"area": 1.0}] * 14
-        else:
-            return [{"area": 1.0}, {"area": 4.69}, {"area": 0.03}]
-
-    def _render_xml(self):
-        self.builder.extension.peaks = self.peaks
+    def _render_xml(self, xml_value_bag):
         env = Environment(loader=PackageLoader('clarity_snpseq', 'test/unit/other_scripts/read_result_files'))
         template = env.get_template('example_tapestation_file.xml.j2')
-        return template.render(ext=self.builder.extension)
+        return template.render(ext=self.builder.extension, xml_value_bag=xml_value_bag)
 
-    def test_render(self):
-        container, pair = self._create_pair('92-998')
-        self._init_builder([], container, pair)
-        self._render_xml()
-
-    def first_test(self):
+    def test__with_one_ok_sample__preset_values_from_script_found_in_udfs(self):
         # Arrange
         container, pair = self._create_pair(target_artifact_id='92-998')
-        self._init_builder([], container, pair)
-        contents = self._render_xml()
+        self._init_builder(container, pair)
+        xml_value_bag = XmlValueBag(comment='92-998_artifact-name')
+        contents = self._render_xml(xml_value_bag)
         self.builder.context_builder.with_mocked_local_shared_file(
             'Result XML File (required)', contents)
-        monkey = ResultFilePatcher()
-        monkey.cache['92-998'] = pair.output_artifact
-        self.builder.extension.context.output_result_file_by_id = monkey.output_result_file_by_id
 
         # Act
         self.builder.extension.execute()
 
         # Assert
-        #self.assertEqual(5.48, pair.output_artifact.udf_gqn)
+        self.assertEqual(-2, pair.output_artifact.udf_dil_calc_source_vol)
 
+    def test__with_one_ok_sample__values_from_xml_file_found_in_udfs(self):
+        # Arrange
+        container, pair = self._create_pair(target_artifact_id='92-998')
+        self._init_builder(container, pair)
+        xml_value_bag = XmlValueBag()
+        xml_value_bag.comment = '92-998_artifact-name'
+        xml_value_bag.observations = '\n'
+        xml_value_bag.concentration = 41.5
+        xml_value_bag.din = 9.4
+        xml_value_bag.peaks = [Peak(size=100, quantity=0),
+                               Peak(size=110, quantity=8.5)]
+
+        contents = self._render_xml(xml_value_bag)
+        self.builder.context_builder.with_mocked_local_shared_file(
+            'Result XML File (required)', contents)
+
+        # Act
+        self.builder.extension.execute()
+
+        # Assert
+        self.assertEqual('(none)', pair.output_artifact.udf_ts_observation)
+        self.assertEqual(41.5, pair.output_artifact.udf_ts_total_conc_ngul)
+        self.assertEqual(9.4, pair.output_artifact.udf_din)
+        self.assertEqual(100, pair.output_artifact.udf_peak_1_mw)
+        self.assertEqual(110, pair.output_artifact.udf_ts_length_bp)
+        self.assertEqual(8.5, pair.output_artifact.udf_ts_range_conc_ngul)
+
+    def test__with_peak_size_not_present__exception(self):
+        # Arrange
+        container, pair = self._create_pair(target_artifact_id='92-998')
+        self._init_builder(container, pair)
+        xml_value_bag = XmlValueBag()
+        xml_value_bag.comment = '92-998_artifact-name'
+        xml_value_bag.peaks = [Peak(size=100, quantity=0),
+                               Peak(size='-', quantity=8.5)]
+
+        contents = self._render_xml(xml_value_bag)
+        self.builder.context_builder.with_mocked_local_shared_file(
+            'Result XML File (required)', contents)
+
+        # Act
+        # Assert
+        self.assertRaises(UsageError, lambda: self.builder.extension.execute())
+
+    def test__with_peak_calibrated_quantity_not_present__exception(self):
+        # Arrange
+        container, pair = self._create_pair(target_artifact_id='92-998')
+        self._init_builder(container, pair)
+        xml_value_bag = XmlValueBag()
+        xml_value_bag.comment = '92-998_artifact-name'
+        xml_value_bag.peaks = [Peak(size=100, quantity=0),
+                               Peak(size='1', quantity='')]
+
+        contents = self._render_xml(xml_value_bag)
+        self.builder.context_builder.with_mocked_local_shared_file(
+            'Result XML File (required)', contents)
+
+        # Act
+        # Assert
+        self.builder.extension.execute()
+        #self.assertRaises(UsageError, lambda: self.builder.extension.execute())
+
+
+class XmlValueBag:
+    def __init__(self, comment=None):
+        self.comment = comment
+        self.observations = '\n'
+        self.concentration = 0
+        self.din = 0
+        self.peaks = [Peak(size=0, quantity=0),
+                      Peak(size=0, quantity=0)]
+
+
+class Peak:
+    def __init__(self, size=None, quantity=None):
+        self.size = size
+        self.calibrated_quantity = quantity

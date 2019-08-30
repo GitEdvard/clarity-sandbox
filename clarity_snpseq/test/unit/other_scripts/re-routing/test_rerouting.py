@@ -2,6 +2,7 @@ import unittest
 import xml.etree.ElementTree as ET
 from collections import namedtuple
 from clarity_ext.utils import single
+from clarity_ext.domain.shared_result_file import SharedResultFile
 from clarity_ext_scripts.general.route_artifacts import Extension as RerouteArtifacts
 from clarity_snpseq.test.utility.higher_level_builders.reroute_extension_builder import RerouteExtensionBuilder
 from clarity_snpseq.test.utility.pair_builders import PairBuilderBase
@@ -15,7 +16,7 @@ class TestRerouting(unittest.TestCase):
         builder.create(RerouteArtifacts)
         self.create_analyte_with_user_settings(
             'analyte1', builder,
-            step_name='a_step_name', workflow_name='a_workflow_name', workflow_change='Approved')
+            step_name='a_step_name', workflow_name='a_workflow_name', confirm_workflow_move=True)
         self.add_available_step_and_workflows(
             builder, step_name='a_step_name', step_uri='a_step_uri',
             workflow_name='a_workflow_name', workflow_uri='a_workflow_uri')
@@ -26,13 +27,49 @@ class TestRerouting(unittest.TestCase):
         # Assert
         self.assertEqual(1, len(builder.post_cache))
 
+    def test_reroute__with_one_approved_and_one_shared_resultfile__one_entry_to_http_post(self):
+        # Arrange
+        builder = RerouteExtensionBuilder()
+        builder.create(RerouteArtifacts)
+        self.create_analyte_with_user_settings(
+            'analyte1', builder,
+            step_name='a_step_name', workflow_name='a_workflow_name', confirm_workflow_move=True)
+        self.create_shared_result_file_proxy(builder)
+        self.add_available_step_and_workflows(
+            builder, step_name='a_step_name', step_uri='a_step_uri',
+            workflow_name='a_workflow_name', workflow_uri='a_workflow_uri')
+
+        # Act
+        builder.extension.execute()
+
+        # Assert
+        self.assertEqual(1, len(builder.post_cache))
+
+    def test_reroute__with_one_nothing_filled_in__no_entry_in_http_post(self):
+        # Arrange
+        builder = RerouteExtensionBuilder()
+        builder.create(RerouteArtifacts)
+        self.create_analyte_with_user_settings(
+            'analyte1', builder,
+            step_name='', workflow_name='', confirm_workflow_move=False)
+        self.create_shared_result_file_proxy(builder)
+        self.add_available_step_and_workflows(
+            builder, step_name='a_step_name', step_uri='a_step_uri',
+            workflow_name='a_workflow_name', workflow_uri='a_workflow_uri')
+
+        # Act
+        builder.extension.execute()
+
+        # Assert
+        self.assertEqual(0, len(builder.post_cache))
+
     def test_reroute__with_one_approved_sample__stage_uri_in_xml_ok(self):
         # Arrange
         builder = RerouteExtensionBuilder()
         builder.create(RerouteArtifacts)
         self.create_analyte_with_user_settings(
             'analyte1', builder,
-            step_name='a_step_name', workflow_name='a_workflow_name', workflow_change='Approved')
+            step_name='a_step_name', workflow_name='a_workflow_name', confirm_workflow_move=True)
         self.add_available_step_and_workflows(
             builder, step_name='a_step_name', step_uri='a_step_uri',
             workflow_name='a_workflow_name', workflow_uri='a_workflow_uri')
@@ -51,7 +88,7 @@ class TestRerouting(unittest.TestCase):
         builder.create(RerouteArtifacts)
         self.create_analyte_with_user_settings(
             'analyte1', builder,
-            step_name='a_step_name', workflow_name='a_workflow_name', workflow_change='Approved')
+            step_name='a_step_name', workflow_name='a_workflow_name', confirm_workflow_move=True)
         self.add_available_step_and_workflows(
             builder, step_name='a_step_name', step_uri='a_step_uri',
             workflow_name='a_workflow_name', workflow_uri='a_workflow_uri')
@@ -71,7 +108,7 @@ class TestRerouting(unittest.TestCase):
         builder.create(RerouteArtifacts)
         self.create_analyte_with_user_settings(
             'analyte1', builder,
-            step_name='a_step_name', workflow_name='a_workflow_name', workflow_change='Approved')
+            step_name='a_step_name', workflow_name='a_workflow_name', confirm_workflow_move=True)
         self.add_available_step_and_workflows(
             builder, step_name='a_step_name', step_uri='a_step_uri',
             workflow_name='a_workflow_name', workflow_uri='a_workflow_uri')
@@ -89,10 +126,10 @@ class TestRerouting(unittest.TestCase):
         builder.create(RerouteArtifacts)
         self.create_analyte_with_user_settings(
             'analyte1', builder,
-            step_name='a_step_name', workflow_name='a_workflow_name', workflow_change='Approved')
+            step_name='a_step_name', workflow_name='a_workflow_name', confirm_workflow_move=True)
         self.create_analyte_with_user_settings(
             'analyte2', builder,
-            step_name='another_step_name', workflow_name='another_workflow_name', workflow_change='Approved')
+            step_name='another_step_name', workflow_name='another_workflow_name', confirm_workflow_move=True)
         self.add_available_step_and_workflows(
             builder, step_name='a_step_name', step_uri='a_step_uri',
             workflow_name='a_workflow_name', workflow_uri='a_workflow_uri')
@@ -121,10 +158,10 @@ class TestRerouting(unittest.TestCase):
         builder.create(RerouteArtifacts)
         self.create_analyte_with_user_settings(
             'analyte1', builder,
-            step_name='a_step_name', workflow_name='a_workflow_name', workflow_change='Approved')
+            step_name='a_step_name', workflow_name='a_workflow_name', confirm_workflow_move=True)
         self.create_analyte_with_user_settings(
             'analyte2', builder,
-            step_name='a_step_name', workflow_name='a_workflow_name', workflow_change='Approved')
+            step_name='a_step_name', workflow_name='a_workflow_name', confirm_workflow_move=True)
         self.add_available_step_and_workflows(
             builder, step_name='a_step_name', step_uri='a_step_uri',
             workflow_name='a_workflow_name', workflow_uri='a_workflow_uri')
@@ -153,7 +190,7 @@ class TestRerouting(unittest.TestCase):
         builder.create(RerouteArtifacts)
         self.create_analyte_with_user_settings(
             'analyte1', builder,
-            step_name='a_step_name', workflow_name='a_workflow_name', workflow_change='Dismissed')
+            step_name='a_step_name', workflow_name='a_workflow_name', confirm_workflow_move=False)
         self.add_available_step_and_workflows(
             builder, step_name='a_step_name', step_uri='a_step_uri',
             workflow_name='a_workflow_name', workflow_uri='a_workflow_uri')
@@ -171,14 +208,20 @@ class TestRerouting(unittest.TestCase):
         builder.add_entry_for_available_stages(stage_entry, workflow_uri)
 
     def create_analyte_with_user_settings(
-            self, artifact_name, rerouting_builder, step_name, workflow_name, workflow_change):
+            self, artifact_name, rerouting_builder, step_name, workflow_name, confirm_workflow_move):
         pair_builder = PairBuilderBase(FakeArtifactRepository())
         stage = SingleWorkflowStage(uri='current_workflow_uri')
         workflow_stage = WorkflowStages(stage=stage, status='IN_PROGRESS', workflow='')
         pair_builder.with_attribute_input('workflow_stages_and_statuses', [workflow_stage])
-        pair_builder.with_output_udf('Workflow change', workflow_change)
-        pair_builder.with_output_udf('Library Prep Method', '{} $ {}'.format(workflow_name, step_name))
+        pair_builder.with_output_udf('Confirm Workflow Move', confirm_workflow_move)
+        pair_builder.with_output_udf('New Workflow (from holding)', workflow_name)
+        pair_builder.with_output_udf('New Step (from holding)', step_name)
         rerouting_builder.with_artifact_pair(artifact_name, pair_builder)
+
+    def create_shared_result_file_proxy(self, rerouting_builder):
+        pair_builder = PairBuilderBase(FakeArtifactRepository())
+        pair_builder.target_type = SharedResultFile
+        rerouting_builder.with_artifact_pair('shared result file', pair_builder)
 
     def test_xml(self):
         def get_workflows_raw():

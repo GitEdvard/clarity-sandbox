@@ -1,12 +1,10 @@
-import xml.etree.ElementTree as ET
 from clarity_snpseq.test.utility.factories import ExtensionBuilderFactory
 from clarity_snpseq.test.utility.misc_builders import FakeStepRepoBuilder
 from clarity_snpseq.test.utility.misc_builders import ContextInitializor
 from clarity_snpseq.test.utility.misc_builders import ContextBuilder
 from clarity_snpseq.test.utility.pair_builders import PairBuilderBase
 from clarity_snpseq.test.utility.fake_artifacts import FakeArtifactRepository
-from clarity_snpseq.test.utility.helpers import FileServiceForSensing
-from clarity_snpseq.test.utility.fake_collaborators import FakeSession
+from clarity_snpseq.test.utility.context_monkey_patching import ResultFilePatcher
 
 
 class ReadResultFileBuilder:
@@ -21,6 +19,7 @@ class ReadResultFileBuilder:
         artifact_repo = FakeArtifactRepository()
         self.pair_builder = PairBuilderBase(artifact_repo)
         self.extension_builder = None
+        self.result_file_monkey = None
 
     def create_pair(self, target_artifact_id, artifact_name=None):
         artifact_pair_builder = self.pair_builder
@@ -44,6 +43,9 @@ class ReadResultFileBuilder:
         builder = ExtensionBuilderFactory.create_with_base_type(
             extension_type, self.context_builder)
         builder.with_mocked_use_qc_flag_from_current_state()
+        if self.result_file_monkey is not None:
+            builder.extension.context.output_result_file_by_id = \
+                self.result_file_monkey.output_result_file_by_id
         self.extension_builder = builder
 
     def _configure_context_builder(self, contents_as_list, container, pair):
@@ -66,3 +68,9 @@ class ReadResultFileBuilder:
                                 existing_contents=None):
         self.context_builder.with_shared_result_file(file_handle, with_id, existing_file_name,
                                                            existing_contents)
+
+    def with_monkey_result_file_cache(self):
+        self.result_file_monkey = ResultFilePatcher()
+
+    def with_result_file(self, id, artifact):
+        self.result_file_monkey.cache[id] = artifact

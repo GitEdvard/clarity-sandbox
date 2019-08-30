@@ -52,6 +52,11 @@ class FakeArtifactRepository:
         ret = analyte_type(api_resource=None, is_input=is_input, id=id, name=name, samples=samples)
         return ret
 
+    def create_shared_result_file(self, name, id):
+        id = id or name
+        ret = SharedResultFile(name=name, id=id)
+        return ret
+
     def create_pair(self, pos_from=None, pos_to=None, source_container_name=None, target_container_name=None,
                     source_type=Analyte, target_type=Analyte, source_id=None, target_id=None):
         if source_container_name is None:
@@ -71,6 +76,8 @@ class FakeArtifactRepository:
         if target_id is not None and target_id in [p.output_artifact.id for p in self.pairs]:
             existing = [p.output_artifact for p in self.pairs if p.output_artifact.id == target_id]
             output_artifact = existing[0]
+        elif target_type == SharedResultFile:
+            output_artifact = self.create_shared_result_file('shared result file', target_id)
         else:
             target_name = "out-FROM:{}-{}".format(source_container_name, pos_from)
             output_artifact = self.create_analyte(False, target_name, target_type, id=target_id)

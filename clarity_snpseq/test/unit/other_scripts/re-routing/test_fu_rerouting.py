@@ -1,8 +1,7 @@
 import unittest
 import xml.etree.ElementTree as ET
 from collections import namedtuple
-from clarity_ext.utils import single
-from clarity_ext_scripts.general.fu_example_rerouting import Extension as RerouteArtifacts
+from clarity_ext_scripts.fu.fu_example_rerouting import Extension as RerouteArtifacts
 from clarity_snpseq.test.utility.higher_level_builders.reroute_extension_builder import RerouteExtensionBuilder
 from clarity_snpseq.test.utility.pair_builders import PairBuilderBase
 from clarity_snpseq.test.utility.fake_artifacts import FakeArtifactRepository
@@ -15,10 +14,10 @@ class TestFuRerouting(unittest.TestCase):
         builder.create(RerouteArtifacts)
         self.create_analyte_with_user_settings(
             'analyte1', builder,
-            step_name='a_step_name', workflow_name='a_workflow_name', workflow_change='Approved')
+            step_name='a_step_name', workflow_name='a_workflow_name', confirm_workflow_move=True)
         self.create_analyte_with_user_settings(
             'analyte2', builder,
-            step_name='another_step_name', workflow_name='another_workflow_name', workflow_change='Approved')
+            step_name='another_step_name', workflow_name='another_workflow_name', confirm_workflow_move=True)
         self.add_available_step_and_workflows(
             builder, step_name='a_step_name', step_uri='a_step_uri',
             workflow_name='a_workflow_name', workflow_uri='a_workflow_uri')
@@ -48,14 +47,14 @@ class TestFuRerouting(unittest.TestCase):
         builder.add_entry_for_available_stages(stage_entry, workflow_uri)
 
     def create_analyte_with_user_settings(
-            self, artifact_name, rerouting_builder, step_name, workflow_name, workflow_change):
+            self, artifact_name, rerouting_builder, step_name, workflow_name, confirm_workflow_move):
         pair_builder = PairBuilderBase(FakeArtifactRepository())
         stage = SingleWorkflowStage(uri='current_workflow_uri')
         workflow_stage = WorkflowStages(stage=stage, status='IN_PROGRESS', workflow='')
         pair_builder.with_attribute_input('workflow_stages_and_statuses', [workflow_stage])
-        pair_builder.with_output_udf('Workflow change', workflow_change)
-        pair_builder.with_output_udf('<move-to-new workflow udf name>', workflow_name)
-        pair_builder.with_output_udf('<move-to-new-stage udf name>', step_name)
+        pair_builder.with_output_udf('Confirm Workflow Move', confirm_workflow_move)
+        pair_builder.with_output_udf('New Workflow (from FU)', workflow_name)
+        pair_builder.with_output_udf('New Step (from FU)', step_name)
         rerouting_builder.with_artifact_pair(artifact_name, pair_builder)
 
 
