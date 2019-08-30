@@ -95,14 +95,14 @@ class TestParseResultfileGenomic(unittest.TestCase):
         # Assert
         self.assertRaises(UsageError, lambda: self.builder.extension.execute())
 
-    def test__with_peak_calibrated_quantity_not_present__exception(self):
+    def test__with_peak_calibrated_quantity_not_present__no_exception(self):
         # Arrange
         container, pair = self._create_pair(target_artifact_id='92-998')
         self._init_builder(container, pair)
         xml_value_bag = XmlValueBag()
         xml_value_bag.comment = '92-998_artifact-name'
         xml_value_bag.peaks = [Peak(size=100, quantity=0),
-                               Peak(size='1', quantity='')]
+                               Peak(size='1', quantity='-')]
 
         contents = self._render_xml(xml_value_bag)
         self.builder.context_builder.with_mocked_local_shared_file(
@@ -111,7 +111,6 @@ class TestParseResultfileGenomic(unittest.TestCase):
         # Act
         # Assert
         self.builder.extension.execute()
-        #self.assertRaises(UsageError, lambda: self.builder.extension.execute())
 
 
 class XmlValueBag:

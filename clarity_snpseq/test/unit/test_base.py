@@ -1,4 +1,5 @@
 from __future__ import print_function
+import re
 import unittest
 import pyperclip
 
@@ -28,3 +29,11 @@ class TestBase(unittest.TestCase):
         for o in object_list:
             print("{}".format(o))
         print("-------------------------------------------\n")
+
+    def parse_path(self, path):
+        import os
+        split_path = re.split(r'[\/\\]', path)
+        new_path = ''
+        for part in split_path:
+            new_path = os.path.join(new_path, part)
+        return new_path

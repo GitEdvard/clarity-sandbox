@@ -1,4 +1,3 @@
-import unittest
 import re
 from unittest import skip
 from clarity_ext.service.step_logger_service import AggregatedStepLoggerService
@@ -6,9 +5,10 @@ from clarity_ext.service.step_logger_service import StepLoggerService
 from clarity_snpseq.test.utility.helpers import SimpleStepLogService
 from clarity_snpseq.test.utility.helpers import OsUtility
 from clarity_snpseq.test.utility.helpers import ContextBuilder
+from clarity_snpseq.test.unit.test_base import TestBase
 
 
-class TestStepLog(unittest.TestCase):
+class TestStepLog(TestBase):
     def setUp(self):
         self.builder = ContextBuilder()
         self.os_utility = OsUtility(self.builder.os_service)
@@ -23,7 +23,7 @@ class TestStepLog(unittest.TestCase):
         step_logger_service.log('my message')
 
         # Assert
-        queue_path = r'./context_files\upload_queue\92-9876\Step_log.txt'
+        queue_path = self.parse_path(r'./context_files\upload_queue\92-9876\Step_log.txt')
         self.assertTrue(self.builder.os_service.exists(queue_path))
 
     def test_write_to_step_log__with_one_message__contents_from_step_log_ok(self):
@@ -35,7 +35,7 @@ class TestStepLog(unittest.TestCase):
         step_logger_service.log('my message')
 
         # Assert
-        queue_path = r'./context_files\upload_queue\92-9876\Step_log.txt'
+        queue_path = self.parse_path(r'./context_files\upload_queue\92-9876\Step_log.txt')
         contents = self.os_utility.get_contents(queue_path)
         match = re.match('^\d+-\d+-\d+ \d+:\d+:\d+ - my message\r\n$', contents)
         self.assertTrue(match is not None)
@@ -49,7 +49,7 @@ class TestStepLog(unittest.TestCase):
         step_logger_service.warning('my message')
 
         # Assert
-        queue_path = r'./context_files\upload_queue\92-9876\Warnings.txt'
+        queue_path = self.parse_path(r'./context_files\upload_queue\92-9876\Warnings.txt')
         self.assertTrue(self.builder.os_service.exists(queue_path))
 
     def test_real_aggregated__with_one_warning__warning_step_log_saved_in_upload_queue(self):
@@ -65,7 +65,7 @@ class TestStepLog(unittest.TestCase):
         aggregated_service.warning('my message')
 
         # Assert
-        queue_path = r'./context_files\upload_queue\92-9877\Warnings.txt'
+        queue_path = self.parse_path(r'./context_files\upload_queue\92-9877\Warnings.txt')
         self.assertTrue(self.builder.os_service.exists(queue_path))
 
     def test_real_aggregated__with_one_warning__warning_contents_ok(self):
@@ -81,7 +81,7 @@ class TestStepLog(unittest.TestCase):
         aggregated_service.warning('my message')
 
         # Assert
-        queue_path = r'./context_files\upload_queue\92-9877\Warnings.txt'
+        queue_path = self.parse_path(r'./context_files\upload_queue\92-9877\Warnings.txt')
         contents = self.os_utility.get_contents(queue_path)
         match = re.match('^WARNING - \d+-\d+-\d+ \d+:\d+:\d+ - my message\r\n$', contents)
         self.assertTrue(match is not None)

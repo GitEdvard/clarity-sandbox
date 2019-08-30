@@ -38,6 +38,7 @@ class ReadResultFileBuilder:
 
     def create(self, extension_type, contents_as_list, container, pair):
         context_initiator = ContextInitializor(self.step_repo_builder)
+        context_initiator.with_fake_logger()
         self.context_builder = ContextBuilder(context_initiator)
         self._configure_context_builder(contents_as_list, container, pair)
         builder = ExtensionBuilderFactory.create_with_base_type(
