@@ -239,6 +239,9 @@ class FakeLogger:
     def error(self, text):
         self.log_messages.append(text)
 
+    def warning(self, text):
+        self.log_messages.append(text)
+
 
 class FakeStepRepo:
     def __init__(self):
