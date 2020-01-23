@@ -261,6 +261,9 @@ class FakeStepRepo:
     def add_analyte_pair(self, input, output):
         self._analytes.append((input, output))
 
+    def reset_analytes(self):
+        self._analytes = list()
+
     def get_process(self):
         return self.process or Process(None, "24-1234", self.user, dict(), "http://not-avail")
 
@@ -269,24 +272,6 @@ class FakeStepRepo:
 
     def get_process_type(self):
         return ProcessType(None, None, name="Some process")
-
-
-class FakeSample:
-    def __init__(self):
-        self.name = None
-        self.project = None
-        self.id = None
-        self.indexconfig_index_position_map_hamilton = None
-        self.indexconfig_source_dimensions_columns_hamilton = None
-        self.indexconfig_source_dimensions_rows_hamilton = None
-        self.indexconfig_index_position_map_biomek = None
-        self.indexconfig_source_dimensions_columns_biomek = None
-        self.indexconfig_source_dimensions_rows_biomek = None
-        self.indexconfig_short_name = None
-
-    @property
-    def udf(self):
-        return self.__dict__
 
 
 class FakeSession:

@@ -1,7 +1,6 @@
-from clarity_ext.utility.testing import DilutionTestDataHelper
 from clarity_ext.domain import *
-from clarity_ext.service.dilution.service import DilutionSettings
-from clarity_snpseq.test.utility.fake_artifacts import FakeArtifactRepository
+from clarity_ext.domain.aliquot import Sample
+from clarity_ext.domain.udf import UdfMapping
 
 
 class PairBuilderBase(object):
@@ -24,6 +23,7 @@ class PairBuilderBase(object):
         self.is_source_control = False
         self.reagent_labels = list()
         self.pair = None
+        self.samples = list()
 
     def create(self):
         pair = self.artifact_repo.create_pair(pos_from=self.pos_from,
@@ -49,7 +49,13 @@ class PairBuilderBase(object):
             pair.input_artifact.is_control = True
         for key in self.input_attribute_dict:
             setattr(pair.input_artifact, key, self.input_attribute_dict[key])
+        if len(self.samples) > 0:
+            pair.input_artifact.samples = self.samples
+            pair.output_artifact.samples = self.samples
         self.pair = pair
+
+    def add_sample(self, sample):
+        self.samples.append(sample)
 
     def with_source_pos(self, pos_from):
         self.pos_from = pos_from
@@ -127,3 +133,18 @@ class DilutionPairBuilder(PairBuilderBase):
         self.is_control_pair = True
         self.source_id = "{}{}".format(control_id_prefix, control_id_index)
         self.with_target_artifact_name('Negative control')
+
+
+class SampleBuilder:
+    def __init__(self):
+        self.udf_dict = dict()
+        self.name = None
+        self.sample_id = None
+
+    def with_udf(self, udf_name, value):
+        self.udf_dict[udf_name] = value
+
+    def create(self):
+        mapping = UdfMapping(self.udf_dict)
+        s = Sample(self.sample_id, self.name, None, udf_map=mapping)
+        return s

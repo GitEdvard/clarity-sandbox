@@ -2,7 +2,7 @@ import re
 from clarity_ext_scripts.library_prep.generate_converted_robotfile_for_hamilton_indextags import Extension as AdapterExt
 from clarity_ext.domain.reagent import ReagentType
 from clarity_snpseq.test.utility.higher_level_builders.adapter_extension_builder import AdapterExtensionBuilder
-from clarity_snpseq.test.utility.fake_collaborators import FakeSample
+from clarity_snpseq.test.utility.higher_level_builders.adapter_extension_builder import FakeSample
 from clarity_snpseq.test.unit.test_base import TestBase
 from clarity_snpseq.test.unit.other_scripts.index_robotfiles.resources.resource_bag import ROBOTFILE_INHERENT_HAMILTON_TRUSEQ_HT
 

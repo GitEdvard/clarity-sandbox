@@ -157,6 +157,8 @@ class ExtensionBuilder(object):
 class DilutionExtensionBuilder(ExtensionBuilder):
     def __init__(self, extension_type, extension_initializer, context_builder=None):
         initz = extension_initializer
+        if context_builder is None:
+            context_builder = ContextBuilder()
         super(DilutionExtensionBuilder, self).__init__(
             extension_type, initz.source_type, initz.target_type, context_builder,
             source_well_positions_from_first=initz.source_well_positions_from_first,
