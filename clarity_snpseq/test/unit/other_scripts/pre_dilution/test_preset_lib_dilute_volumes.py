@@ -25,6 +25,20 @@ class TestPresetLibDiluteValues(unittest.TestCase):
         pair = single(pairs)
         self.assertEqual(30, pair.output_artifact.udf_target_vol_ul)
 
+    def test__with_miseq__target_volume_is_14(self):
+        # Arrange
+        self.builder.create_pair(
+            '1234', 'miseq',
+            pooling='1 lib/pool', seq_instrument='miseq', number_of_lanes='1 lane/pool')
+
+        # Act
+        self.builder.extension.execute()
+
+        # Assert
+        pairs = self.builder.all_aliquot_pairs
+        pair = single(pairs)
+        self.assertEqual(14, pair.output_artifact.udf_target_vol_ul)
+
     def test_pool__with_novaseq_s1_xp__target_volume_is_30(self):
         # Arrange
         self.builder.create_pair(
@@ -141,7 +155,7 @@ class TestPresetLibDiluteValues(unittest.TestCase):
         self.assertEqual(3, lib_per_pool)
 
     def test__with_instrument_3_words__exception(self):
-        self.builder.context_builder.with_shared_result_file('Step log', '8908', existing_file_name='Errors')
+        self.builder.context_builder.with_shared_result_file('Step log', '8908', file_name='Errors')
         self.builder.create_pair(
             '1234', 'not correct', pooling='2 lib/pool', seq_instrument='novaseq s1 xp',
             number_of_lanes='1 lane/pool')
@@ -149,7 +163,7 @@ class TestPresetLibDiluteValues(unittest.TestCase):
             self.builder.extension.execute()
 
     def test__with_instrument_empty__exception(self):
-        self.builder.context_builder.with_shared_result_file('Step log', '8908', existing_file_name='Errors')
+        self.builder.context_builder.with_shared_result_file('Step log', '8908', file_name='Errors')
         self.builder.create_pair(
             '1234', 'not correct', pooling='2 lib/pool',
             number_of_lanes='1 lane/pool', seq_instrument=None)
@@ -157,7 +171,7 @@ class TestPresetLibDiluteValues(unittest.TestCase):
             self.builder.extension.execute()
 
     def test__flowcell_type_not_correct__exception(self):
-        self.builder.context_builder.with_shared_result_file('Step log', '8908', existing_file_name='Errors')
+        self.builder.context_builder.with_shared_result_file('Step log', '8908', file_name='Errors')
         self.builder.create_pair(
             '1234', 'not correct', pooling='2 lib/pool',
             number_of_lanes='1 xxx/pool', seq_instrument='NovaSeq S1')

@@ -16,6 +16,7 @@ class TestIntermediateTransfers(TestDilutionBase):
         builder = ExtensionBuilderFactory.create_with_dna_extension()
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
+        builder.context.logger.write_to_stout = True
 
         # Act
         self.execute_short(builder)
@@ -27,6 +28,8 @@ class TestIntermediateTransfers(TestDilutionBase):
         self.assertEqual(2, len(batches))
         self.assertEqual(1, len(loop_batch.transfers))
         self.assertEqual(1, len(default_batch.transfers))
+        print(type(builder.context_builder.context.logger))
+        self.assertFalse(True)
 
     def test__with_one_looped__pipette_volumes_ok(self):
         # Arrange

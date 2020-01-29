@@ -42,14 +42,14 @@ class TestDiluteVolumeParser(unittest.TestCase):
 
     def test__with_novaseq_standard_s1__returns_140(self):
         volume = self.volume_parser.get_from(
-            libraries_per_pool=1, instrument='novaseq',flowcell_type='standard',
-            novaseq_type='S1', units_per_pool=1)
+            libraries_per_pool=1, instrument='novaseq', novaseq_run_type='standard',
+            flowcell_type='S1', units_per_pool=1)
         self.assertEqual(140, volume)
 
     def test__with_novaseq_xp_s1__returns_30(self):
         volume = self.volume_parser.get_from(
-            libraries_per_pool=1, instrument='novaseq', flowcell_type='xp',
-            novaseq_type='S1', units_per_pool=1)
+            libraries_per_pool=1, instrument='novaseq', novaseq_run_type='xp',
+            flowcell_type='S1', units_per_pool=1)
         self.assertEqual(30, volume)
 
     def test__with_miseq_2_lib_per_pool__returns_7(self):
@@ -58,7 +58,7 @@ class TestDiluteVolumeParser(unittest.TestCase):
 
     def test__with_novaseq_xp_s1_and_lane_per_pool_is_2__returns_60(self):
         volume = self.volume_parser.get_from(
-            libraries_per_pool=1, instrument='novaseq', flowcell_type='xp', novaseq_type='s1',
+            libraries_per_pool=1, instrument='novaseq', novaseq_run_type='xp', flowcell_type='s1',
             units_per_pool=2
         )
         self.assertEqual(60, volume)

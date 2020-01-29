@@ -19,10 +19,10 @@ class TestDilutionFactor(TestDilutionBase):
         transfers = builder.sorted_transfers
         self.assertEqual(5, transfers[0].pipette_sample_volume)
         self.assertEqual(5, transfers[0].pipette_buffer_volume)
-        self.assertEqual(3.3, transfers[1].pipette_sample_volume)
-        self.assertEqual(6.7, transfers[1].pipette_buffer_volume)
-        self.assertEqual(2.5, transfers[2].pipette_sample_volume)
-        self.assertEqual(7.5, transfers[2].pipette_buffer_volume)
+        self.assertAlmostEqual(3.3, transfers[1].pipette_sample_volume, places=1)
+        self.assertAlmostEqual(6.7, transfers[1].pipette_buffer_volume, places=1)
+        self.assertAlmostEqual(2.5, transfers[2].pipette_sample_volume, places=1)
+        self.assertAlmostEqual(7.5, transfers[2].pipette_buffer_volume, places=1)
 
     def test___without_source_conc___target_conc_is_none(self):
         # Arrange

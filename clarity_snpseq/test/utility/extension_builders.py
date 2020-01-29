@@ -192,7 +192,8 @@ class DilutionExtensionBuilder(ExtensionBuilder):
 
     def _add_artifact_pair(self, source_conc=None, source_vol=None, target_conc=None, target_vol=None,
                            dilute_factor=None,
-                          source_container_name=None, target_container_name=None, is_control=False):
+                          source_container_name=None, target_container_name=None, is_control=False,
+                           min_pipette_volume=None):
 
         pos_from, pos_to = self._get_positions(is_control)
         pair_builder = DilutionPairBuilder(self.artifact_repository)
@@ -204,6 +205,8 @@ class DilutionExtensionBuilder(ExtensionBuilder):
         if is_control:
             pair_builder.make_it_control_pair(self.control_id_prefix, self.call_index)
         pair_builder.with_target_id('target{}'.format(self.call_index))
+        if min_pipette_volume is not None:
+            pair_builder.with_output_udf('Min pipette volume (ul)', min_pipette_volume)
         pair_builder.create()
         self.pairs.append(pair_builder.pair)
         self.call_index += 1
@@ -318,11 +321,14 @@ class ExtensionBuilderConc(DilutionExtensionBuilder):
                                                    context_builder=context_builder)
 
     def add_artifact_pair(self, source_conc=100, source_vol=40, target_conc=10, target_vol=40,
-                          source_container_name="source1", target_container_name="target1", is_control=False):
+                          source_container_name="source1", target_container_name="target1",
+                          is_control=False, min_pipette_volume=None):
         self._add_artifact_pair(
             source_conc=source_conc, source_vol=source_vol, target_conc=target_conc,
             target_vol=target_vol, source_container_name=source_container_name,
-            target_container_name=target_container_name, is_control=is_control)
+            target_container_name=target_container_name, is_control=is_control,
+            min_pipette_volume=min_pipette_volume
+        )
 
     def _create_dilution_pair(self, pair_builder, source_conc=None, source_vol=None,
                               target_conc=None, target_vol=None, dilute_factor=None,

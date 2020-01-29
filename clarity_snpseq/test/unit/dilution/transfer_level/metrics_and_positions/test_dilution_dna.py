@@ -16,5 +16,5 @@ class TestDilutionDNA(TestDilutionBase):
         # Assert
         transfers = builder.sorted_transfers
         self.assertEqual(1, len(transfers))
-        self.assertEqual(33.8, transfers[0].pipette_sample_volume)
-        self.assertEqual(1.2, transfers[0].pipette_buffer_volume)
+        self.assertAlmostEqual(33.8, transfers[0].pipette_sample_volume, places=1)
+        self.assertAlmostEqual(1.2, transfers[0].pipette_buffer_volume, places=1)
