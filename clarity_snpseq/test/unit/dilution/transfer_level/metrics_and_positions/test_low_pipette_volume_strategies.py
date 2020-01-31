@@ -107,3 +107,46 @@ class TestLowPipetteVolumesStrategies(TestDilutionBase):
         transfer = single(batch.transfers)
         self.assertEqual(3, transfer.pipette_sample_volume)
         self.assertEqual(3, transfer.pipette_buffer_volume)
+
+    def test__with_artifact_has_min_pipette_volume_udf__shows_in_log(self):
+        # Arrange
+        builder = ExtensionBuilderFactory.create_with_library_dil_extension()
+        builder.add_artifact_pair(
+            source_conc=100, source_vol=40, target_conc=50, target_vol=2,
+            source_container_name="source1", target_container_name="target1",
+            min_pipette_volume=3)
+        builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=10, target_vol=10,
+                                  source_container_name="source1", target_container_name="target1")
+
+        # Act
+        self.execute_short(builder)
+
+        # Assert
+        batches = builder.extension.dilution_session.transfer_batches(self.biomek_robot_setting.name)
+        self.assertEqual(2, len(batches))
+        logger = builder.context_builder.context.logger
+        self.assertEqual(3, len(set(logger.staged_messages)))
+        self.assertTrue('Udf \'Min pipette volume (ul)\' specifically set to 3 ul on artifact: out-FROM:source1-A:1'
+                        in logger.staged_messages)
+
+    def test__with_step_has_min_pipette_volume_udf__shows_in_log(self):
+        # Arrange
+        context_builder = ContextBuilder()
+        context_builder.with_udf_on_step('Min pipette volume (ul)', 8)
+        builder = ExtensionBuilderFactory.create_with_library_dil_extension(context_builder=context_builder)
+        builder.add_artifact_pair(
+            source_conc=100, source_vol=40, target_conc=50, target_vol=2,
+            source_container_name="source1", target_container_name="target1")
+        builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=10, target_vol=10,
+                                  source_container_name="source1", target_container_name="target1")
+
+        # Act
+        self.execute_short(builder)
+
+        # Assert
+        batches = builder.extension.dilution_session.transfer_batches(self.biomek_robot_setting.name)
+        self.assertEqual(2, len(batches))
+        logger = builder.context_builder.context.logger
+        self.assertEqual(3, len(set(logger.staged_messages)))
+        self.assertTrue('Udf \'Min pipette volume (ul)\' set to 8 ul on step'
+                        in logger.staged_messages)

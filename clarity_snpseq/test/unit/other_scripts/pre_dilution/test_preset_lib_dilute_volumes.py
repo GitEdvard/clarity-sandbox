@@ -15,7 +15,8 @@ class TestPresetLibDiluteValues(unittest.TestCase):
         # Arrange
         self.builder.create_pair(
             '1234', 'novaseq_s1_xp',
-            pooling='1 lib/pool', seq_instrument='Novaseq S1', number_of_lanes='1 lane/pool')
+            pooling='1 lib/pool', seq_instrument='Novaseq S1', number_of_lanes='1 lane/pool',
+            conc_fc='200')
 
         # Act
         self.builder.extension.execute()
@@ -44,7 +45,7 @@ class TestPresetLibDiluteValues(unittest.TestCase):
         self.builder.create_pair(
             '1234', 'novaseq_s1_xp',
             pooling=None, seq_instrument='Novaseq S1', number_of_lanes='1 lane/pool',
-            number_samples=3
+            number_samples=3, conc_fc='200'
         )
 
         # Act
@@ -60,7 +61,7 @@ class TestPresetLibDiluteValues(unittest.TestCase):
         self.builder.create_pair(
             '1234', 'novaseq_s1_xp',
             pooling='7 libraries/pool', seq_instrument='Novaseq S1',
-            number_of_lanes='1 lane/pool')
+            number_of_lanes='1 lane/pool', conc_fc='200')
 
         # Act
         self.builder.extension.execute()
@@ -87,7 +88,8 @@ class TestPresetLibDiluteValues(unittest.TestCase):
         self.builder.context_builder.with_shared_result_file('Step log', '7897', 'Warnings')
         self.builder.create_pair(
             '1234', 'combination_not_present',
-            pooling='1 lib/pool', seq_instrument='Novaseq S3', number_of_lanes='1 lane/pool')
+            pooling='1 lib/pool', seq_instrument='Novaseq S3', number_of_lanes='1 lane/pool',
+            conc_fc='200')
 
         # Act
         self.builder.extension.execute()
@@ -120,7 +122,7 @@ class TestPresetLibDiluteValues(unittest.TestCase):
         pair = self.builder.create_pair('1', 'name')
 
         for value in valid_values:
-            validator = PresetValidator(None, None, None, None)
+            validator = PresetValidator(None, None, None, None, None)
             validator._validate_pooling_udf(pair.output_artifact, value)
 
     def test_validate_pooling_udf__with_not_correct_value__exception_cast(self):
@@ -155,7 +157,7 @@ class TestPresetLibDiluteValues(unittest.TestCase):
         self.assertEqual(3, lib_per_pool)
 
     def test__with_instrument_3_words__exception(self):
-        self.builder.context_builder.with_shared_result_file('Step log', '8908', file_name='Errors')
+        self.builder.context_builder.with_shared_result_file('Step log', '8908', 'Errors')
         self.builder.create_pair(
             '1234', 'not correct', pooling='2 lib/pool', seq_instrument='novaseq s1 xp',
             number_of_lanes='1 lane/pool')
@@ -163,7 +165,7 @@ class TestPresetLibDiluteValues(unittest.TestCase):
             self.builder.extension.execute()
 
     def test__with_instrument_empty__exception(self):
-        self.builder.context_builder.with_shared_result_file('Step log', '8908', file_name='Errors')
+        self.builder.context_builder.with_shared_result_file('Step log', '8908', 'Errors')
         self.builder.create_pair(
             '1234', 'not correct', pooling='2 lib/pool',
             number_of_lanes='1 lane/pool', seq_instrument=None)
@@ -171,7 +173,7 @@ class TestPresetLibDiluteValues(unittest.TestCase):
             self.builder.extension.execute()
 
     def test__flowcell_type_not_correct__exception(self):
-        self.builder.context_builder.with_shared_result_file('Step log', '8908', file_name='Errors')
+        self.builder.context_builder.with_shared_result_file('Step log', '8908', 'Errors')
         self.builder.create_pair(
             '1234', 'not correct', pooling='2 lib/pool',
             number_of_lanes='1 xxx/pool', seq_instrument='NovaSeq S1')

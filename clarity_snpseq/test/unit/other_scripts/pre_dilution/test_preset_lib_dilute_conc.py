@@ -1,6 +1,5 @@
 import unittest
 from clarity_ext_scripts.dilution.preset_lib_dilution import Extension as PresetLibDilution
-from clarity_ext_scripts.dilution.preset_lib_dilution import PresetValidator
 from clarity_ext.utils import single
 from clarity_snpseq.test.utility.higher_level_builders.pre_dilution_extension_builder import PreDilutionExtensionBuilder
 from clarity_ext.domain.validation import UsageError
@@ -43,7 +42,7 @@ class TestPresetLibDiluteConc(unittest.TestCase):
         # Arrange
         self.builder.context_builder.with_shared_result_file('Step log', '7897', 'Warnings')
         self.builder.create_pair(
-            '1234', 'iSeq',
+            '1234', 'unknown_instrument_sample',
             pooling='1 lib/pool', seq_instrument='xxx', number_of_lanes='1 lane/pool')
 
         # Act

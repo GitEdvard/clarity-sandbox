@@ -103,7 +103,7 @@ class ContextBuilder:
             self.context.current_step.udf_map = UdfMapping()
         self.context.current_step.udf_map.add(key, value)
 
-    def with_mocked_logger(self):
+    def with_mocked_logger_on_file_service(self):
         logger = FakeLogger()
         self.file_service.logger = logger
 

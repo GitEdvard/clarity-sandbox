@@ -28,8 +28,6 @@ class TestIntermediateTransfers(TestDilutionBase):
         self.assertEqual(2, len(batches))
         self.assertEqual(1, len(loop_batch.transfers))
         self.assertEqual(1, len(default_batch.transfers))
-        print(type(builder.context_builder.context.logger))
-        self.assertFalse(True)
 
     def test__with_one_looped__pipette_volumes_ok(self):
         # Arrange

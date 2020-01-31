@@ -15,7 +15,7 @@ class TestRemoveFiles(unittest.TestCase):
         self.builder.with_shared_result_file('Step log', with_id=9876,
                                              existing_file_name='warnings.txt',
                                              existing_contents='x')
-        self.builder.with_mocked_logger()
+        self.builder.with_mocked_logger_on_file_service()
         file_service = self.builder.context.file_service
 
         # Act

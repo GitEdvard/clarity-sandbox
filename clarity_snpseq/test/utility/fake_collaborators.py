@@ -236,6 +236,12 @@ class FakeLogger:
         print('from fake logger log: {}'.format(text))
         self.log_messages.append(text)
 
+    def stage_log(self, text):
+        pass
+
+    def write_staged(self):
+        pass
+
     def error(self, text):
         self.log_messages.append(text)
 
