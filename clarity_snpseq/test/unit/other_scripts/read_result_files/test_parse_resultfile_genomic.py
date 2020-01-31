@@ -78,10 +78,11 @@ class TestParseResultfileGenomic(unittest.TestCase):
         self.assertEqual(110, pair.output_artifact.udf_ts_length_bp)
         self.assertEqual(8.5, pair.output_artifact.udf_ts_range_conc_ngul)
 
-    def test__with_peak_size_not_present__exception(self):
+    def test__with_peak_size_not_present__warning(self):
         # Arrange
         container, pair = self._create_pair(target_artifact_id='92-998')
         self._init_builder(container, pair)
+        self.builder.context_builder.with_shared_result_file('Step log', '1234', 'Warnings')
         xml_value_bag = XmlValueBag()
         xml_value_bag.comment = '92-998_artifact-name'
         xml_value_bag.peaks = [Peak(size=100, quantity=0),
@@ -92,13 +93,17 @@ class TestParseResultfileGenomic(unittest.TestCase):
             'Result XML File (required)', contents)
 
         # Act
-        # Assert
-        self.assertRaises(UsageError, lambda: self.builder.extension.execute())
+        self.builder.extension.execute()
 
-    def test__with_peak_calibrated_quantity_not_present__no_exception(self):
+        # Assert
+        warning_count = self.builder.extension.context.validation_service.warning_count
+        self.assertEqual(1, warning_count)
+
+    def test__with_peak_calibrated_quantity_not_present__warning(self):
         # Arrange
         container, pair = self._create_pair(target_artifact_id='92-998')
         self._init_builder(container, pair)
+        self.builder.context_builder.with_shared_result_file('Step log', '1234', 'Warnings')
         xml_value_bag = XmlValueBag()
         xml_value_bag.comment = '92-998_artifact-name'
         xml_value_bag.peaks = [Peak(size=100, quantity=0),
@@ -109,8 +114,11 @@ class TestParseResultfileGenomic(unittest.TestCase):
             'Result XML File (required)', contents)
 
         # Act
-        # Assert
         self.builder.extension.execute()
+
+        # Assert
+        warning_count = self.builder.extension.context.validation_service.warning_count
+        self.assertEqual(1, warning_count)
 
 
 class XmlValueBag:
