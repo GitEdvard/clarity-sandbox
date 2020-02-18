@@ -713,3 +713,25 @@ class TestIntermediateTransfers(TestDilutionBase):
         self.assertEqual(20, transfer_loop.pipette_buffer_volume)
         self.assertEqual(10, transfer_default.pipette_sample_volume)
         self.assertEqual(0, transfer_default.pipette_buffer_volume)
+
+    def test_heidur(self):
+        # Arrange
+        context_builder = ContextBuilder()
+        context_builder.with_shared_result_file('Step log', existing_file_name='Warnings')
+        builder = ExtensionBuilderFactory.create_with_dna_extension(context_builder=context_builder)
+        builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=12, target_vol=5,
+                                  source_container_name="source1", target_container_name="target1")
+
+        # Act
+        self.execute_short(builder)
+
+        # Assert
+        batches = builder.extension.dilution_session.transfer_batches(self.biomek_robot_setting.name)
+        loop_batch = utils.single([b for b in batches if b.name == "looped"])
+        default_batch = utils.single([b for b in batches if b.name == "default"])
+        transfer_loop = utils.single(loop_batch.transfers)
+        transfer_default = utils.single(default_batch.transfers)
+        self.assertEqual(4, transfer_loop.pipette_sample_volume)
+        self.assertAlmostEqual(29.3, transfer_loop.pipette_buffer_volume, 1)
+        self.assertEqual(5, transfer_default.pipette_sample_volume)
+        self.assertEqual(0, transfer_default.pipette_buffer_volume)

@@ -108,6 +108,65 @@ class TestLowPipetteVolumesStrategies(TestDilutionBase):
         self.assertEqual(3, transfer.pipette_sample_volume)
         self.assertEqual(3, transfer.pipette_buffer_volume)
 
+    def test_heidur(self):
+        # Arrange
+        self.context_builder.with_udf_on_step('Max scale up volume (ul)', 100)
+        self.context_builder.with_udf_on_step('Min pipette volume (ul)', 4)
+        self.builder.add_artifact_pair(
+            source_conc=100, source_vol=40, target_conc=20, target_vol=10,
+            source_container_name="source1", target_container_name="target1")
+
+        # Act
+        self.execute_short(self.builder)
+
+        # Assert
+        batch = self.builder.default_batch
+        transfer = single(batch.transfers)
+        self.assertEqual(4, transfer.pipette_sample_volume)
+        self.assertEqual(16, transfer.pipette_buffer_volume)
+
+    def test_heidur__with_scale_up__dil_calc_target_vol_is_ok(self):
+        # Arrange
+        self.context_builder.with_udf_on_step('Max scale up volume (ul)', 100)
+        self.builder.add_artifact_pair(
+            source_conc=18, source_vol=40, target_conc=2, target_vol=5,
+            source_container_name="source1", target_container_name="target1")
+
+        # Act
+        self.execute_short(self.builder)
+
+        # Assert
+        batch = self.builder.default_batch
+        transfer = single(batch.transfers)
+        self.assertEqual(2, transfer.pipette_sample_volume)
+        self.assertEqual(16, transfer.pipette_buffer_volume)
+        dil_calc_target_vol = transfer.update_info.target_vol
+        self.assertEqual(18, dil_calc_target_vol)
+
+    def test__with_scale_up_and_row_split__pipette_volumes_ok(self):
+        # Arrange
+        self.context_builder.with_udf_on_step('Max scale up volume (ul)', 100)
+        self.builder.add_artifact_pair(
+            source_conc=54, source_vol=40, target_conc=2, target_vol=5,
+            source_container_name="source1", target_container_name="target1")
+
+        # Act
+        self.execute_short(self.builder)
+
+        # Assert
+        batch = self.builder.default_batch
+        self.assertEqual(2, len(batch.transfers))
+        sorted_transfers = sorted(
+            batch.transfers, key=self.sort_strategy.input_position_sort_key)
+        transfer1 = sorted_transfers[0]
+        transfer2 = sorted_transfers[1]
+        self.assertEqual(2, transfer1.pipette_sample_volume)
+        self.assertAlmostEqual(26, transfer1.pipette_buffer_volume, 1)
+        self.assertEqual(0, transfer2.pipette_sample_volume)
+        self.assertAlmostEqual(26, transfer2.pipette_buffer_volume, 1)
+        dil_calc_target_vol = transfer1.update_info.target_vol
+        self.assertEqual(54, dil_calc_target_vol)
+
     def test__with_artifact_has_min_pipette_volume_udf__shows_in_log(self):
         # Arrange
         builder = ExtensionBuilderFactory.create_with_library_dil_extension()

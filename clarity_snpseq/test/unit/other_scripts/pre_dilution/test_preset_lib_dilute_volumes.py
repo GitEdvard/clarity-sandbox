@@ -179,3 +179,18 @@ class TestPresetLibDiluteValues(unittest.TestCase):
             number_of_lanes='1 xxx/pool', seq_instrument='NovaSeq S1')
         with self.assertRaises(UsageError):
             self.builder.extension.execute()
+
+    def test__with_novaseq_s1_xp_and_20_samples_in_pool__target_volume_is_scaled_up_to_2(self):
+        # Arrange
+        self.builder.create_pair(
+            '1234', 'novaseq_s1_xp',
+            pooling='20 lib/pool', seq_instrument='Novaseq S1', number_of_lanes='1 lane/pool',
+            conc_fc='200')
+
+        # Act
+        self.builder.extension.execute()
+
+        # Assert
+        pairs = self.builder.all_aliquot_pairs
+        pair = single(pairs)
+        self.assertEqual(2, pair.output_artifact.udf_target_vol_ul)
