@@ -4,6 +4,7 @@ from clarity_ext_scripts.dilution.preset_lib_dilution import PresetValidator
 from clarity_ext.utils import single
 from clarity_snpseq.test.utility.higher_level_builders.pre_dilution_extension_builder import PreDilutionExtensionBuilder
 from clarity_ext.domain.validation import UsageError
+from clarity_snpseq.test.utility.misc_builders import ContextBuilder
 
 
 class TestPresetLibDiluteValues(unittest.TestCase):
@@ -24,7 +25,7 @@ class TestPresetLibDiluteValues(unittest.TestCase):
         # Assert
         pairs = self.builder.all_aliquot_pairs
         pair = single(pairs)
-        self.assertEqual(30, pair.output_artifact.udf_target_vol_ul)
+        self.assertEqual(31, pair.output_artifact.udf_target_vol_ul)
 
     def test__with_miseq__target_volume_is_14(self):
         # Arrange
@@ -38,7 +39,7 @@ class TestPresetLibDiluteValues(unittest.TestCase):
         # Assert
         pairs = self.builder.all_aliquot_pairs
         pair = single(pairs)
-        self.assertEqual(14, pair.output_artifact.udf_target_vol_ul)
+        self.assertEqual(15, pair.output_artifact.udf_target_vol_ul)
 
     def test_pool__with_novaseq_s1_xp__target_volume_is_30(self):
         # Arrange
@@ -54,7 +55,7 @@ class TestPresetLibDiluteValues(unittest.TestCase):
         # Assert
         pairs = self.builder.all_aliquot_pairs
         pair = single(pairs)
-        self.assertEqual(30, pair.output_artifact.udf_target_vol_ul)
+        self.assertEqual(31, pair.output_artifact.udf_target_vol_ul)
 
     def test__with_target_value_float(self):
         # Arrange
@@ -69,7 +70,7 @@ class TestPresetLibDiluteValues(unittest.TestCase):
         # Assert
         pairs = self.builder.all_aliquot_pairs
         pair = single(pairs)
-        self.assertAlmostEqual(4.29, pair.output_artifact.udf_target_vol_ul, places=2)
+        self.assertAlmostEqual(5.29, pair.output_artifact.udf_target_vol_ul, places=2)
 
     def test_prep_sample__without_pooling_udf__usage_error(self):
         # Arrange
@@ -180,11 +181,11 @@ class TestPresetLibDiluteValues(unittest.TestCase):
         with self.assertRaises(UsageError):
             self.builder.extension.execute()
 
-    def test__with_novaseq_s1_xp_and_20_samples_in_pool__target_volume_is_scaled_up_to_2(self):
+    def test__with_novaseq_s1_xp_and_60_samples_in_pool__target_volume_is_scaled_up_to_2(self):
         # Arrange
         self.builder.create_pair(
             '1234', 'novaseq_s1_xp',
-            pooling='20 lib/pool', seq_instrument='Novaseq S1', number_of_lanes='1 lane/pool',
+            pooling='60 lib/pool', seq_instrument='Novaseq S1', number_of_lanes='1 lane/pool',
             conc_fc='200')
 
         # Act
@@ -194,3 +195,46 @@ class TestPresetLibDiluteValues(unittest.TestCase):
         pairs = self.builder.all_aliquot_pairs
         pair = single(pairs)
         self.assertEqual(2, pair.output_artifact.udf_target_vol_ul)
+
+    def test_magnus__with_iseq_and_pooling_is_set_to_no__volume_is_ok(self):
+        # Arrange
+        context_builder = ContextBuilder()
+        context_builder.with_shared_result_file('Step log', existing_file_name='Errors')
+        builder = PreDilutionExtensionBuilder(context_builder)
+        builder.create(PresetLibDilution)
+        builder.create_pair(
+            '1234', 'novaseq_s1_xp',
+            pooling='no', seq_instrument='iSeq', number_of_lanes='1 flowcell/pool',
+            conc_fc='500')
+
+        # Act
+        builder.extension.execute()
+
+        # Assert
+        pairs = builder.all_aliquot_pairs
+        pair = single(pairs)
+        self.assertEqual(21, pair.output_artifact.udf_target_vol_ul)
+
+    def test_magnus__with_iseq_and_pooling_is_not_parseable__error_message(self):
+        # Arrange
+        context_builder = ContextBuilder()
+        context_builder.with_shared_result_file('Step log', existing_file_name='Errors')
+        builder = PreDilutionExtensionBuilder(context_builder)
+        builder.create(PresetLibDilution)
+        builder.create_pair(
+            '1234', 'novaseq_s1_xp',
+            pooling='xxxxx', seq_instrument='iSeq', number_of_lanes='1 flowcell/pool',
+            conc_fc='500', number_samples=2)
+        # Act
+        try:
+            builder.extension.execute()
+        except UsageError:
+            pass
+
+        # Assert
+        warning_count = builder.extension.context.validation_service.warning_count
+        error_count = builder.extension.context.validation_service.error_count
+        messages = list(builder.extension.context.validation_service.messages)
+        self.assertEqual(1, error_count)
+        self.assertEqual(1, len(messages))
+        self.assertEqual(0, warning_count)

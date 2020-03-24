@@ -6,11 +6,10 @@ from clarity_snpseq.test.utility.misc_builders import ContextBuilder
 
 
 class PreDilutionExtensionBuilder:
-    def __init__(self):
+    def __init__(self, context_builder=None):
         artifact_repo = FakeArtifactRepository()
         self.pair_builder = PairBuilderBase(artifact_repo)
-        self.extension_builder = None
-        self.context_builder = ContextBuilder()
+        self.context_builder = context_builder or ContextBuilder()
 
     def create(self, extension_type):
         builder = ExtensionBuilderFactory.create_with_base_type(

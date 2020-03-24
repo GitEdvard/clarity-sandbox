@@ -9,7 +9,7 @@ class TestLowPipetteVolumesStrategies(TestDilutionBase):
     def setUp(self):
         super(TestLowPipetteVolumesStrategies, self).setUp()
         self.context_builder = ContextBuilder()
-        self.builder = ExtensionBuilderFactory.create_with_library_dil_extension(
+        self.builder = ExtensionBuilderFactory.create_with_dna_extension(
             context_builder=self.context_builder)
 
     def test_dilution_has_low_pipette_volume__end_volume_less_than_scale_up__no_intermediate_dilution(self):
@@ -167,9 +167,54 @@ class TestLowPipetteVolumesStrategies(TestDilutionBase):
         dil_calc_target_vol = transfer1.update_info.target_vol
         self.assertEqual(54, dil_calc_target_vol)
 
+    def test_heidur__with_too_small_pip_volume__scale_up(self):
+        # Arrange
+        self.context_builder.with_udf_on_step('Max scale up volume (ul)', 100)
+        self.context_builder.with_udf_on_step('Min pipette volume (ul)', 5)
+        self.builder.add_artifact_pair(
+            source_conc=6, source_vol=40, target_conc=2, target_vol=14,
+            source_container_name="source1", target_container_name="target1")
+
+        # Act
+        self.execute_short(self.builder)
+
+        # Assert
+        batch = self.builder.default_batch
+        transfer = single(batch.transfers)
+        self.assertEqual(5, transfer.pipette_sample_volume)
+        self.assertAlmostEqual(10, transfer.pipette_buffer_volume, 1)
+        dil_calc_target_vol = transfer.update_info.target_vol
+        self.assertEqual(15, dil_calc_target_vol)
+
+    def test_heidur__with_too_small_pip_volume__intermediate(self):
+        # Arrange
+        self.context_builder.with_udf_on_step('Max scale up volume (ul)', 0)
+        self.context_builder.with_udf_on_step('Min pipette volume (ul)', 5)
+        self.builder.add_artifact_pair(
+            source_conc=6, source_vol=40, target_conc=2, target_vol=14,
+            source_container_name="source1", target_container_name="target1")
+
+        # Act
+        self.execute_short(self.builder)
+
+        # Assert
+        batch = self.builder.default_batch
+        loop_batch = self.builder.loop_batch
+        transfer = single(batch.transfers)
+        loop_transfer = single(loop_batch.transfers)
+        self.assertAlmostEqual(4.7, loop_transfer.pipette_sample_volume, 1)
+        self.assertAlmostEqual(9.3, loop_transfer.pipette_buffer_volume, 1)
+        self.assertEqual(14, transfer.pipette_sample_volume)
+        self.assertAlmostEqual(0, transfer.pipette_buffer_volume)
+        dil_calc_target_vol = transfer.update_info.target_vol
+        self.assertEqual(14, dil_calc_target_vol)
+
     def test__with_artifact_has_min_pipette_volume_udf__shows_in_log(self):
         # Arrange
-        builder = ExtensionBuilderFactory.create_with_library_dil_extension()
+        context_builder = ContextBuilder()
+        context_builder.with_shared_result_file('Step log', existing_file_name='Warnings')
+        builder = ExtensionBuilderFactory.create_with_library_dil_extension(
+            context_builder=context_builder)
         builder.add_artifact_pair(
             source_conc=100, source_vol=40, target_conc=50, target_vol=2,
             source_container_name="source1", target_container_name="target1",
@@ -191,6 +236,7 @@ class TestLowPipetteVolumesStrategies(TestDilutionBase):
     def test__with_step_has_min_pipette_volume_udf__shows_in_log(self):
         # Arrange
         context_builder = ContextBuilder()
+        context_builder.with_shared_result_file('Step log', existing_file_name='Warnings')
         context_builder.with_udf_on_step('Min pipette volume (ul)', 8)
         builder = ExtensionBuilderFactory.create_with_library_dil_extension(context_builder=context_builder)
         builder.add_artifact_pair(

@@ -66,3 +66,44 @@ class TestMinMaxVolumeLogging(TestDilutionBase):
         self.assertEqual(1, len(batches))
         logger = builder.context_builder.context.logger
         self.assertEqual(0, len(set(logger.staged_messages)))
+
+    def test__with_one_intermediate_and_one_ordinary_sample__two_entries_in_log(self):
+        # Arrange
+        context_builder = ContextBuilder()
+        context_builder.with_shared_result_file('Step log', existing_file_name='Warnings')
+        builder = ExtensionBuilderFactory.create_with_library_dil_extension(
+            context_builder=context_builder)
+        builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=10, target_vol=5,
+                                  source_container_name="source1", target_container_name="target1")
+        builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=5,
+                                  source_container_name="source1", target_container_name="target1")
+
+        # Act
+        self.execute_short(builder)
+
+        # Assert
+        batches = builder.extension.dilution_session.transfer_batches(self.biomek_robot_setting.name)
+        logger = builder.context_builder.context.logger
+        self.assertEqual(2, len(set(logger.staged_messages)))
+        self.assertTrue('Temp1: min volume 40.0 ul, max volume 40.0 ul.' in logger.staged_messages)
+        self.assertTrue('target1: min volume 5.0 ul, max volume 10.0 ul.' in logger.staged_messages)
+
+    def test__with_one_evaporation_and_one_ordinary_sample__one_entry_in_log(self):
+        # Arrange
+        context_builder = ContextBuilder()
+        context_builder.with_shared_result_file('Step log', existing_file_name='Warnings')
+        builder = ExtensionBuilderFactory.create_with_library_dil_extension(
+            context_builder=context_builder)
+        builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=10, target_vol=5,
+                                  source_container_name="source1", target_container_name="target1")
+        builder.add_artifact_pair(source_conc=1, source_vol=40, target_conc=2, target_vol=7,
+                                  source_container_name="source1", target_container_name="target1")
+
+        # Act
+        self.execute_short(builder)
+
+        # Assert
+        batches = builder.extension.dilution_session.transfer_batches(self.biomek_robot_setting.name)
+        logger = builder.context_builder.context.logger
+        self.assertEqual(1, len(set(logger.staged_messages)))
+        self.assertTrue('target1: min volume 5.0 ul, max volume 7 ul.' in logger.staged_messages)

@@ -135,7 +135,9 @@ class TestIntermediateTransfers(TestDilutionBase):
         initz = ExtensionInitializer()
         initz.with_source_container_size(PlateSize(height=1, width=1))
         initz.with_target_container_size(PlateSize(height=1, width=1))
-        builder = ExtensionBuilderFactory.create_with_library_dil_extension(initz)
+        context_builder = ContextBuilder()
+        context_builder.with_shared_result_file('Step log', existing_file_name='Warnings')
+        builder = ExtensionBuilderFactory.create_with_library_dil_extension(initz, context_builder)
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=10,
@@ -714,7 +716,7 @@ class TestIntermediateTransfers(TestDilutionBase):
         self.assertEqual(10, transfer_default.pipette_sample_volume)
         self.assertEqual(0, transfer_default.pipette_buffer_volume)
 
-    def test_heidur(self):
+    def test_heidur__pipette_volume_are_calculated_as_floats_not_ints(self):
         # Arrange
         context_builder = ContextBuilder()
         context_builder.with_shared_result_file('Step log', existing_file_name='Warnings')
@@ -735,3 +737,129 @@ class TestIntermediateTransfers(TestDilutionBase):
         self.assertAlmostEqual(29.3, transfer_loop.pipette_buffer_volume, 1)
         self.assertEqual(5, transfer_default.pipette_sample_volume)
         self.assertEqual(0, transfer_default.pipette_buffer_volume)
+
+    def test__with_scale_up_is_needed_at_intermediate__pipette_volume_at_least_step_limit(self):
+        # Arrange
+        context_builder = ContextBuilder()
+        context_builder.with_shared_result_file('Step log', existing_file_name='Warnings')
+        context_builder.with_udf_on_step('Min pipette volume (ul)', 5)
+        context_builder.with_udf_on_step('Max scale up volume (ul)', 50)
+        builder = ExtensionBuilderFactory.create_with_library_dil_extension(context_builder=context_builder)
+        builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=2.8,
+                                  source_container_name="source1", target_container_name="target1")
+
+        # Act
+        self.execute_short(builder)
+
+        # Assert
+        loop_batch = builder.loop_batch
+        final_batch = builder.default_batch
+        loop_transfer = utils.single(loop_batch.transfers)
+        final_transfer = utils.single(final_batch.transfers)
+        # Note, udf limit not implemented in intermediate step 1!
+        self.assertEqual(4, loop_transfer.pipette_sample_volume)
+        self.assertEqual(36, loop_transfer.pipette_buffer_volume)
+        self.assertEqual(-5, loop_transfer.update_info.source_vol_delta)
+        self.assertEqual(5, final_transfer.pipette_sample_volume)
+        self.assertEqual(20, final_transfer.pipette_buffer_volume)
+        dil_calc_target_vol = final_transfer.update_info.target_vol
+        self.assertEqual(25, dil_calc_target_vol)
+
+    def test__with_scale_up_is_needed_at_intermediate__pipette_volume_at_least_sample_limit(self):
+        # Arrange
+        context_builder = ContextBuilder()
+        context_builder.with_shared_result_file('Step log', existing_file_name='Warnings')
+        context_builder.with_udf_on_step('Min pipette volume (ul)', 5)
+        context_builder.with_udf_on_step('Max scale up volume (ul)', 50)
+        builder = ExtensionBuilderFactory.create_with_library_dil_extension(context_builder=context_builder)
+        builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=2.8,
+                                  source_container_name="source1", target_container_name="target1",
+                                  min_pipette_volume=3)
+
+        # Act
+        self.execute_short(builder)
+
+        # Assert
+        loop_batch = builder.loop_batch
+        final_batch = builder.default_batch
+        loop_transfer = utils.single(loop_batch.transfers)
+        final_transfer = utils.single(final_batch.transfers)
+        # Note, udf limit not implemented in intermediate step 1!
+        self.assertEqual(4, loop_transfer.pipette_sample_volume)
+        self.assertEqual(36, loop_transfer.pipette_buffer_volume)
+        self.assertEqual(3, final_transfer.pipette_sample_volume)
+        self.assertEqual(12, final_transfer.pipette_buffer_volume)
+
+    def test__with_scale_up_is_needed_at_intermediate__pipette_volume_at_least_sample_limit2(self):
+        # Arrange
+        context_builder = ContextBuilder()
+        context_builder.with_shared_result_file('Step log', existing_file_name='Warnings')
+        context_builder.with_udf_on_step('Min pipette volume (ul)', 5)
+        context_builder.with_udf_on_step('Max scale up volume (ul)', 50)
+        builder = ExtensionBuilderFactory.create_with_library_dil_extension(context_builder=context_builder)
+        builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=15,
+                                  source_container_name="source1", target_container_name="target1")
+
+        # Act
+        self.execute_short(builder)
+
+        # Assert
+        loop_batch = builder.loop_batch
+        final_batch = builder.default_batch
+        loop_transfer = utils.single(loop_batch.transfers)
+        final_transfer = utils.single(final_batch.transfers)
+        # Note, udf limit not implemented in intermediate step 1!
+        self.assertEqual(4, loop_transfer.pipette_sample_volume)
+        self.assertEqual(36, loop_transfer.pipette_buffer_volume)
+        self.assertEqual(5, final_transfer.pipette_sample_volume)
+        self.assertEqual(20, final_transfer.pipette_buffer_volume)
+
+    def test__with_4_ul_pip_volume_causes_too_little_volume__pip_volumes_is_scaled_up(self):
+        # Arrange
+        context_builder = ContextBuilder()
+        context_builder.with_shared_result_file('Step log', existing_file_name='Warnings')
+        context_builder.with_udf_on_step('Min pipette volume (ul)', 5)
+        context_builder.with_udf_on_step('Max scale up volume (ul)', 0)
+        builder = ExtensionBuilderFactory.create_with_library_dil_extension(context_builder=context_builder)
+        builder.add_artifact_pair(source_conc=6, source_vol=40, target_conc=2, target_vol=14,
+                                  source_container_name="source1", target_container_name="target1")
+
+        # Act
+        self.execute_short(builder)
+
+        # Assert
+        batches = builder.extension.dilution_session.transfer_batches('hamilton')
+        self.assertEqual(2, len(batches))
+        final_batch = builder.default_batch
+        loop_batch = builder.loop_batch
+        loop_transfer = utils.single(loop_batch.transfers)
+        final_transfer = utils.single(final_batch.transfers)
+        self.assertAlmostEqual(4.7, loop_transfer.pipette_sample_volume, 1)
+        self.assertAlmostEqual(9.3, loop_transfer.pipette_buffer_volume, 1)
+        self.assertEqual(14, final_transfer.pipette_sample_volume)
+        self.assertEqual(0, final_transfer.pipette_buffer_volume)
+
+    def test__with_scale_up_on_2_occations__there_is_enough_volume(self):
+        # Arrange
+        context_builder = ContextBuilder()
+        context_builder.with_shared_result_file('Step log', existing_file_name='Warnings')
+        context_builder.with_udf_on_step('Min pipette volume (ul)', 8)
+        builder = ExtensionBuilderFactory.create_with_library_dil_extension(context_builder=context_builder)
+        builder.add_artifact_pair(
+            source_conc=100, source_vol=40, target_conc=50, target_vol=2,
+            source_container_name="source1", target_container_name="target1")
+
+        # Act
+        self.execute_short(builder)
+
+        # Assert
+        batches = builder.extension.dilution_session.transfer_batches('hamilton')
+        self.assertEqual(2, len(batches))
+        final_batch = builder.default_batch
+        loop_batch = builder.loop_batch
+        loop_transfer = utils.single(loop_batch.transfers)
+        final_transfer = utils.single(final_batch.transfers)
+        self.assertAlmostEqual(4.5, loop_transfer.pipette_sample_volume, 1)
+        self.assertAlmostEqual(4.5, loop_transfer.pipette_buffer_volume, 1)
+        self.assertAlmostEqual(9, final_transfer.pipette_sample_volume, 1)
+        self.assertAlmostEqual(0, final_transfer.pipette_buffer_volume, 1)
