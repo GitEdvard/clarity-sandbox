@@ -7,6 +7,9 @@ class TestAnalyzeQpcrResultfile(unittest.TestCase):
     def setup_standard_with_mocked_local_shared_file(self):
         self.setup_standard()
         self.builder.with_mocked_local_shared_file('Result File (.csv) (required)')
+        self.builder.with_process_udf('Criteria 1 - Threshold Value', 1)
+        self.builder.with_process_udf('Criteria 1 - Operator', '<')
+        self.builder.with_process_udf('Criteria 1 - Source Data Field', 'xxx')
 
     def setup_standard(self):
         builder = ReadResultFileBuilder()

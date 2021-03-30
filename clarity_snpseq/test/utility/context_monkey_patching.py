@@ -26,7 +26,7 @@ class LocalSharedFilePatcher:
             return Csv(stream)
         else:
             content = self.cache[name]
-            bs = BytesIO(b'{}'.format(content.encode('utf-8')))
+            bs = BytesIO(content.encode('utf-8'))
             return self.file_service.parse_xml(bs)
 
 
