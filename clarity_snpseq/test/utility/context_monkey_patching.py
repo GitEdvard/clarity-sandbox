@@ -1,5 +1,5 @@
 from contextlib import contextmanager
-from StringIO import StringIO
+from io import StringIO
 from io import BytesIO
 from mock import MagicMock
 from clarity_ext.service.file_service import Csv

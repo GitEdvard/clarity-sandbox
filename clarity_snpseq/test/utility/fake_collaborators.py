@@ -1,5 +1,5 @@
-from __future__ import print_function
-import StringIO
+
+import io
 import os
 from mock import MagicMock
 from pyfakefs import fake_filesystem
@@ -121,17 +121,17 @@ class MonkeyMethodsForFileService:
         return [(call[0], call[1][0]) for call in self.call_stack]
 
 
-class MockedStreamCatcher(StringIO.StringIO):
+class MockedStreamCatcher(io.StringIO):
     """
     Acts as StringIO stream object, but also catches all calls to write
     to be used in tests
     """
     def __init__(self):
-        StringIO.StringIO.__init__(self)
+        io.StringIO.__init__(self)
         self.write_calls = list()
 
     def write(self, s):
-        StringIO.StringIO.write(self, s)
+        io.StringIO.write(self, s)
         self.write_calls.append(s)
 
 
@@ -157,7 +157,7 @@ class FakeOsService:
 
     def _add_call(self, path, text):
         file_name = os.path.basename(path)
-        if not self.write_calls.has_key(file_name):
+        if file_name not in self.write_calls:
             self.write_calls[file_name] = list()
         self.write_calls[file_name].append(text)
 
@@ -165,7 +165,7 @@ class FakeOsService:
     def open_file(self, path, mode):
         file_module = FakeFileOpen(self.filesystem)
 
-        mybuffer = StringIO.StringIO()
+        mybuffer = io.StringIO()
         if self.exists(path):
             with file_module(path) as file_object:
                 c = "".join([line for line in file_object])

@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 from clarity_snpseq.test.utility.factories import ExtensionBuilderFactory
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
 

@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 import datetime
 from clarity_ext.service.file_service import FileService
 from clarity_ext.service.file_service import OSService
@@ -77,7 +77,7 @@ class TestDilutionBase(TestBase):
         robot_files_by_type = dict()
         for robot in dilution_session.robot_settings:
             files = dilution_session.transfer_batches_by_robot[robot.name].driver_files
-            for ftype, f in files.items():
+            for ftype, f in list(files.items()):
                 robot_files_by_type.setdefault(ftype, list())
                 robot_files_by_type[ftype].append(f)
         map_batch_to_file_handle = \
@@ -87,7 +87,7 @@ class TestDilutionBase(TestBase):
                 "evaporate2": "Evaporate step 2",
                 "looped": "Intermediate"
             }
-        for ftype, files in robot_files_by_type.items():
+        for ftype, files in list(robot_files_by_type.items()):
             print("-"*40)
             for f in files:
                 print(f.to_string(include_header=False))

@@ -34,7 +34,7 @@ class TestDilutionDNA(TestDilutionBase):
 
         # Assert
         messages = list(builder.extension.dilution_session.validation_service.messages)
-        print(messages[0])
+        print((messages[0]))
         self.assertEqual(1, 1)
 
     def test__with_looped_not_enough__1_warning(self):
