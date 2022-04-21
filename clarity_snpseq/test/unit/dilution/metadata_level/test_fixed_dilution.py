@@ -1,14 +1,16 @@
 from __future__ import print_function
 import unittest
 import re
+import pytest
 from clarity_snpseq.test.utility.factories import ExtensionBuilderFactory
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
-from clarity_ext.domain.validation import UsageError
 from clarity_snpseq.test.utility.misc_builders import ContextBuilder
+from clarity_ext.domain.validation import UsageError
 
 
 class TestFixedDilution(TestDilutionBase):
 
+    @pytest.mark.now
     def test__with_one_sample__one_transfer_batch(self):
         # Arrange
         builder = ExtensionBuilderFactory.create_with_fixed_extension()

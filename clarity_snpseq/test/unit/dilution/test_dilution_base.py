@@ -6,6 +6,8 @@ from clarity_ext_scripts.dilution.settings.file_rendering import HamiltonRobotSe
 from clarity_ext_scripts.dilution.settings.file_rendering import BiomekRobotSettings
 from clarity_ext.service.dilution.service import SortStrategy
 from clarity_ext.domain.container import Container
+from clarity_ext.inversion_of_control.ioc import ioc
+from clarity_ext.service.application import ApplicationService
 from clarity_snpseq.test.utility.misc_builders import ContextBuilder
 from clarity_snpseq.test.utility.extension_builders import ExtensionInitializer
 from clarity_snpseq.test.utility.factories import ExtensionBuilderFactory
@@ -14,6 +16,7 @@ from clarity_snpseq.test.unit.test_base import TestBase
 
 class TestDilutionBase(TestBase):
     def setUp(self):
+        ioc.set_application(ApplicationService(None, None))
         self.hamilton_robot_setting = HamiltonRobotSettings()
         self.biomek_robot_setting = BiomekRobotSettings()
         self.sort_strategy = SortStrategy()

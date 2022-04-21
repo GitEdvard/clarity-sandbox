@@ -1,4 +1,5 @@
 import unittest
+import pytest
 from unittest import skip
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
 from clarity_ext_scripts.dilution.settings.file_rendering import HamiltonRobotSettings
@@ -38,15 +39,16 @@ class TestDilution(TestDilutionBase):
         self.print_list(metadata_info.container_mappings, "container_mappings")
         self.assertEqual(1,1)
 
+    @pytest.mark.now
     def test__with_two_added_controls_and_one_normal_sample__control_excluded_in_container_mappings(self):
         """
         container_mappings controls what is shown under source containers and target containers
         in the xml metadata file
-        
-        Negative controls are taken from the through and should not be included in the source 
+
+        Negative controls are taken from the through and should not be included in the source
         container list.
-        
-        In future there will be a problem with several types of controls! 
+
+        In future there will be a problem with several types of controls!
         """
 
         # Arrange
