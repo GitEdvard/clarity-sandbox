@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 import unittest
 from clarity_ext.domain import *
 from clarity_ext_scripts.dilution.settings.file_rendering import HamiltonRobotSettings

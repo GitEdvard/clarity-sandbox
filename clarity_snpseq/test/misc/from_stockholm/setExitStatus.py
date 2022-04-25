@@ -1,6 +1,6 @@
 import sys
 import getopt
-import glsapiutilv2
+from . import glsapiutilv2
 import re
 from genologics.config import BASEURI, USERNAME, PASSWORD
 

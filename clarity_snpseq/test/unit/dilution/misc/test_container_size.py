@@ -12,13 +12,13 @@ class TestContainerSize(TestDilutionBase):
         c = Container(size=PlateSize(height=4, width=6))
         # Act
 
-        print(type(c.wells))
+        print((type(c.wells)))
 
         self.print_list(c.wells, '')
 
-        print(c.wells[(1, 1)])
+        print((c.wells[(1, 1)]))
 
-        print(type(c.wells[(1, 1)]))
+        print((type(c.wells[(1, 1)])))
 
         # Assert
         self.assertEqual(24, len(c.wells))

@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 import unittest
 import re
 from clarity_snpseq.test.utility.factories import ExtensionBuilderFactory

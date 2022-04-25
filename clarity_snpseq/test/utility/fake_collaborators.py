@@ -1,4 +1,3 @@
-from __future__ import print_function
 import io
 import os
 from mock import MagicMock
@@ -157,7 +156,7 @@ class FakeOsService:
 
     def _add_call(self, path, text):
         file_name = os.path.basename(path)
-        if not file_name in self.write_calls:
+        if file_name not in self.write_calls:
             self.write_calls[file_name] = list()
         self.write_calls[file_name].append(text)
 

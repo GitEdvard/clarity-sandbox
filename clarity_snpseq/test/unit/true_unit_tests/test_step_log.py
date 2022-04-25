@@ -37,7 +37,7 @@ class TestStepLog(TestBase):
         # Assert
         queue_path = self.parse_path(r'./context_files\upload_queue\92-9876\Step_log.txt')
         contents = self.os_utility.get_contents(queue_path)
-        match = re.match('^\d+-\d+-\d+ \d+:\d+:\d+ - my message\r\n$', contents)
+        match = re.match('^\d+-\d+-\d+ \d+:\d+:\d+ - my message', contents)
         self.assertTrue(match is not None)
 
     def test_write_to_step_log__with_filename_and_handle_different__file_saved_in_upload_queue(self):
@@ -83,7 +83,7 @@ class TestStepLog(TestBase):
         # Assert
         queue_path = self.parse_path(r'./context_files\upload_queue\92-9877\Warnings.txt')
         contents = self.os_utility.get_contents(queue_path)
-        match = re.match('^WARNING - \d+-\d+-\d+ \d+:\d+:\d+ - my message\r\n$', contents)
+        match = re.match('^WARNING - \d+-\d+-\d+ \d+:\d+:\d+ - my message', contents)
         self.assertTrue(match is not None)
 
     def test_aggregated__with_log_call__1_message_in_standard_log(self):

@@ -119,6 +119,6 @@ class TestDilution(TestDilutionBase):
         # Assert
         metadata_info = builder.metadata_info("Metadata filename", HamiltonRobotSettings())
         default_batch = builder.default_batch
-        print("source slots: {}".format(default_batch.source_container_slots))
+        print(("source slots: {}".format(default_batch.source_container_slots)))
         self.assertEqual(1, len(default_batch.source_container_slots))
         self.assertEqual("source1",  default_batch.source_container_slots[0].container.name)

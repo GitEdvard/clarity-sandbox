@@ -1,27 +1,31 @@
-from __future__ import print_function
+
 from clarity_snpseq.test.utility.factories import ExtensionBuilderFactory
 from clarity_snpseq.test.unit.dilution.test_dilution_base import TestDilutionBase
+from clarity_snpseq.test.utility.misc_builders import ContextBuilder
 
 
 class TestBothEvaporationAndIntermediate(TestDilutionBase):
     def test__with_one_evaporation_one_multistep_one_ordinary__four_batches(self):
         # Arrange
-        builder = ExtensionBuilderFactory.create_with_dna_extension()
+        context_builder = ContextBuilder()
+        context_builder.with_all_files()
+        builder = ExtensionBuilderFactory.create_with_dna_extension(context_builder=context_builder)
         # ordinary
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=10, target_vol=40,
-                                  source_container_name="source1", target_container_name="target1")
+                                  source_container_name="27-8473", target_container_name="target1")
         # multistep
         builder.add_artifact_pair(source_conc=100, source_vol=40, target_conc=2, target_vol=40,
-                                  source_container_name="source1", target_container_name="target1")
+                                  source_container_name="source1", target_container_name="Test-RNA1_PL1_org_210428")
         # evaporation
         builder.add_artifact_pair(source_conc=20, source_vol=40, target_conc=30, target_vol=10,
                                   source_container_name="source1", target_container_name="target1")
 
         # Act
-        self.execute_short(builder)
+        # self.execute_short(builder)
+        builder.extension.execute()
 
         # Assert
-        #self.save_metadata_to_harddisk(builder.extension, r'C:\Smajobb\2017\Augusti\Clarity\saves')
+        self.save_metadata_to_harddisk(builder, r'/home/edvard/smajobb/saves')
         batches = builder.extension.dilution_session.transfer_batches(self.hamilton_robot_setting.name)
         gen = (b for b in batches if b.name == "default")
         default_batch = next(gen)

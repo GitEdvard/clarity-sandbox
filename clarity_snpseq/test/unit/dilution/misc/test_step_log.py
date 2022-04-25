@@ -24,10 +24,10 @@ class TestStepLog(TestDilutionBase):
         today = datetime.date.today().strftime("%y%m%d")
         step_log_file_handle = "Step log"
         step_log_files = list()
-        print("Saving files to harddisk in folder {}".format(save_directory))
+        print(("Saving files to harddisk in folder {}".format(save_directory)))
         file_name = "step_log_{}.txt".format(today)
         step_log_files.append((file_name, step_log_contents))
-        print("file: {}".format(file_name))
+        print(("file: {}".format(file_name)))
 
         # Upload the metadata file:
         file_service.upload_files(step_log_file_handle, step_log_files)

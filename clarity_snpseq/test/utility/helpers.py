@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 import os
 from clarity_ext.domain import *
 from clarity_snpseq.test.utility.fake_collaborators import FakeOsService

@@ -11,7 +11,7 @@ class TestLogin(unittest.TestCase):
             f.write('password: {}\n'.format(PASSWORD))
             f.write('basuri: {}\n'.format(BASEURI))
 
-        print('username: {}'.format(USERNAME))
-        print('password: {}'.format(PASSWORD))
-        print('basuri: {}'.format(BASEURI))
+        print(('username: {}'.format(USERNAME)))
+        print(('password: {}'.format(PASSWORD)))
+        print(('basuri: {}'.format(BASEURI)))
         self.assertEqual(1, 2)
