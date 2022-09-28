@@ -1,0 +1,26 @@
+{
+  "$schema": "https://puremourning.github.io/vimspector/schema/vimspector.schema.json",
+  "configurations": {
+    "run": {
+      "adapter": "debugpy",
+      "configuration": {
+        "request": "launch",
+        "default": true,
+        "python": "${workspaceRoot}/venv/bin/python3",
+        "type": "python",
+        "cwd": "${workspaceRoot}",
+        "program": "${workspaceRoot}/clarity-ext/clarity_ext/cli.py",
+        "args": [ "--level", "INFO", "extension", "--cache", "False", "${CURRENT_PY_PATH}", "test" ],
+        "stopOnEntry": false,
+        "console": "integratedTerminal"
+      },
+      "breakpoints": {
+        "exception": {
+          "raised": "N",
+          "uncaught": "",
+          "userUnhandled": ""
+        }
+      }
+    }
+  }
+}
